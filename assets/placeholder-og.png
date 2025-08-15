@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Monaghan's Midnight Smash</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #0A0A0A 0%, #1a1a1a 100%);
+            color: white;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .og-card {
+            background: rgba(255,255,255,0.1);
+            border: 2px solid #00E0FF;
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+            max-width: 600px;
+            box-shadow: 0 0 30px rgba(0,224,255,0.3);
+        }
+        h1 {
+            color: #00E0FF;
+            font-size: 48px;
+            margin: 0 0 20px 0;
+            text-shadow: 0 0 20px #00E0FF;
+        }
+        p {
+            font-size: 24px;
+            margin: 0;
+            color: #FFC72C;
+        }
+    </style>
+</head>
+<body>
+    <div class="og-card">
+        <h1>Monaghan's Midnight Smash</h1>
+        <p>Last Call for the Best Burger in Denver</p>
+    </div>
+</body>
+</html>
