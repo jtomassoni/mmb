@@ -89,30 +89,8 @@
             box-shadow: 0 0 20px var(--sunset-gold), 0 0 40px var(--sunset-gold), 0 0 0 3px var(--sunset-gold);
         }
         
-        .skeleton {
-            background: linear-gradient(90deg, var(--steel) 25%, #666 50%, var(--steel) 75%);
-            background-size: 200% 100%;
-            animation: shimmer 1.5s infinite;
-        }
-        
-        @keyframes shimmer {
-            0% { background-position: -200% 0; }
-            100% { background-position: 200% 0; }
-        }
-        
-        .img-fallback {
-            opacity: 0.7;
-            filter: grayscale(100%);
-        }
-        
         .hero-gradient {
             background: linear-gradient(135deg, rgba(0, 224, 255, 0.3) 0%, rgba(139, 0, 255, 0.3) 50%, rgba(255, 0, 110, 0.3) 100%);
-        }
-        
-        .sticky-nav {
-            backdrop-filter: blur(10px);
-            background-color: rgba(0, 0, 0, 0.4);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
         
         .card-hover {
@@ -127,28 +105,8 @@
     </style>
 </head>
 <body class="antialiased">
-    <!-- Sticky Top Bar -->
-    <nav class="sticky top-0 z-50 sticky-nav">
-        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-            <div class="flex items-center space-x-3">
-                <img src="assets/placeholder-logo.svg" 
-                     alt="Monaghan's Midnight Smash Logo" 
-                     width="48" 
-                     height="48" 
-                     decoding="async" 
-                     loading="lazy"
-                     class="w-12 h-12 bg-white/10 rounded-lg p-2">
-                <span class="font-orbitron text-xl font-bold glow">Monaghan's Midnight Smash</span>
-            </div>
-            <div class="flex space-x-6">
-                <a href="#menu" class="text-white hover:text-neon-blue transition-colors">Menu</a>
-                <a href="#order" class="text-white hover:text-neon-blue transition-colors">Order Online</a>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Hero Section -->
-    <section class="relative h-screen flex items-center justify-center overflow-hidden">
+    <!-- Single Hero Section -->
+    <section class="relative min-h-screen flex items-center justify-center overflow-hidden p-4">
         <!-- Hero Background Image -->
         <img id="hero-img" 
              src="assets/hero.png" 
@@ -158,145 +116,85 @@
              decoding="async"
              class="absolute inset-0 w-full h-full object-cover">
         
+        <!-- Dark Overlay for Better Text Readability -->
+        <div class="absolute inset-0 bg-black/40"></div>
         <!-- Gradient Overlay -->
-        <div class="absolute inset-0 hero-gradient"></div>
+        <div class="absolute inset-0 hero-gradient opacity-60"></div>
         
         <!-- Hero Content -->
-        <div class="relative z-10 text-center px-4 max-w-4xl mx-auto">
-            <h1 class="font-orbitron text-6xl md:text-8xl font-black mb-6 glow">
-                MIDNIGHT SMASH
-            </h1>
-            <p class="text-xl md:text-2xl mb-8 text-white/90 font-light">
-                Once a month • 4PM–4AM • Inside Monaghan's
-            </p>
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <a href="#menu" 
-                   class="btn-glow bg-sunset-gold text-black font-bold py-4 px-8 rounded-full text-lg hover:bg-yellow-300 transition-colors">
-                    See Menu
-                </a>
-                <a href="#order" 
-                   class="btn-glow bg-white/10 text-white font-bold py-4 px-8 rounded-full text-lg hover:bg-white/20 transition-colors border border-white/20">
-                    Order Online
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Menu Section -->
-    <section id="menu" class="py-20 px-4">
-        <div class="container mx-auto max-w-6xl">
-            <h2 class="font-orbitron text-4xl md:text-5xl font-bold text-center mb-16 glow">
-                THE MENU
-            </h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- Single Smash -->
-                <div class="card-hover rounded-2xl bg-white/5 ring-1 ring-white/10 p-6 text-center">
-                    <h3 class="font-orbitron text-xl font-bold mb-2">Single Smash</h3>
-                    <p class="text-sunset-gold text-2xl font-bold mb-3">$12</p>
-                    <p class="text-white/80 text-sm">Includes chips</p>
-                </div>
-                
-                <!-- Double Trouble -->
-                <div class="card-hover rounded-2xl bg-white/5 ring-1 ring-white/10 p-6 text-center">
-                    <h3 class="font-orbitron text-xl font-bold mb-2">Double Trouble</h3>
-                    <p class="text-sunset-gold text-2xl font-bold mb-3">$15</p>
-                    <p class="text-white/80 text-sm">Includes chips — balance is key</p>
-                </div>
-                
-                <!-- Dynamic Duo -->
-                <div class="card-hover rounded-2xl bg-white/5 ring-1 ring-white/10 p-6 text-center">
-                    <h3 class="font-orbitron text-xl font-bold mb-2">Dynamic Duo</h3>
-                    <p class="text-sunset-gold text-2xl font-bold mb-3">$20</p>
-                    <p class="text-white/80 text-sm">Two singles • one bag of chips — share if you dare</p>
-                </div>
-                
-                <!-- Double Down -->
-                <div class="card-hover rounded-2xl bg-white/5 ring-1 ring-white/10 p-6 text-center">
-                    <h3 class="font-orbitron text-xl font-bold mb-2">Double Down</h3>
-                    <p class="text-sunset-gold text-2xl font-bold mb-3">$25</p>
-                    <p class="text-white/80 text-sm">Two doubles • one bag of chips — we're watching you</p>
-                </div>
-            </div>
-            
-            <div class="text-center mt-8 text-white/60 text-sm">
-                <p>Add pickles +$0.50 • Removal of onions or sauce is okay • No substitutions</p>
-            </div>
-            
-            <!-- What's Included Section -->
-            <div class="mt-12 p-8 rounded-2xl bg-white/5 ring-1 ring-white/10">
-                <h3 class="font-orbitron text-2xl font-bold text-center mb-6 glow-pink">
-                    WHAT'S INCLUDED
-                </h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 text-center">
-                    <div class="p-4 rounded-xl bg-white/5">
-                        <div class="text-sunset-gold text-3xl mb-2">🥔</div>
-                        <p class="font-semibold text-white">Potato Roll</p>
-                    </div>
-                    <div class="p-4 rounded-xl bg-white/5">
-                        <div class="text-sunset-gold text-3xl mb-2">🥩</div>
-                        <p class="font-semibold text-white">Beef Patty</p>
-                    </div>
-                    <div class="p-4 rounded-xl bg-white/5">
-                        <div class="text-sunset-gold text-3xl mb-2">🧀</div>
-                        <p class="font-semibold text-white">American Cheese</p>
-                    </div>
-                    <div class="p-4 rounded-xl bg-white/5">
-                        <div class="text-sunset-gold text-3xl mb-2">🧅</div>
-                        <p class="font-semibold text-white">Onions</p>
-                    </div>
-                    <div class="p-4 rounded-xl bg-white/5">
-                        <div class="text-sunset-gold text-3xl mb-2">🥫</div>
-                        <p class="font-semibold text-white">Burger Sauce</p>
-                    </div>
-                </div>
-                <p class="text-center mt-6 text-white/80 text-sm">
-                    Every burger comes with these five ingredients by default
+        <div class="relative z-10 w-full max-w-4xl mx-auto">
+            <!-- Title -->
+            <div class="text-center mb-8">
+                <h1 class="font-orbitron text-4xl md:text-6xl lg:text-7xl font-black mb-4 glow">
+                    MIDNIGHT SMASH
+                </h1>
+                <p class="text-lg md:text-xl mb-6 text-white font-semibold drop-shadow-lg">
+                    Once a month • 4PM–4AM • Inside Monaghan's
                 </p>
             </div>
-        </div>
-    </section>
 
-    <!-- Order Online Section -->
-    <section id="order" class="py-20 px-4 bg-white/5">
-        <div class="container mx-auto max-w-4xl text-center">
-            <h2 class="font-orbitron text-4xl md:text-5xl font-bold mb-16 glow-pink">
-                ORDER ONLINE
-            </h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Menu Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-8">
+                <div class="card-hover rounded-xl bg-white/10 ring-1 ring-white/20 p-3 md:p-4 text-center backdrop-blur-sm">
+                    <h3 class="font-orbitron text-sm md:text-lg font-bold mb-1 text-white drop-shadow-lg">Single</h3>
+                    <p class="text-sunset-gold text-lg md:text-2xl font-bold drop-shadow-lg">$12</p>
+                </div>
+                
+                <div class="card-hover rounded-xl bg-white/10 ring-1 ring-white/20 p-3 md:p-4 text-center backdrop-blur-sm">
+                    <h3 class="font-orbitron text-sm md:text-lg font-bold mb-1 text-white drop-shadow-lg">Double</h3>
+                    <p class="text-sunset-gold text-lg md:text-2xl font-bold drop-shadow-lg">$15</p>
+                </div>
+                
+                <div class="card-hover rounded-xl bg-white/10 ring-1 ring-white/20 p-3 md:p-4 text-center backdrop-blur-sm">
+                    <h3 class="font-orbitron text-sm md:text-lg font-bold mb-1 text-white drop-shadow-lg">Two Singles</h3>
+                    <p class="text-sunset-gold text-lg md:text-2xl font-bold drop-shadow-lg">$20</p>
+                </div>
+                
+                <div class="card-hover rounded-xl bg-white/10 ring-1 ring-white/20 p-3 md:p-4 text-center backdrop-blur-sm">
+                    <h3 class="font-orbitron text-sm md:text-lg font-bold mb-1 text-white drop-shadow-lg">Two Doubles</h3>
+                    <p class="text-sunset-gold text-lg md:text-2xl font-bold drop-shadow-lg">$25</p>
+                </div>
+            </div>
+
+            <!-- What's Included -->
+            <div class="text-center mb-8">
+                <p class="text-white font-bold text-sm md:text-base mb-2 drop-shadow-xl">
+                    Every burger includes: potato roll, beef, american cheese, onions, burger sauce
+                </p>
+                <p class="text-white font-semibold text-xs md:text-sm drop-shadow-lg">
+                    Add pickles +$0.50 • Customizations welcome
+                </p>
+            </div>
+
+            <!-- Order Buttons -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 mb-8">
                 <a href="https://www.doordash.com/" 
                    target="_blank" 
                    rel="noopener noreferrer"
-                   class="btn-glow bg-red-600 text-white font-bold py-6 px-8 rounded-2xl text-xl hover:bg-red-700 transition-colors">
+                   class="btn-glow bg-red-600 text-white font-bold py-3 md:py-4 px-6 md:px-8 rounded-xl text-base md:text-lg hover:bg-red-700 transition-colors">
                     DoorDash
                 </a>
                 <a href="https://www.ubereats.com/" 
                    target="_blank" 
                    rel="noopener noreferrer"
-                   class="btn-glow bg-black text-white font-bold py-6 px-8 rounded-2xl text-xl hover:bg-gray-800 transition-colors">
+                   class="btn-glow bg-black text-white font-bold py-3 md:py-4 px-6 md:px-8 rounded-xl text-base md:text-lg hover:bg-gray-800 transition-colors">
                     Uber Eats
                 </a>
                 <a href="https://www.grubhub.com/" 
                    target="_blank" 
                    rel="noopener noreferrer"
-                   class="btn-glow bg-red-600 text-white font-bold py-6 px-8 rounded-2xl text-xl hover:bg-red-700 transition-colors">
+                   class="btn-glow bg-red-600 text-white font-bold py-3 md:py-4 px-6 md:px-8 rounded-xl text-base md:text-lg hover:bg-red-700 transition-colors">
                     Grubhub
                 </a>
             </div>
-            <p class="text-white/60 text-sm mt-6">Links go live on event nights.</p>
+
+            <!-- Footer Info -->
+            <div class="text-center text-white font-semibold text-xs md:text-sm">
+                <p class="drop-shadow-lg">Links go live on event nights • Denver, CO</p>
+                <p class="mt-1 drop-shadow-lg">© <span id="current-year"></span> Monaghan's Midnight Smash</p>
+            </div>
         </div>
     </section>
-
-    <!-- Footer -->
-    <footer class="py-12 px-4 border-t border-white/10">
-        <div class="container mx-auto text-center">
-            <p class="text-white/80 mb-4">
-                © <span id="current-year"></span> Monaghan's Midnight Smash · Denver, CO
-            </p>
-            <p class="text-white/60 text-sm">
-                Contact: <a href="mailto:info@monaghans-midnight-smash.com" class="hover:text-neon-blue transition-colors">info@monaghans-midnight-smash.com</a>
-            </p>
-        </div>
-    </footer>
 
     <!-- Scripts -->
     <script src="scripts.js"></script>
