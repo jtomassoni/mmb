@@ -10,7 +10,13 @@
     "status": "tsx scripts/update-status.ts",
     "bootstrap": "tsx scripts/bootstrap.ts",
     "verify-env": "tsx scripts/verify-env.ts",
-    "predev": "npm run verify-env"
+    "predev": "npm run verify-env",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "lighthouse": "lhci autorun",
+    "lighthouse:ci": "lhci autorun --collect.url=http://localhost:3000"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.10.0",
@@ -23,12 +29,17 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@lhci/cli": "^0.15.1",
+    "@playwright/test": "^1.55.0",
     "@tailwindcss/postcss": "^4",
+    "@types/jest": "^29.5.12",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.5.3",
+    "jest": "^29.7.0",
+    "jest-environment-node": "^29.7.0",
     "tailwindcss": "^4",
     "tsx": "^4.7.0",
     "typescript": "^5"

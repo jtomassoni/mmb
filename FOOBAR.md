@@ -24,39 +24,39 @@
 - [x] TASK-01 — Create recovery branch
   - [x] 01A — Create branch recovery/restart-$(date +%Y%m%d-%H%M)
   - [x] 01B — Commit current state [TASK-01]
-- [ ] TASK-02 — Repo audit & scaffold missing infra
+- [x] TASK-02 — Repo audit & scaffold missing infra
   - [x] 02A — Run bootstrap script to create folders, .gitkeep, .env.local
   - [x] 02B — Add verify-env predev gate
-  - [ ] 02C — Commit [TASK-02]
-- [ ] TASK-03 — Prisma multi-tenant models present
-  - [ ] 03A — Define models with siteId scoping; no cross-tenant leakage
-  - [ ] 03B — Add Role enum: SUPERADMIN, OWNER, MANAGER, STAFF
-  - [ ] 03C — Run migration + seed minimal data
-- [ ] TASK-04 — Auth.js + RBAC + redirect rules
-  - [ ] 04A — Configure Auth.js with Prisma adapter
-  - [ ] 04B — Implement RBAC helper + server-side guards
-  - [ ] 04C — Redirect callback per role
-- [ ] TASK-05 — Middleware host routing + superadmin lock
-  - [ ] 05A — Detect host and path; lock /resto-admin to platform
-  - [ ] 05B — Add matcher for all paths
-  - [ ] 05C — Tests cover redirection behaviour
-- [ ] TASK-06 — Admin (site) + Superadmin dashboards
-  - [ ] 06A — Superadmin list: Sites, Domains, Users
-  - [ ] 06B — Per-site Admin shell with nav
-  - [ ] 06C — Access tests (RBAC)
-- [ ] TASK-07 — Create Site wizard
-  - [ ] 07A — Basics → name, host label, business type
-  - [ ] 07B — Owner invite (email) optional
-  - [ ] 07C — Seed Hours/Events/Specials defaults
-- [ ] TASK-08 — Vercel Domain add/verify API
-  - [ ] 08A — Add domain via Vercel API if token provided
-  - [ ] 08B — Verify endpoint + polling/backoff
-  - [ ] 08C — Hourly cron for PENDING
+  - [x] 02C — Commit [TASK-02]
+- [x] TASK-03 — Prisma multi-tenant models present
+  - [x] 03A — Define models with siteId scoping; no cross-tenant leakage
+  - [x] 03B — Add Role enum: SUPERADMIN, OWNER, MANAGER, STAFF
+  - [x] 03C — Run migration + seed minimal data
+- [x] TASK-04 — Auth.js + RBAC + redirect rules
+  - [x] 04A — Configure Auth.js with Prisma adapter
+  - [x] 04B — Implement RBAC helper + server-side guards
+  - [x] 04C — Redirect callback per role
+- [x] TASK-05 — Middleware host routing + superadmin lock
+  - [x] 05A — Detect host and path; lock /resto-admin to platform
+  - [x] 05B — Add matcher for all paths
+  - [x] 05C — Tests cover redirection behaviour
+- [x] TASK-06 — Admin (site) + Superadmin dashboards
+  - [x] 06A — Superadmin list: Sites, Domains, Users
+  - [x] 06B — Per-site Admin shell with nav
+  - [x] 06C — Access tests (RBAC)
+- [x] TASK-07 — Create Site wizard
+  - [x] 07A — Basics → name, host label, business type
+  - [x] 07B — Owner invite (email) optional
+  - [x] 07C — Seed Hours/Events/Specials defaults
+- [x] TASK-08 — Vercel Domain add/verify API
+  - [x] 08A — Add domain via Vercel API if token provided
+  - [x] 08B — Verify endpoint + polling/backoff
+  - [x] 08C — Hourly cron for PENDING
 - [x] TASK-09 — Per-host SEO (sitemap/robots/JSON-LD)
-  - [ ] 09A — Dynamic sitemap per host (App Router)
-  - [ ] 09B — robots.txt per host with disallow rules for /admin,/resto-admin
-  - [ ] 09C — Inject LocalBusiness/Menu/Event JSON-LD
-  - [ ] 09D — Lighthouse SEO ≥ 90 on tenant + platform
+  - [x] 09A — Dynamic sitemap per host (App Router)
+  - [x] 09B — robots.txt per host with disallow rules for /admin,/resto-admin
+  - [x] 09C — Inject LocalBusiness/Menu/Event JSON-LD
+  - [x] 09D — Lighthouse SEO ≥ 90 on tenant + platform
 - [ ] TASK-10 — SPA home sections + routes
   - [ ] 10A — Home sections composed, fast LCP
   - [ ] 10B — Routes: /menu /specials /events /reviews /about /visit
