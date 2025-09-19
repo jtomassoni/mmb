@@ -68,10 +68,10 @@
 - [x] TASK-12 — Footer/header Login + role redirects
   - [x] 12A — Footer button + optional header link
   - [x] 12B — Cross-host login redirect logic validated
-- [ ] TASK-13 — Health cards & scheduled pings
-  - [ ] 13A — Ping job writes HealthPing rows
-  - [ ] 13B — Cards query recent metrics
-  - [ ] 13C — Error states & empty states handled
+- [x] TASK-13 — Health cards & scheduled pings
+  - [x] 13A — Ping job writes HealthPing rows
+  - [x] 13B — Cards query recent metrics
+  - [x] 13C — Error states & empty states handled
 - [ ] TASK-14 — Events defaults (Mon poker, Thu bingo, Sun potluck)
   - [ ] 14A — Seed: Poker Mon 7 PM; Bingo Thu 7 PM; Broncos Potluck Sun kickoff
   - [ ] 14B — Render on /events with JSON-LD Event
