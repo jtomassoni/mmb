@@ -17,12 +17,12 @@
 
 **Task Checklist (auto-synced from docs/status.json):**
 <!-- TASKS-LIST:DO-NOT-EDIT-MANUALLY -->
-- [ ] TASK-00 — Create FOOBAR.md runbook
+- [x] TASK-00 — Create FOOBAR.md runbook
   - [x] 00A — Create FOOBAR.md with runbook content verbatim
   - [x] 00B — Ensure marker <!-- TASKS-LIST:DO-NOT-EDIT-MANUALLY --> present
-  - [ ] 00C — Commit snapshot [TASK-00]
+  - [x] 00C — Commit snapshot [TASK-00]
 - [ ] TASK-01 — Create recovery branch
-  - [ ] 01A — Create branch recovery/restart-$(date +%Y%m%d-%H%M)
+  - [x] 01A — Create branch recovery/restart-$(date +%Y%m%d-%H%M)
   - [ ] 01B — Commit current state [TASK-01]
 - [ ] TASK-02 — Repo audit & scaffold missing infra
   - [ ] 02A — Run bootstrap script to create folders, .gitkeep, .env.local

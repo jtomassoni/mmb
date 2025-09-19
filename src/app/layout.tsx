@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { Providers } from "../components/providers";
+import { AccessibilityToolbar } from "../components/accessibility-toolbar";
+import JsonLdWrapper from "../components/json-ld-wrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,10 +27,33 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <JsonLdWrapper />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <a href="#main-content" className="skip-link">
+          Skip to main content
+        </a>
+        <AccessibilityToolbar />
+        <Providers>
+          <main id="main-content">
+            {children}
+          </main>
+          <footer className="bg-gray-800 text-white py-4 px-6 mt-auto">
+            <div className="max-w-7xl mx-auto flex justify-between items-center">
+              <p className="text-sm">&copy; 2024 Monaghan&apos;s Bar & Grill</p>
+              <a 
+                href="/login" 
+                className="text-sm hover:underline focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 rounded"
+                aria-label="Owner / Staff Login"
+              >
+                Owner / Staff Login
+              </a>
+            </div>
+          </footer>
+        </Providers>
       </body>
     </html>
   );
