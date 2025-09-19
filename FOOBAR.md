@@ -12,8 +12,8 @@
 - **Branch:** recovery/restart-20250918-1837
 - **Platform Host (Superadmin):** www.byte-by-bite.com
 - **Tenants:** monaghansbargrill.com (first)
-- **Last Updated:** 2025-09-19T02:30:00.000Z
-**Next Step:** TASK-18/18A — Add domain via UI/API
+- **Last Updated:** 2025-09-19T02:35:00.000Z
+**Next Step:** TASK-19/19A — Blueprint: type-specific question sets (dive bar/café/fine dining)
 
 **Task Checklist (auto-synced from docs/status.json):**
 <!-- TASKS-LIST:DO-NOT-EDIT-MANUALLY -->
@@ -88,10 +88,10 @@
   - [x] 17A — Playwright smoke flows (public + admin)
   - [x] 17B — Axe integration for a11y assertions
   - [x] 17C — Lighthouse CI with budgets/thresholds
-- [ ] TASK-18 — Monaghans domain attached & verified
-  - [ ] 18A — Add domain via UI/API
-  - [ ] 18B — DNS records correct (CNAME/A/ALIAS)
-  - [ ] 18C — Verify + smoke test routes
+- [x] TASK-18 — Monaghans domain attached & verified
+  - [x] 18A — Add domain via UI/API
+  - [x] 18B — DNS records correct (CNAME/A/ALIAS)
+  - [x] 18C — Verify + smoke test routes
 - [ ] TASK-19 — AI intake wizard (tailored Q&A by business type)
   - [ ] 19A — Blueprint: type-specific question sets (dive bar/café/fine dining)
   - [ ] 19B — Prompt packs + slot map (hours, parking, TVs, reservations)

@@ -1,6 +1,6 @@
 {
   "meta": {
-    "lastUpdated": "2025-09-19T02:30:00.000Z",
+    "lastUpdated": "2025-09-19T02:35:00.000Z",
     "branch": "recovery/restart-20250918-1837",
     "platformHost": "www.byte-by-bite.com",
     "tenants": [
@@ -488,7 +488,7 @@
     {
       "id": "TASK-18",
       "title": "Monaghans domain attached & verified",
-      "state": "todo",
+      "state": "done",
       "acceptance": "monaghansbargrill.com attached, verified ACTIVE, 200 OK, HTTPS green.",
       "artifacts": [
         "Domain row ACTIVE",
@@ -498,17 +498,17 @@
         {
           "id": "18A",
           "title": "Add domain via UI/API",
-          "state": "todo"
+          "state": "done"
         },
         {
           "id": "18B",
           "title": "DNS records correct (CNAME/A/ALIAS)",
-          "state": "todo"
+          "state": "done"
         },
         {
           "id": "18C",
           "title": "Verify + smoke test routes",
-          "state": "todo"
+          "state": "done"
         }
       ]
     }

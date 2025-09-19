@@ -95,9 +95,12 @@ export default function SuperadminDashboard() {
                       <button className="text-blue-600 hover:text-blue-900 mr-4">
                         Edit
                       </button>
-                      <button className="text-green-600 hover:text-green-900 mr-4">
+                      <a 
+                        href="/resto-admin/domains"
+                        className="text-green-600 hover:text-green-900 mr-4"
+                      >
                         Manage Domain
-                      </button>
+                      </a>
                       <button className="text-gray-600 hover:text-gray-900">
                         View Site
                       </button>
