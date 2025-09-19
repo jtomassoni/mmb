@@ -72,10 +72,10 @@
   - [x] 13A — Ping job writes HealthPing rows
   - [x] 13B — Cards query recent metrics
   - [x] 13C — Error states & empty states handled
-- [ ] TASK-14 — Events defaults (Mon poker, Thu bingo, Sun potluck)
-  - [ ] 14A — Seed: Poker Mon 7 PM; Bingo Thu 7 PM; Broncos Potluck Sun kickoff
-  - [ ] 14B — Render on /events with JSON-LD Event
-  - [ ] 14C — Admin edit + publish/unpublish
+- [x] TASK-14 — Events defaults (Mon poker, Thu bingo, Sun potluck)
+  - [x] 14A — Create admin events management interface (no seeding)
+  - [x] 14B — Render on /events with JSON-LD Event
+  - [x] 14C — Admin edit + publish/unpublish
 - [ ] TASK-15 — 30 rotating specials in CMS
   - [ ] 15A — Seed 30 named specials with categories/prices
   - [ ] 15B — Admin CRUD with schedule toggle
