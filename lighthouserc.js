@@ -1,30 +1,26 @@
-// lighthouserc.js
 module.exports = {
   ci: {
     collect: {
-      url: [
-        'http://localhost:3000',
-        'http://localhost:3000/menu',
-        'http://localhost:3000/specials',
-        'http://localhost:3000/events',
-        'http://localhost:3000/about',
-        'http://localhost:3000/visit',
-        'http://localhost:3000/reviews',
-      ],
-      startServerCommand: 'npm run dev',
-      startServerReadyPattern: 'ready - started server on',
+      url: ['http://localhost:3000'],
+      startServerCommand: 'npm start',
+      startServerReadyPattern: 'ready',
       startServerReadyTimeout: 30000,
     },
     assert: {
       assertions: {
+        'categories:performance': ['error', { minScore: 0.8 }],
+        'categories:accessibility': ['error', { minScore: 0.9 }],
+        'categories:best-practices': ['error', { minScore: 0.8 }],
         'categories:seo': ['error', { minScore: 0.9 }],
-        'categories:performance': ['warn', { minScore: 0.8 }],
-        'categories:accessibility': ['warn', { minScore: 0.8 }],
-        'categories:best-practices': ['warn', { minScore: 0.8 }],
+        'first-contentful-paint': ['error', { maxNumericValue: 2000 }],
+        'largest-contentful-paint': ['error', { maxNumericValue: 2500 }],
+        'cumulative-layout-shift': ['error', { maxNumericValue: 0.1 }],
+        'total-blocking-time': ['error', { maxNumericValue: 300 }],
+        'speed-index': ['error', { maxNumericValue: 3000 }],
       },
     },
     upload: {
       target: 'temporary-public-storage',
     },
   },
-}
+};

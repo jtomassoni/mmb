@@ -12,8 +12,8 @@
 - **Branch:** recovery/restart-20250918-1837
 - **Platform Host (Superadmin):** www.byte-by-bite.com
 - **Tenants:** monaghansbargrill.com (first)
-- **Last Updated:** 2025-09-19T01:50:02.245Z
-**Next Step:** TASK-00/00A — Create FOOBAR.md with runbook content verbatim
+- **Last Updated:** 2025-09-19T02:30:00.000Z
+**Next Step:** TASK-18/18A — Add domain via UI/API
 
 **Task Checklist (auto-synced from docs/status.json):**
 <!-- TASKS-LIST:DO-NOT-EDIT-MANUALLY -->
@@ -84,10 +84,10 @@
   - [x] 16A — Map filenames → fixed alt per runbook list
   - [x] 16B — Fallback alt rules for new media
   - [x] 16C — Axe pass for images
-- [ ] TASK-17 — Playwright + Axe + Lighthouse CI
-  - [ ] 17A — Playwright smoke flows (public + admin)
-  - [ ] 17B — Axe integration for a11y assertions
-  - [ ] 17C — Lighthouse CI with budgets/thresholds
+- [x] TASK-17 — Playwright + Axe + Lighthouse CI
+  - [x] 17A — Playwright smoke flows (public + admin)
+  - [x] 17B — Axe integration for a11y assertions
+  - [x] 17C — Lighthouse CI with budgets/thresholds
 - [ ] TASK-18 — Monaghans domain attached & verified
   - [ ] 18A — Add domain via UI/API
   - [ ] 18B — DNS records correct (CNAME/A/ALIAS)

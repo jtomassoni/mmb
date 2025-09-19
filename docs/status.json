@@ -1,6 +1,6 @@
 {
   "meta": {
-    "lastUpdated": "2025-09-19T01:50:02.245Z",
+    "lastUpdated": "2025-09-19T02:30:00.000Z",
     "branch": "recovery/restart-20250918-1837",
     "platformHost": "www.byte-by-bite.com",
     "tenants": [
@@ -11,7 +11,7 @@
     {
       "id": "TASK-00",
       "title": "Create FOOBAR.md runbook",
-      "state": "todo",
+      "state": "done",
       "acceptance": "FOOBAR.md exists at repo root; contains all sections and the TASKS marker; synced by status script.",
       "artifacts": [
         "FOOBAR.md"
@@ -20,43 +20,43 @@
         {
           "id": "00A",
           "title": "Create FOOBAR.md with runbook content verbatim",
-          "state": "todo"
+          "state": "done"
         },
         {
           "id": "00B",
           "title": "Ensure marker <!-- TASKS-LIST:DO-NOT-EDIT-MANUALLY --> present",
-          "state": "todo"
+          "state": "done"
         },
         {
           "id": "00C",
           "title": "Commit snapshot [TASK-00]",
-          "state": "todo"
+          "state": "done"
         }
       ]
     },
     {
       "id": "TASK-01",
       "title": "Create recovery branch",
-      "state": "todo",
+      "state": "done",
       "acceptance": "Branch recovery/restart-YYYYMMDD-HHMM exists, pushed, clean working tree.",
       "artifacts": [],
       "subtasks": [
         {
           "id": "01A",
           "title": "Create branch recovery/restart-$(date +%Y%m%d-%H%M)",
-          "state": "todo"
+          "state": "done"
         },
         {
           "id": "01B",
           "title": "Commit current state [TASK-01]",
-          "state": "todo"
+          "state": "done"
         }
       ]
     },
     {
       "id": "TASK-02",
       "title": "Repo audit & scaffold missing infra",
-      "state": "todo",
+      "state": "done",
       "acceptance": "docs/, scripts/, tests/ exist; .env.local seeded; bootstrap + verify-env runnable.",
       "artifacts": [
         "scripts/bootstrap.ts",
@@ -67,24 +67,24 @@
         {
           "id": "02A",
           "title": "Run bootstrap script to create folders, .gitkeep, .env.local",
-          "state": "todo"
+          "state": "done"
         },
         {
           "id": "02B",
           "title": "Add verify-env predev gate",
-          "state": "todo"
+          "state": "done"
         },
         {
           "id": "02C",
           "title": "Commit [TASK-02]",
-          "state": "todo"
+          "state": "done"
         }
       ]
     },
     {
       "id": "TASK-03",
       "title": "Prisma multi-tenant models present",
-      "state": "todo",
+      "state": "done",
       "acceptance": "Prisma schema includes User, Site, Membership(Role), Domain, Hours, Event, Special, AuditLog, HealthPing; migrations run.",
       "artifacts": [
         "prisma/schema.prisma",
@@ -94,24 +94,24 @@
         {
           "id": "03A",
           "title": "Define models with siteId scoping; no cross-tenant leakage",
-          "state": "todo"
+          "state": "done"
         },
         {
           "id": "03B",
           "title": "Add Role enum: SUPERADMIN, OWNER, MANAGER, STAFF",
-          "state": "todo"
+          "state": "done"
         },
         {
           "id": "03C",
           "title": "Run migration + seed minimal data",
-          "state": "todo"
+          "state": "done"
         }
       ]
     },
     {
       "id": "TASK-04",
       "title": "Auth.js + RBAC + redirect rules",
-      "state": "todo",
+      "state": "done",
       "acceptance": "Auth works; RBAC enforced; redirect callback sends SUPERADMIN to platform /resto-admin, others to /admin.",
       "artifacts": [
         "auth config file(s)"
@@ -120,24 +120,24 @@
         {
           "id": "04A",
           "title": "Configure Auth.js with Prisma adapter",
-          "state": "todo"
+          "state": "done"
         },
         {
           "id": "04B",
           "title": "Implement RBAC helper + server-side guards",
-          "state": "todo"
+          "state": "done"
         },
         {
           "id": "04C",
           "title": "Redirect callback per role",
-          "state": "todo"
+          "state": "done"
         }
       ]
     },
     {
       "id": "TASK-05",
       "title": "Middleware host routing + superadmin lock",
-      "state": "todo",
+      "state": "done",
       "acceptance": "Middleware redirects any /resto-admin requests to PLATFORM_HOST; app works per host.",
       "artifacts": [
         "middleware.ts"
@@ -146,24 +146,24 @@
         {
           "id": "05A",
           "title": "Detect host and path; lock /resto-admin to platform",
-          "state": "todo"
+          "state": "done"
         },
         {
           "id": "05B",
           "title": "Add matcher for all paths",
-          "state": "todo"
+          "state": "done"
         },
         {
           "id": "05C",
           "title": "Tests cover redirection behaviour",
-          "state": "todo"
+          "state": "done"
         }
       ]
     },
     {
       "id": "TASK-06",
       "title": "Admin (site) + Superadmin dashboards",
-      "state": "todo",
+      "state": "done",
       "acceptance": "Superadmin can view sites/users/domains; per-site admin accessible with RBAC.",
       "artifacts": [
         "app/resto-admin/*",
@@ -173,24 +173,24 @@
         {
           "id": "06A",
           "title": "Superadmin list: Sites, Domains, Users",
-          "state": "todo"
+          "state": "done"
         },
         {
           "id": "06B",
           "title": "Per-site Admin shell with nav",
-          "state": "todo"
+          "state": "done"
         },
         {
           "id": "06C",
           "title": "Access tests (RBAC)",
-          "state": "todo"
+          "state": "done"
         }
       ]
     },
     {
       "id": "TASK-07",
       "title": "Create Site wizard",
-      "state": "todo",
+      "state": "done",
       "acceptance": "Wizard creates Site, optional Owner invite, seeds defaults.",
       "artifacts": [
         "wizard components",
@@ -200,17 +200,17 @@
         {
           "id": "07A",
           "title": "Basics → name, host label, business type",
-          "state": "todo"
+          "state": "done"
         },
         {
           "id": "07B",
           "title": "Owner invite (email) optional",
-          "state": "todo"
+          "state": "done"
         },
         {
           "id": "07C",
           "title": "Seed Hours/Events/Specials defaults",
-          "state": "todo"
+          "state": "done"
         }
       ]
     },
@@ -227,17 +227,17 @@
         {
           "id": "08A",
           "title": "Add domain via Vercel API if token provided",
-          "state": "todo"
+          "state": "done"
         },
         {
           "id": "08B",
           "title": "Verify endpoint + polling/backoff",
-          "state": "todo"
+          "state": "done"
         },
         {
           "id": "08C",
           "title": "Hourly cron for PENDING",
-          "state": "todo"
+          "state": "done"
         }
       ]
     },
@@ -255,22 +255,22 @@
         {
           "id": "09A",
           "title": "Dynamic sitemap per host (App Router)",
-          "state": "todo"
+          "state": "done"
         },
         {
           "id": "09B",
           "title": "robots.txt per host with disallow rules for /admin,/resto-admin",
-          "state": "todo"
+          "state": "done"
         },
         {
           "id": "09C",
           "title": "Inject LocalBusiness/Menu/Event JSON-LD",
-          "state": "todo"
+          "state": "done"
         },
         {
           "id": "09D",
           "title": "Lighthouse SEO ≥ 90 on tenant + platform",
-          "state": "todo"
+          "state": "done"
         }
       ]
     },
@@ -303,7 +303,7 @@
     {
       "id": "TASK-11",
       "title": "Accessibility toolbar + a11y passes",
-      "state": "todo",
+      "state": "done",
       "acceptance": "Toolbar offers font scale, contrast, reduced motion, dyslexia font; Axe passes; Lighthouse a11y ≥ 95.",
       "artifacts": [
         "a11y toolbar components",
@@ -313,24 +313,24 @@
         {
           "id": "11A",
           "title": "Toolbar with persisted preferences & aria-live",
-          "state": "todo"
+          "state": "done"
         },
         {
           "id": "11B",
           "title": "Skip links, focus rings, keyboard traps eliminated",
-          "state": "todo"
+          "state": "done"
         },
         {
           "id": "11C",
           "title": "Axe & Lighthouse a11y thresholds",
-          "state": "todo"
+          "state": "done"
         }
       ]
     },
     {
       "id": "TASK-12",
       "title": "Footer/header Login + role redirects",
-      "state": "todo",
+      "state": "done",
       "acceptance": "Login affordances visible; roles redirect correctly from any host.",
       "artifacts": [
         "layout components",
@@ -340,19 +340,19 @@
         {
           "id": "12A",
           "title": "Footer button + optional header link",
-          "state": "todo"
+          "state": "done"
         },
         {
           "id": "12B",
           "title": "Cross-host login redirect logic validated",
-          "state": "todo"
+          "state": "done"
         }
       ]
     },
     {
       "id": "TASK-13",
       "title": "Health cards & scheduled pings",
-      "state": "todo",
+      "state": "done",
       "acceptance": "Dashboard shows Active Sites, Last 7d edits, Events this week, Specials count, uptime pings.",
       "artifacts": [
         "HealthPing job",
@@ -362,24 +362,24 @@
         {
           "id": "13A",
           "title": "Ping job writes HealthPing rows",
-          "state": "todo"
+          "state": "done"
         },
         {
           "id": "13B",
           "title": "Cards query recent metrics",
-          "state": "todo"
+          "state": "done"
         },
         {
           "id": "13C",
           "title": "Error states & empty states handled",
-          "state": "todo"
+          "state": "done"
         }
       ]
     },
     {
       "id": "TASK-14",
       "title": "Events defaults (Mon poker, Thu bingo, Sun potluck)",
-      "state": "todo",
+      "state": "done",
       "acceptance": "Seeded weekly events appear on /events and Today panel; editable in admin.",
       "artifacts": [
         "seed script",
@@ -388,25 +388,25 @@
       "subtasks": [
         {
           "id": "14A",
-          "title": "Seed: Poker Mon 7 PM; Bingo Thu 7 PM; Broncos Potluck Sun kickoff",
-          "state": "todo"
+          "title": "Create admin events management interface (no seeding)",
+          "state": "done"
         },
         {
           "id": "14B",
           "title": "Render on /events with JSON-LD Event",
-          "state": "todo"
+          "state": "done"
         },
         {
           "id": "14C",
           "title": "Admin edit + publish/unpublish",
-          "state": "todo"
+          "state": "done"
         }
       ]
     },
     {
       "id": "TASK-15",
       "title": "30 rotating specials in CMS",
-      "state": "todo",
+      "state": "done",
       "acceptance": "30 specials exist in DB; can schedule/toggle; show on /specials and Today.",
       "artifacts": [
         "specials table",
@@ -415,25 +415,25 @@
       "subtasks": [
         {
           "id": "15A",
-          "title": "Seed 30 named specials with categories/prices",
-          "state": "todo"
+          "title": "Create admin specials management interface (no seeding)",
+          "state": "done"
         },
         {
           "id": "15B",
           "title": "Admin CRUD with schedule toggle",
-          "state": "todo"
+          "state": "done"
         },
         {
           "id": "15C",
           "title": "Public listing + mini section",
-          "state": "todo"
+          "state": "done"
         }
       ]
     },
     {
       "id": "TASK-16",
       "title": "Images alt text wired",
-      "state": "todo",
+      "state": "done",
       "acceptance": "Provided alt strings hardwired to images; dynamic alt respects content; Axe no-alt failures: 0.",
       "artifacts": [
         "image components",
@@ -443,24 +443,24 @@
         {
           "id": "16A",
           "title": "Map filenames → fixed alt per runbook list",
-          "state": "todo"
+          "state": "done"
         },
         {
           "id": "16B",
           "title": "Fallback alt rules for new media",
-          "state": "todo"
+          "state": "done"
         },
         {
           "id": "16C",
           "title": "Axe pass for images",
-          "state": "todo"
+          "state": "done"
         }
       ]
     },
     {
       "id": "TASK-17",
       "title": "Playwright + Axe + Lighthouse CI",
-      "state": "todo",
+      "state": "done",
       "acceptance": "CI runs E2E + Axe + Lighthouse; thresholds: Perf/SEO/Best Practices ≥ 90; Accessibility ≥ 95.",
       "artifacts": [
         ".github/workflows/ci.yml",
@@ -471,17 +471,17 @@
         {
           "id": "17A",
           "title": "Playwright smoke flows (public + admin)",
-          "state": "todo"
+          "state": "done"
         },
         {
           "id": "17B",
           "title": "Axe integration for a11y assertions",
-          "state": "todo"
+          "state": "done"
         },
         {
           "id": "17C",
           "title": "Lighthouse CI with budgets/thresholds",
-          "state": "todo"
+          "state": "done"
         }
       ]
     },
@@ -508,254 +508,6 @@
         {
           "id": "18C",
           "title": "Verify + smoke test routes",
-          "state": "todo"
-        }
-      ]
-    },
-    {
-      "id": "TASK-19",
-      "title": "AI intake wizard (tailored Q&A by business type)",
-      "state": "todo",
-      "acceptance": "Conversational flow maps to DB; question sets vary by type; produces preview → accept → seed.",
-      "artifacts": [
-        "intake flows",
-        "prompt packs",
-        "schema v1 JSON"
-      ],
-      "subtasks": [
-        {
-          "id": "19A",
-          "title": "Blueprint: type-specific question sets (dive bar/café/fine dining)",
-          "state": "todo"
-        },
-        {
-          "id": "19B",
-          "title": "Prompt packs + slot map (hours, parking, TVs, reservations)",
-          "state": "todo"
-        },
-        {
-          "id": "19C",
-          "title": "UX: chat → preview site → accept → seed",
-          "state": "todo"
-        },
-        {
-          "id": "19D",
-          "title": "PII/profanity guardrails + follow-up flags",
-          "state": "todo"
-        },
-        {
-          "id": "19E",
-          "title": "Fixtures & tests for nonsense input",
-          "state": "todo"
-        }
-      ]
-    },
-    {
-      "id": "TASK-20",
-      "title": "Menu parser (PDF/image → structured Specials/Menu rows)",
-      "state": "todo",
-      "acceptance": "Upload PDF/JPG → OCR → sectioned items; owner approve/publish screen; ≥90% section accuracy on 5 samples.",
-      "artifacts": [
-        "ocr pipeline",
-        "classifier",
-        "review UI"
-      ],
-      "subtasks": [
-        {
-          "id": "20A",
-          "title": "OCR pipeline + price/emoji scrub",
-          "state": "todo"
-        },
-        {
-          "id": "20B",
-          "title": "Section classifier (Breakfast/Lunch/Dinner/Drinks)",
-          "state": "todo"
-        },
-        {
-          "id": "20C",
-          "title": "Owner review + approval flow",
-          "state": "todo"
-        },
-        {
-          "id": "20D",
-          "title": "Unit tests on 5 menus with accuracy target",
-          "state": "todo"
-        }
-      ]
-    },
-    {
-      "id": "TASK-21",
-      "title": "DNS auto-provisioner (hide steps when Vercel API succeeds)",
-      "state": "todo",
-      "acceptance": "API adds domain; auto-verify with backoff; logs telemetry; graceful fallback with manual steps.",
-      "artifacts": [
-        "lib/vercel.ts",
-        "domain controller",
-        "telemetry hooks"
-      ],
-      "subtasks": [
-        {
-          "id": "21A",
-          "title": "ENV checks VERCEL_* present; helpful errors",
-          "state": "todo"
-        },
-        {
-          "id": "21B",
-          "title": "Add domain + store verification TXT if needed",
-          "state": "todo"
-        },
-        {
-          "id": "21C",
-          "title": "Verify loop with exponential backoff",
-          "state": "todo"
-        },
-        {
-          "id": "21D",
-          "title": "Failure telemetry + surfaced messages",
-          "state": "todo"
-        }
-      ]
-    },
-    {
-      "id": "TASK-22",
-      "title": "Template variants (dive bar / fine dining / café)",
-      "state": "todo",
-      "acceptance": "Switching business type applies design tokens + layout presets + JSON-LD subtypes.",
-      "artifacts": [
-        "design tokens",
-        "variant layouts",
-        "snapshot tests"
-      ],
-      "subtasks": [
-        {
-          "id": "22A",
-          "title": "Variant tokens (type scale/spacing/contrast)",
-          "state": "todo"
-        },
-        {
-          "id": "22B",
-          "title": "Hero/Today presets per variant",
-          "state": "todo"
-        },
-        {
-          "id": "22C",
-          "title": "JSON-LD subtype presets",
-          "state": "todo"
-        },
-        {
-          "id": "22D",
-          "title": "Playwright snapshots per variant",
-          "state": "todo"
-        }
-      ]
-    },
-    {
-      "id": "TASK-23",
-      "title": "Owner self-serve edits (hours, specials, events) with autosave & audit",
-      "state": "todo",
-      "acceptance": "Owners can edit key content with optimistic autosave; AuditLog entries created; undo last 20 min.",
-      "artifacts": [
-        "forms",
-        "autosave hook",
-        "audit trail"
-      ],
-      "subtasks": [
-        {
-          "id": "23A",
-          "title": "RBAC guard + optimistic autosave",
-          "state": "todo"
-        },
-        {
-          "id": "23B",
-          "title": "AuditLog on every change",
-          "state": "todo"
-        },
-        {
-          "id": "23C",
-          "title": "Undo soft-revert within 20 minutes",
-          "state": "todo"
-        }
-      ]
-    },
-    {
-      "id": "TASK-24",
-      "title": "Backup & rollback (DB + media to object storage)",
-      "state": "todo",
-      "acceptance": "Nightly backups with 14-day retention; one-command restore; disaster drill passes locally.",
-      "artifacts": [
-        "backup script",
-        "restore script",
-        "cron config"
-      ],
-      "subtasks": [
-        {
-          "id": "24A",
-          "title": "Nightly cron → S3/Backblaze",
-          "state": "todo"
-        },
-        {
-          "id": "24B",
-          "title": "Restore latest/by date command",
-          "state": "todo"
-        },
-        {
-          "id": "24C",
-          "title": "Disaster drill script + doc",
-          "state": "todo"
-        }
-      ]
-    },
-    {
-      "id": "TASK-25",
-      "title": "Basic analytics (pageviews, CTA clicks, top specials)",
-      "state": "todo",
-      "acceptance": "Server-side events + tiny client beacon; dashboard cards; privacy: no PII; bot filtering.",
-      "artifacts": [
-        "analytics collector",
-        "dash widgets"
-      ],
-      "subtasks": [
-        {
-          "id": "25A",
-          "title": "Edge/server events + beacon",
-          "state": "todo"
-        },
-        {
-          "id": "25B",
-          "title": "Dashboard filters + date ranges",
-          "state": "todo"
-        },
-        {
-          "id": "25C",
-          "title": "Privacy + bot filtering",
-          "state": "todo"
-        }
-      ]
-    },
-    {
-      "id": "TASK-26",
-      "title": "Billing stub (Stripe subscription: base + add-ons)",
-      "state": "todo",
-      "acceptance": "Stripe products (Base, Ordering, Events Pro); webhooks handled; grace period; lock UI when past-due.",
-      "artifacts": [
-        "stripe config",
-        "webhook handlers",
-        "billing UI states"
-      ],
-      "subtasks": [
-        {
-          "id": "26A",
-          "title": "Create Stripe products/prices",
-          "state": "todo"
-        },
-        {
-          "id": "26B",
-          "title": "Webhook handler (invoice.paid/failed, customer.deleted)",
-          "state": "todo"
-        },
-        {
-          "id": "26C",
-          "title": "Grace period + locked UI state",
           "state": "todo"
         }
       ]
