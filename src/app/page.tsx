@@ -1,5 +1,6 @@
 import Image from "next/image";
 import SpecialsMini from '../components/specials-mini';
+import { getImageAlt } from '../lib/image-alt';
 
 export default function Home() {
   // JSON-LD structured data for restaurant
@@ -56,7 +57,7 @@ export default function Home() {
       <section className="relative h-96 overflow-hidden">
         <Image
           src="/pics/hero.png"
-          alt="Monaghan's Bar & Grill - Interior view showing bar and dining area"
+          alt={getImageAlt('hero.png')}
           fill
           priority
           className="object-cover"
@@ -191,7 +192,7 @@ export default function Home() {
             <div className="relative h-48 rounded-lg overflow-hidden">
               <Image
                 src="/pics/monaghans-billiards.jpg"
-                alt="Pool tables at Monaghan's Bar & Grill"
+                alt={getImageAlt('monaghans-billiards.jpg')}
                 fill
                 className="object-cover"
                 sizes="(max-width: 768px) 50vw, 25vw"
@@ -200,7 +201,7 @@ export default function Home() {
             <div className="relative h-48 rounded-lg overflow-hidden">
               <Image
                 src="/pics/monaghans-billiard-room.jpg"
-                alt="Bar area with pool tables and seating"
+                alt={getImageAlt('monaghans-billiard-room.jpg')}
                 fill
                 className="object-cover"
                 sizes="(max-width: 768px) 50vw, 25vw"
@@ -209,7 +210,7 @@ export default function Home() {
             <div className="relative h-48 rounded-lg overflow-hidden">
               <Image
                 src="/pics/monaghans-breakfast-biscut.jpg"
-                alt="Dining room with tables and comfortable seating"
+                alt={getImageAlt('monaghans-breakfast-biscut.jpg')}
                 fill
                 className="object-cover"
                 sizes="(max-width: 768px) 50vw, 25vw"
@@ -218,7 +219,7 @@ export default function Home() {
             <div className="relative h-48 rounded-lg overflow-hidden">
               <Image
                 src="/pics/monaghans-patio.jpg"
-                alt="Outdoor patio seating area"
+                alt={getImageAlt('monaghans-patio.jpg')}
                 fill
                 className="object-cover"
                 sizes="(max-width: 768px) 50vw, 25vw"

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
+import { getImageAlt } from '../lib/image-alt'
 
 interface Special {
   id: string
@@ -71,7 +72,7 @@ export default function SpecialsMini() {
               <div className="relative h-48">
                 <Image
                   src={special.image || `/pics/monaghans-fish-n-chips.jpg`}
-                  alt={`${special.title} - ${special.description || ''}`}
+                  alt={special.image ? getImageAlt(special.image.split('/').pop() || '') : `${special.title} - ${special.description || ''}`}
                   fill
                   className="object-cover"
                   sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"

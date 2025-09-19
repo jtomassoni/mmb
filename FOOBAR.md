@@ -80,10 +80,10 @@
   - [x] 15A — Create admin specials management interface (no seeding)
   - [x] 15B — Admin CRUD with schedule toggle
   - [x] 15C — Public listing + mini section
-- [ ] TASK-16 — Images alt text wired
-  - [ ] 16A — Map filenames → fixed alt per runbook list
-  - [ ] 16B — Fallback alt rules for new media
-  - [ ] 16C — Axe pass for images
+- [x] TASK-16 — Images alt text wired
+  - [x] 16A — Map filenames → fixed alt per runbook list
+  - [x] 16B — Fallback alt rules for new media
+  - [x] 16C — Axe pass for images
 - [ ] TASK-17 — Playwright + Axe + Lighthouse CI
   - [ ] 17A — Playwright smoke flows (public + admin)
   - [ ] 17B — Axe integration for a11y assertions
