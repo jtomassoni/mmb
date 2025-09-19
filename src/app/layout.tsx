@@ -38,7 +38,7 @@ export default function RootLayout({
         </a>
         <AccessibilityToolbar />
         <Providers>
-          <main id="main-content">
+          <main id="main-content" tabIndex={-1}>
             {children}
           </main>
           <footer className="bg-gray-800 text-white py-4 px-6 mt-auto">

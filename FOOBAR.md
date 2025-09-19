@@ -12,7 +12,7 @@
 - **Branch:** recovery/restart-20250918-1837
 - **Platform Host (Superadmin):** www.byte-by-bite.com
 - **Tenants:** monaghansbargrill.com (first)
-- **Last Updated:** 2025-09-19T01:13:45.000Z
+- **Last Updated:** 2025-09-19T01:50:02.245Z
 **Next Step:** TASK-00/00A — Create FOOBAR.md with runbook content verbatim
 
 **Task Checklist (auto-synced from docs/status.json):**
@@ -57,14 +57,14 @@
   - [x] 09B — robots.txt per host with disallow rules for /admin,/resto-admin
   - [x] 09C — Inject LocalBusiness/Menu/Event JSON-LD
   - [x] 09D — Lighthouse SEO ≥ 90 on tenant + platform
-- [ ] TASK-10 — SPA home sections + routes
-  - [ ] 10A — Home sections composed, fast LCP
-  - [ ] 10B — Routes: /menu /specials /events /reviews /about /visit
-  - [ ] 10C — Prefetch & image optimization
-- [ ] TASK-11 — Accessibility toolbar + a11y passes
-  - [ ] 11A — Toolbar with persisted preferences & aria-live
-  - [ ] 11B — Skip links, focus rings, keyboard traps eliminated
-  - [ ] 11C — Axe & Lighthouse a11y thresholds
+- [x] TASK-10 — SPA home sections + routes
+  - [x] 10A — Home sections composed, fast LCP
+  - [x] 10B — Routes: /menu /specials /events /reviews /about /visit
+  - [x] 10C — Prefetch & image optimization
+- [x] TASK-11 — Accessibility toolbar + a11y passes
+  - [x] 11A — Toolbar with persisted preferences & aria-live
+  - [x] 11B — Skip links, focus rings, keyboard traps eliminated
+  - [x] 11C — Axe & Lighthouse a11y thresholds
 - [ ] TASK-12 — Footer/header Login + role redirects
   - [ ] 12A — Footer button + optional header link
   - [ ] 12B — Cross-host login redirect logic validated

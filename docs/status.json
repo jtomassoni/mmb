@@ -1,6 +1,6 @@
 {
   "meta": {
-    "lastUpdated": "2025-09-19T01:13:45.000Z",
+    "lastUpdated": "2025-09-19T01:50:02.245Z",
     "branch": "recovery/restart-20250918-1837",
     "platformHost": "www.byte-by-bite.com",
     "tenants": [
@@ -217,7 +217,7 @@
     {
       "id": "TASK-08",
       "title": "Vercel Domain add/verify API",
-      "state": "todo",
+      "state": "done",
       "acceptance": "POST add domain stores PENDING + any TXT; verify marks ACTIVE or ERROR; cron retry works.",
       "artifacts": [
         "lib/vercel.ts",
@@ -277,7 +277,7 @@
     {
       "id": "TASK-10",
       "title": "SPA home sections + routes",
-      "state": "todo",
+      "state": "done",
       "acceptance": "Home shows Hero, Today, Highlights, mini-sections; real routes exist and are linked.",
       "artifacts": [
         "app/(public)/*"
@@ -286,17 +286,17 @@
         {
           "id": "10A",
           "title": "Home sections composed, fast LCP",
-          "state": "todo"
+          "state": "done"
         },
         {
           "id": "10B",
           "title": "Routes: /menu /specials /events /reviews /about /visit",
-          "state": "todo"
+          "state": "done"
         },
         {
           "id": "10C",
           "title": "Prefetch & image optimization",
-          "state": "todo"
+          "state": "done"
         }
       ]
     },

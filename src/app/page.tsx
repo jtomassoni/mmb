@@ -1,4 +1,4 @@
-// import Image from "next/image";
+import Image from "next/image";
 
 export default function Home() {
   // JSON-LD structured data for restaurant
@@ -38,12 +38,34 @@ export default function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      {/* Prefetch critical routes for better performance */}
+      <link rel="prefetch" href="/menu" />
+      <link rel="prefetch" href="/specials" />
+      <link rel="prefetch" href="/events" />
+      <link rel="prefetch" href="/reviews" />
+      <link rel="prefetch" href="/about" />
+      <link rel="prefetch" href="/visit" />
+      
+      {/* Preload critical images */}
+      <link rel="preload" as="image" href="/pics/hero.png" />
+      <link rel="preload" as="image" href="/pics/monaghans-billiards.jpg" />
+      <link rel="preload" as="image" href="/pics/monaghans-fish-n-chips.jpg" />
       <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <section className="relative h-96 bg-gradient-to-r from-red-900 to-red-700 flex items-center justify-center">
-        <div className="text-center text-white">
-          <h1 className="text-5xl font-bold mb-4">Monaghan&apos;s Bar & Grill</h1>
-          <p className="text-xl">Where Denver comes to eat, drink, and play</p>
+      <section className="relative h-96 overflow-hidden">
+        <Image
+          src="/pics/hero.png"
+          alt="Monaghan's Bar & Grill - Interior view showing bar and dining area"
+          fill
+          priority
+          className="object-cover"
+          sizes="100vw"
+        />
+        <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+          <div className="text-center text-white">
+            <h1 className="text-5xl font-bold mb-4">Monaghan&apos;s Bar & Grill</h1>
+            <p className="text-xl">Where Denver comes to eat, drink, and play</p>
+          </div>
         </div>
       </section>
 
@@ -73,21 +95,21 @@ export default function Home() {
               <div className="bg-red-600 text-white rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl">🍺</span>
               </div>
-              <h3 className="text-xl font-semibold mb-2">Great Drinks</h3>
+              <h2 className="text-xl font-semibold mb-2">Great Drinks</h2>
               <p className="text-gray-600">Full bar with local craft beers and signature cocktails</p>
             </div>
             <div className="text-center">
               <div className="bg-red-600 text-white rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl">🎱</span>
               </div>
-              <h3 className="text-xl font-semibold mb-2">Pool Tables</h3>
+              <h2 className="text-xl font-semibold mb-2">Pool Tables</h2>
               <p className="text-gray-600">Multiple pool tables and games for entertainment</p>
             </div>
             <div className="text-center">
               <div className="bg-red-600 text-white rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl">🎤</span>
               </div>
-              <h3 className="text-xl font-semibold mb-2">Karaoke</h3>
+              <h2 className="text-xl font-semibold mb-2">Karaoke</h2>
               <p className="text-gray-600">Weekly karaoke nights and live entertainment</p>
             </div>
           </div>
@@ -100,17 +122,17 @@ export default function Home() {
           <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">This Week&apos;s Events</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="bg-gray-50 p-6 rounded-lg">
-              <h3 className="text-xl font-semibold mb-2">Monday - Poker Night</h3>
+              <h2 className="text-xl font-semibold mb-2">Monday - Poker Night</h2>
               <p className="text-gray-600 mb-2">7:00 PM</p>
               <p className="text-sm text-gray-500">Texas Hold&apos;em tournament with prizes</p>
             </div>
             <div className="bg-gray-50 p-6 rounded-lg">
-              <h3 className="text-xl font-semibold mb-2">Thursday - Bingo Night</h3>
+              <h2 className="text-xl font-semibold mb-2">Thursday - Bingo Night</h2>
               <p className="text-gray-600 mb-2">7:00 PM</p>
               <p className="text-sm text-gray-500">Traditional bingo with cash prizes</p>
             </div>
             <div className="bg-gray-50 p-6 rounded-lg">
-              <h3 className="text-xl font-semibold mb-2">Sunday - Broncos Potluck</h3>
+              <h2 className="text-xl font-semibold mb-2">Sunday - Broncos Potluck</h2>
               <p className="text-gray-600 mb-2">Game Time</p>
               <p className="text-sm text-gray-500">Watch the Broncos with potluck dinner</p>
             </div>
@@ -128,20 +150,53 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">Today&apos;s Specials</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="bg-white p-6 rounded-lg shadow">
-              <h3 className="text-lg font-semibold mb-2">Chicken Fried Chicken</h3>
-              <p className="text-gray-600 mb-2">Crispy fried chicken with mashed potatoes and gravy</p>
-              <p className="text-red-600 font-semibold">$12.99</p>
+            <div className="bg-white rounded-lg shadow overflow-hidden">
+              <div className="relative h-48">
+                <Image
+                  src="/pics/monaghans-fish-n-chips.jpg"
+                  alt="Fish & Chips - Beer-battered cod with crispy fries"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                />
+              </div>
+              <div className="p-6">
+                <h2 className="text-lg font-semibold mb-2">Fish & Chips</h2>
+                <p className="text-gray-600 mb-2">Beer-battered cod with crispy fries</p>
+                <p className="text-red-600 font-semibold">$11.99</p>
+              </div>
             </div>
-            <div className="bg-white p-6 rounded-lg shadow">
-              <h3 className="text-lg font-semibold mb-2">Fish & Chips</h3>
-              <p className="text-gray-600 mb-2">Beer-battered cod with crispy fries</p>
-              <p className="text-red-600 font-semibold">$11.99</p>
+            <div className="bg-white rounded-lg shadow overflow-hidden">
+              <div className="relative h-48">
+                <Image
+                  src="/pics/monaghans-taco-platter.jpg"
+                  alt="Taco Platter - Fresh tacos with all the fixings"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                />
+              </div>
+              <div className="p-6">
+                <h2 className="text-lg font-semibold mb-2">Taco Platter</h2>
+                <p className="text-gray-600 mb-2">Fresh tacos with all the fixings</p>
+                <p className="text-red-600 font-semibold">$13.99</p>
+              </div>
             </div>
-            <div className="bg-white p-6 rounded-lg shadow">
-              <h3 className="text-lg font-semibold mb-2">Club Sandwich</h3>
-              <p className="text-gray-600 mb-2">Triple-decker with turkey, bacon, and avocado</p>
-              <p className="text-red-600 font-semibold">$10.99</p>
+            <div className="bg-white rounded-lg shadow overflow-hidden">
+              <div className="relative h-48">
+                <Image
+                  src="/pics/monaghans-quesadilla.jpg"
+                  alt="Quesadilla - Grilled cheese and chicken quesadilla"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                />
+              </div>
+              <div className="p-6">
+                <h2 className="text-lg font-semibold mb-2">Chicken Quesadilla</h2>
+                <p className="text-gray-600 mb-2">Grilled cheese and chicken quesadilla</p>
+                <p className="text-red-600 font-semibold">$10.99</p>
+              </div>
             </div>
           </div>
           <div className="text-center mt-8">
@@ -191,17 +246,41 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">See Our Space</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-gray-300 h-48 rounded-lg flex items-center justify-center">
-              <span className="text-gray-600">Pool Tables</span>
+            <div className="relative h-48 rounded-lg overflow-hidden">
+              <Image
+                src="/pics/monaghans-billiards.jpg"
+                alt="Pool tables at Monaghan's Bar & Grill"
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 50vw, 25vw"
+              />
             </div>
-            <div className="bg-gray-300 h-48 rounded-lg flex items-center justify-center">
-              <span className="text-gray-600">Bar Area</span>
+            <div className="relative h-48 rounded-lg overflow-hidden">
+              <Image
+                src="/pics/monaghans-billiard-room.jpg"
+                alt="Bar area with pool tables and seating"
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 50vw, 25vw"
+              />
             </div>
-            <div className="bg-gray-300 h-48 rounded-lg flex items-center justify-center">
-              <span className="text-gray-600">Dining Room</span>
+            <div className="relative h-48 rounded-lg overflow-hidden">
+              <Image
+                src="/pics/monaghans-breakfast-biscut.jpg"
+                alt="Dining room with tables and comfortable seating"
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 50vw, 25vw"
+              />
             </div>
-            <div className="bg-gray-300 h-48 rounded-lg flex items-center justify-center">
-              <span className="text-gray-600">Patio</span>
+            <div className="relative h-48 rounded-lg overflow-hidden">
+              <Image
+                src="/pics/monaghans-patio.jpg"
+                alt="Outdoor patio seating area"
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 50vw, 25vw"
+              />
             </div>
           </div>
           <div className="text-center mt-8">
@@ -218,13 +297,13 @@ export default function Home() {
           <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">Visit Us</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
             <div>
-              <h3 className="text-xl font-semibold mb-4">Location & Hours</h3>
+              <h2 className="text-xl font-semibold mb-4">Location & Hours</h2>
               <div className="space-y-2 text-gray-600">
                 <p>1234 Main Street</p>
                 <p>Denver, CO 80202</p>
                 <p>Phone: (303) 555-0123</p>
                 <div className="mt-4">
-                  <h4 className="font-semibold mb-2">Hours:</h4>
+                  <h3 className="font-semibold mb-2">Hours:</h3>
                   <p>Monday - Thursday: 11:00 AM - 2:00 AM</p>
                   <p>Friday - Saturday: 11:00 AM - 3:00 AM</p>
                   <p>Sunday: 12:00 PM - 2:00 AM</p>
@@ -232,7 +311,7 @@ export default function Home() {
               </div>
             </div>
             <div>
-              <h3 className="text-xl font-semibold mb-4">Get Directions</h3>
+              <h2 className="text-xl font-semibold mb-4">Get Directions</h2>
               <div className="bg-gray-200 h-64 rounded-lg flex items-center justify-center">
                 <span className="text-gray-600">Map placeholder</span>
               </div>

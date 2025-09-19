@@ -104,7 +104,7 @@ export function AccessibilityToolbar() {
 
   return (
     <div className="accessibility-toolbar fixed top-4 right-4 bg-white border border-gray-300 rounded-lg shadow-lg p-4 z-50">
-      <h3 className="text-sm font-semibold text-gray-900 mb-3">Accessibility Options</h3>
+      <h2 className="text-sm font-semibold text-gray-900 mb-3">Accessibility Options</h2>
       
       <div className="space-y-3">
         {/* Font Scale */}
