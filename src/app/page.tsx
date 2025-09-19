@@ -1,4 +1,5 @@
 import Image from "next/image";
+import SpecialsMini from '../components/specials-mini';
 
 export default function Home() {
   // JSON-LD structured data for restaurant
@@ -146,66 +147,7 @@ export default function Home() {
       </section>
 
       {/* Specials Mini Section */}
-      <section className="py-16 bg-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">Today&apos;s Specials</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="bg-white rounded-lg shadow overflow-hidden">
-              <div className="relative h-48">
-                <Image
-                  src="/pics/monaghans-fish-n-chips.jpg"
-                  alt="Fish & Chips - Beer-battered cod with crispy fries"
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                />
-              </div>
-              <div className="p-6">
-                <h2 className="text-lg font-semibold mb-2">Fish & Chips</h2>
-                <p className="text-gray-600 mb-2">Beer-battered cod with crispy fries</p>
-                <p className="text-red-600 font-semibold">$11.99</p>
-              </div>
-            </div>
-            <div className="bg-white rounded-lg shadow overflow-hidden">
-              <div className="relative h-48">
-                <Image
-                  src="/pics/monaghans-taco-platter.jpg"
-                  alt="Taco Platter - Fresh tacos with all the fixings"
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                />
-              </div>
-              <div className="p-6">
-                <h2 className="text-lg font-semibold mb-2">Taco Platter</h2>
-                <p className="text-gray-600 mb-2">Fresh tacos with all the fixings</p>
-                <p className="text-red-600 font-semibold">$13.99</p>
-              </div>
-            </div>
-            <div className="bg-white rounded-lg shadow overflow-hidden">
-              <div className="relative h-48">
-                <Image
-                  src="/pics/monaghans-quesadilla.jpg"
-                  alt="Quesadilla - Grilled cheese and chicken quesadilla"
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                />
-              </div>
-              <div className="p-6">
-                <h2 className="text-lg font-semibold mb-2">Chicken Quesadilla</h2>
-                <p className="text-gray-600 mb-2">Grilled cheese and chicken quesadilla</p>
-                <p className="text-red-600 font-semibold">$10.99</p>
-              </div>
-            </div>
-          </div>
-          <div className="text-center mt-8">
-            <a href="/specials" className="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-colors">
-              View All Specials
-            </a>
-          </div>
-        </div>
-      </section>
+      <SpecialsMini />
 
       {/* Reviews Mini Section */}
       <section className="py-16 bg-white">

@@ -76,10 +76,10 @@
   - [x] 14A — Create admin events management interface (no seeding)
   - [x] 14B — Render on /events with JSON-LD Event
   - [x] 14C — Admin edit + publish/unpublish
-- [ ] TASK-15 — 30 rotating specials in CMS
-  - [ ] 15A — Seed 30 named specials with categories/prices
-  - [ ] 15B — Admin CRUD with schedule toggle
-  - [ ] 15C — Public listing + mini section
+- [x] TASK-15 — 30 rotating specials in CMS
+  - [x] 15A — Create admin specials management interface (no seeding)
+  - [x] 15B — Admin CRUD with schedule toggle
+  - [x] 15C — Public listing + mini section
 - [ ] TASK-16 — Images alt text wired
   - [ ] 16A — Map filenames → fixed alt per runbook list
   - [ ] 16B — Fallback alt rules for new media
