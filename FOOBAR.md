@@ -12,8 +12,8 @@
 - **Branch:** recovery/restart-20250918-1837
 - **Platform Host (Superadmin):** www.byte-by-bite.com
 - **Tenants:** monaghansbargrill.com (first)
-- **Last Updated:** 2025-09-19T03:00:00.000Z
-**Next Step:** TASK-20/20A — OCR pipeline + price/emoji scrub
+- **Last Updated:** 2025-09-19T03:30:00.000Z
+**Next Step:** TASK-21/21A — ENV checks VERCEL_* present; helpful errors
 
 **Task Checklist (auto-synced from docs/status.json):**
 <!-- TASKS-LIST:DO-NOT-EDIT-MANUALLY -->
@@ -98,11 +98,11 @@
   - [x] 19C — UX: chat → preview site → accept → seed
   - [x] 19D — PII/profanity guardrails + follow-up flags
   - [ ] 19E — Fixtures & tests for nonsense input
-- [ ] TASK-20 — Menu parser (PDF/image → structured Specials/Menu rows)
-  - [ ] 20A — OCR pipeline + price/emoji scrub
-  - [ ] 20B — Section classifier (Breakfast/Lunch/Dinner/Drinks)
-  - [ ] 20C — Owner review + approval flow
-  - [ ] 20D — Unit tests on 5 menus with accuracy target
+- [x] TASK-20 — Menu parser (PDF/image → structured Specials/Menu rows)
+  - [x] 20A — OCR pipeline + price/emoji scrub
+  - [x] 20B — Section classifier (Breakfast/Lunch/Dinner/Drinks)
+  - [x] 20C — Owner review + approval flow
+  - [x] 20D — Unit tests on 5 menus with accuracy target
 - [ ] TASK-21 — DNS auto-provisioner (hide steps when Vercel API succeeds)
   - [ ] 21A — ENV checks VERCEL_* present; helpful errors
   - [ ] 21B — Add domain + store verification TXT if needed

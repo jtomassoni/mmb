@@ -62,6 +62,7 @@ model Site {
   hours       Hours[]
   events      Event[]
   specials    Special[]
+  menuItems   MenuItem[]
   auditLogs   AuditLog[]
   healthPings HealthPing[]
 
@@ -163,6 +164,27 @@ model AuditLog {
   site Site? @relation(fields: [siteId], references: [id], onDelete: Cascade)
 
   @@map("audit_logs")
+}
+
+model MenuItem {
+  id          String   @id @default(cuid())
+  siteId      String
+  name        String
+  description String?
+  price       String
+  category    String
+  isAvailable Boolean  @default(true)
+  allergens   String   @default("[]") // JSON array as string
+  calories    Int?
+  imageUrl    String?
+  source      String   @default("manual") // "manual", "ocr", "import"
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  site Site @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  @@map("menu_items")
 }
 
 model HealthPing {
