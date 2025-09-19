@@ -4,7 +4,6 @@ import "./globals.css";
 import { Providers } from "../components/providers";
 import { AccessibilityToolbar } from "../components/accessibility-toolbar";
 import { Header } from "../components/header";
-import JsonLdWrapper from "../components/json-ld-wrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,10 +28,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <JsonLdWrapper />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        suppressHydrationWarning={true}
       >
         <a href="#main-content" className="skip-link">
           Skip to main content

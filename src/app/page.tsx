@@ -97,21 +97,21 @@ export default function Home() {
               <div className="bg-red-600 text-white rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl">🍺</span>
               </div>
-              <h2 className="text-xl font-semibold mb-2">Great Drinks</h2>
+              <h2 className="text-xl font-semibold mb-2 text-gray-900">Great Drinks</h2>
               <p className="text-gray-600">Full bar with local craft beers and signature cocktails</p>
             </div>
             <div className="text-center">
               <div className="bg-red-600 text-white rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl">🎱</span>
               </div>
-              <h2 className="text-xl font-semibold mb-2">Pool Tables</h2>
+              <h2 className="text-xl font-semibold mb-2 text-gray-900">Pool Tables</h2>
               <p className="text-gray-600">Multiple pool tables and games for entertainment</p>
             </div>
             <div className="text-center">
               <div className="bg-red-600 text-white rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl">🎤</span>
               </div>
-              <h2 className="text-xl font-semibold mb-2">Karaoke</h2>
+              <h2 className="text-xl font-semibold mb-2 text-gray-900">Karaoke</h2>
               <p className="text-gray-600">Weekly karaoke nights and live entertainment</p>
             </div>
           </div>
@@ -124,17 +124,17 @@ export default function Home() {
           <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">This Week&apos;s Events</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="bg-gray-50 p-6 rounded-lg">
-              <h2 className="text-xl font-semibold mb-2">Monday - Poker Night</h2>
+              <h2 className="text-xl font-semibold mb-2 text-gray-900">Monday - Poker Night</h2>
               <p className="text-gray-600 mb-2">7:00 PM</p>
               <p className="text-sm text-gray-500">Texas Hold&apos;em tournament with prizes</p>
             </div>
             <div className="bg-gray-50 p-6 rounded-lg">
-              <h2 className="text-xl font-semibold mb-2">Thursday - Bingo Night</h2>
+              <h2 className="text-xl font-semibold mb-2 text-gray-900">Thursday - Bingo Night</h2>
               <p className="text-gray-600 mb-2">7:00 PM</p>
               <p className="text-sm text-gray-500">Traditional bingo with cash prizes</p>
             </div>
             <div className="bg-gray-50 p-6 rounded-lg">
-              <h2 className="text-xl font-semibold mb-2">Sunday - Broncos Potluck</h2>
+              <h2 className="text-xl font-semibold mb-2 text-gray-900">Sunday - Broncos Potluck</h2>
               <p className="text-gray-600 mb-2">Game Time</p>
               <p className="text-sm text-gray-500">Watch the Broncos with potluck dinner</p>
             </div>
@@ -240,13 +240,13 @@ export default function Home() {
           <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">Visit Us</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
             <div>
-              <h2 className="text-xl font-semibold mb-4">Location & Hours</h2>
+              <h2 className="text-xl font-semibold mb-4 text-gray-900">Location & Hours</h2>
               <div className="space-y-2 text-gray-600">
                 <p>1234 Main Street</p>
                 <p>Denver, CO 80202</p>
                 <p>Phone: (303) 555-0123</p>
                 <div className="mt-4">
-                  <h3 className="font-semibold mb-2">Hours:</h3>
+                  <h3 className="font-semibold mb-2 text-gray-900">Hours:</h3>
                   <p>Monday - Thursday: 11:00 AM - 2:00 AM</p>
                   <p>Friday - Saturday: 11:00 AM - 3:00 AM</p>
                   <p>Sunday: 12:00 PM - 2:00 AM</p>
@@ -254,7 +254,7 @@ export default function Home() {
               </div>
             </div>
             <div>
-              <h2 className="text-xl font-semibold mb-4">Get Directions</h2>
+              <h2 className="text-xl font-semibold mb-4 text-gray-900">Get Directions</h2>
               <div className="bg-gray-200 h-64 rounded-lg flex items-center justify-center">
                 <span className="text-gray-600">Map placeholder</span>
               </div>

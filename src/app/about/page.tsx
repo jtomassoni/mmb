@@ -23,7 +23,7 @@ export default function AboutPage() {
             <h2 className="text-2xl font-semibold mb-4 text-red-600">What We Offer</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <h3 className="text-lg font-semibold mb-2">Food & Drinks</h3>
+                <h3 className="text-lg font-semibold mb-2 text-gray-900">Food & Drinks</h3>
                 <ul className="text-gray-700 space-y-1">
                   <li>• Full bar with craft beers and cocktails</li>
                   <li>• Fresh, made-to-order meals</li>
@@ -32,7 +32,7 @@ export default function AboutPage() {
                 </ul>
               </div>
               <div>
-                <h3 className="text-lg font-semibold mb-2">Entertainment</h3>
+                <h3 className="text-lg font-semibold mb-2 text-gray-900">Entertainment</h3>
                 <ul className="text-gray-700 space-y-1">
                   <li>• Multiple pool tables</li>
                   <li>• Weekly poker tournaments</li>
@@ -50,21 +50,21 @@ export default function AboutPage() {
                 <div className="bg-red-600 text-white rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
                   <span className="text-2xl">🤝</span>
                 </div>
-                <h3 className="font-semibold mb-2">Community</h3>
+                <h3 className="font-semibold mb-2 text-gray-900">Community</h3>
                 <p className="text-gray-600 text-sm">Supporting our local community and creating lasting relationships</p>
               </div>
               <div className="text-center">
                 <div className="bg-red-600 text-white rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
                   <span className="text-2xl">⭐</span>
                 </div>
-                <h3 className="font-semibold mb-2">Quality</h3>
+                <h3 className="font-semibold mb-2 text-gray-900">Quality</h3>
                 <p className="text-gray-600 text-sm">Consistent quality in food, service, and atmosphere</p>
               </div>
               <div className="text-center">
                 <div className="bg-red-600 text-white rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
                   <span className="text-2xl">🎉</span>
                 </div>
-                <h3 className="font-semibold mb-2">Fun</h3>
+                <h3 className="font-semibold mb-2 text-gray-900">Fun</h3>
                 <p className="text-gray-600 text-sm">Creating memorable experiences for all our guests</p>
               </div>
             </div>
@@ -74,7 +74,7 @@ export default function AboutPage() {
             <h2 className="text-2xl font-semibold mb-4 text-red-600">Visit Us</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <h3 className="font-semibold mb-2">Location</h3>
+                <h3 className="font-semibold mb-2 text-gray-900">Location</h3>
                 <p className="text-gray-700">
                   1234 Main Street<br />
                   Denver, CO 80202<br />
@@ -82,7 +82,7 @@ export default function AboutPage() {
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold mb-2">Hours</h3>
+                <h3 className="font-semibold mb-2 text-gray-900">Hours</h3>
                 <p className="text-gray-700">
                   Monday - Thursday: 11:00 AM - 2:00 AM<br />
                   Friday - Saturday: 11:00 AM - 3:00 AM<br />

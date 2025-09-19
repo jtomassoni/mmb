@@ -19,7 +19,7 @@ export default function SpecialsMini() {
   useEffect(() => {
     const fetchSpecials = async () => {
       try {
-        const response = await fetch('/api/specials')
+        const response = await fetch('/api/public/specials')
         if (response.ok) {
           const data = await response.json()
           // Only show first 3 active specials

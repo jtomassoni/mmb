@@ -27,7 +27,7 @@ export default function SpecialsPage() {
         setIsLoading(true)
         setError(null)
         
-        const response = await fetch('/api/specials')
+        const response = await fetch('/api/public/specials')
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`)
         }

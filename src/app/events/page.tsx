@@ -29,7 +29,7 @@ export default function EventsPage() {
         setIsLoading(true)
         setError(null)
         
-        const response = await fetch('/api/events')
+        const response = await fetch('/api/public/events')
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`)
         }
