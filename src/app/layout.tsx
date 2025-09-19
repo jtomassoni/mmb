@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "../components/providers";
 import { AccessibilityToolbar } from "../components/accessibility-toolbar";
+import { Header } from "../components/header";
 import JsonLdWrapper from "../components/json-ld-wrapper";
 
 const geistSans = Geist({
@@ -38,6 +39,7 @@ export default function RootLayout({
         </a>
         <AccessibilityToolbar />
         <Providers>
+          <Header />
           <main id="main-content" tabIndex={-1}>
             {children}
           </main>

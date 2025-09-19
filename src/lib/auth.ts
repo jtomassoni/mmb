@@ -55,8 +55,16 @@ export const authOptions: NextAuthOptions = {
       }
       return session
     },
-    async redirect({ baseUrl }) {
-      // Role-based redirect will be handled in the login page
+    async redirect({ url, baseUrl }) {
+      // If it's a relative URL, make it absolute
+      if (url.startsWith('/')) {
+        return new URL(url, baseUrl).toString()
+      }
+      // If it's already absolute, return as is
+      if (url.startsWith('http')) {
+        return url
+      }
+      // Default to admin page
       return new URL('/admin', baseUrl).toString()
     },
   },

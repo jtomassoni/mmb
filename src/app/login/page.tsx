@@ -3,6 +3,7 @@
 import { signIn, getSession } from 'next-auth/react'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { getRedirectUrl } from '../../lib/redirect'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -28,8 +29,15 @@ export default function LoginPage() {
       } else {
         // Get the session to check role and redirect appropriately
         const session = await getSession()
-        if (session?.user?.role === 'SUPERADMIN') {
-          router.push('https://www.byte-by-bite.com/resto-admin')
+        if (session?.user?.role) {
+          const redirectUrl = getRedirectUrl(session.user.role)
+          
+          // Use window.location.href for cross-host redirects
+          if (redirectUrl.startsWith('http') && !redirectUrl.includes(window.location.hostname)) {
+            window.location.href = redirectUrl
+          } else {
+            router.push(redirectUrl.replace(window.location.origin, ''))
+          }
         } else {
           router.push('/admin')
         }

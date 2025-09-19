@@ -65,9 +65,9 @@
   - [x] 11A — Toolbar with persisted preferences & aria-live
   - [x] 11B — Skip links, focus rings, keyboard traps eliminated
   - [x] 11C — Axe & Lighthouse a11y thresholds
-- [ ] TASK-12 — Footer/header Login + role redirects
-  - [ ] 12A — Footer button + optional header link
-  - [ ] 12B — Cross-host login redirect logic validated
+- [x] TASK-12 — Footer/header Login + role redirects
+  - [x] 12A — Footer button + optional header link
+  - [x] 12B — Cross-host login redirect logic validated
 - [ ] TASK-13 — Health cards & scheduled pings
   - [ ] 13A — Ping job writes HealthPing rows
   - [ ] 13B — Cards query recent metrics
