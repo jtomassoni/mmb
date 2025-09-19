@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '../../../../../lib/auth'
 import { prisma } from '../../../../../lib/prisma'
 import { getDomainStatus } from '../../../../../lib/vercel'
+import { validateVercelEnv, getVercelEnvHelpMessage } from '../../../../../lib/vercel-env'
 
 export async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions)
@@ -27,10 +28,13 @@ export async function POST(request: NextRequest) {
     }
 
     // Check domain status with Vercel
-    if (process.env.VERCEL_TOKEN && domain.provider === 'VERCEL') {
+    const vercelValidation = validateVercelEnv()
+    
+    if (vercelValidation.isValid && domain.provider === 'VERCEL') {
       try {
+        const vercelConfig = vercelValidation.config!
         const status = await getDomainStatus({
-          token: process.env.VERCEL_TOKEN,
+          token: vercelConfig.VERCEL_TOKEN,
           hostname: domain.hostname
         })
 
@@ -46,7 +50,11 @@ export async function POST(request: NextRequest) {
 
         return NextResponse.json({ 
           domain: updatedDomain,
-          verified: isActive
+          verified: isActive,
+          vercel: {
+            success: true,
+            autoVerified: true
+          }
         })
       } catch (error) {
         console.error('Failed to check domain status:', error)
@@ -60,7 +68,10 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ 
           domain: updatedDomain,
           verified: false,
-          error: 'Failed to verify domain'
+          vercel: {
+            success: false,
+            error: error instanceof Error ? error.message : 'Unknown error'
+          }
         })
       }
     } else {
@@ -75,7 +86,11 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json({ 
         domain: updatedDomain,
-        verified: true
+        verified: true,
+        vercel: {
+          success: false,
+          error: vercelValidation.isValid ? 'Domain not managed by Vercel' : getVercelEnvHelpMessage(vercelValidation)
+        }
       })
     }
   } catch (error) {

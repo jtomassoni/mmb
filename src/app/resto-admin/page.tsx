@@ -101,6 +101,12 @@ export default function SuperadminDashboard() {
                       >
                         Manage Domain
                       </a>
+                      <a 
+                        href="/resto-admin/telemetry"
+                        className="text-purple-600 hover:text-purple-900 mr-4"
+                      >
+                        Telemetry
+                      </a>
                       <button className="text-gray-600 hover:text-gray-900">
                         View Site
                       </button>

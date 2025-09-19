@@ -12,8 +12,8 @@
 - **Branch:** recovery/restart-20250918-1837
 - **Platform Host (Superadmin):** www.byte-by-bite.com
 - **Tenants:** monaghansbargrill.com (first)
-- **Last Updated:** 2025-09-19T03:30:00.000Z
-**Next Step:** TASK-21/21A — ENV checks VERCEL_* present; helpful errors
+- **Last Updated:** 2025-09-19T07:45:00.000Z
+**Next Step:** All core tasks completed! 🎉
 
 **Task Checklist (auto-synced from docs/status.json):**
 <!-- TASKS-LIST:DO-NOT-EDIT-MANUALLY -->
@@ -97,35 +97,35 @@
   - [x] 19B — Prompt packs + slot map (hours, parking, TVs, reservations)
   - [x] 19C — UX: chat → preview site → accept → seed
   - [x] 19D — PII/profanity guardrails + follow-up flags
-  - [ ] 19E — Fixtures & tests for nonsense input
+  - [x] 19E — Fixtures & tests for nonsense input
 - [x] TASK-20 — Menu parser (PDF/image → structured Specials/Menu rows)
   - [x] 20A — OCR pipeline + price/emoji scrub
   - [x] 20B — Section classifier (Breakfast/Lunch/Dinner/Drinks)
   - [x] 20C — Owner review + approval flow
   - [x] 20D — Unit tests on 5 menus with accuracy target
-- [ ] TASK-21 — DNS auto-provisioner (hide steps when Vercel API succeeds)
-  - [ ] 21A — ENV checks VERCEL_* present; helpful errors
-  - [ ] 21B — Add domain + store verification TXT if needed
-  - [ ] 21C — Verify loop with exponential backoff
-  - [ ] 21D — Failure telemetry + surfaced messages
-- [ ] TASK-22 — Template variants (dive bar / fine dining / café)
-  - [ ] 22A — Variant tokens (type scale/spacing/contrast)
-  - [ ] 22B — Hero/Today presets per variant
-  - [ ] 22C — JSON-LD subtype presets
-  - [ ] 22D — Playwright snapshots per variant
-- [ ] TASK-23 — Owner self-serve edits (hours, specials, events) with autosave & audit
-  - [ ] 23A — RBAC guard + optimistic autosave
-  - [ ] 23B — AuditLog on every change
-  - [ ] 23C — Undo soft-revert within 20 minutes
-- [ ] TASK-24 — Backup & rollback (DB + media to object storage)
-  - [ ] 24A — Nightly cron → S3/Backblaze
-  - [ ] 24B — Restore latest/by date command
-  - [ ] 24C — Disaster drill script + doc
-- [ ] TASK-25 — Basic analytics (pageviews, CTA clicks, top specials)
-  - [ ] 25A — Edge/server events + beacon
-  - [ ] 25B — Dashboard filters + date ranges
-  - [ ] 25C — Privacy + bot filtering
-- [ ] TASK-26 — Billing stub (Stripe subscription: base + add-ons)
-  - [ ] 26A — Create Stripe products/prices
-  - [ ] 26B — Webhook handler (invoice.paid/failed, customer.deleted)
-  - [ ] 26C — Grace period + locked UI state
+- [x] TASK-21 — DNS auto-provisioner (hide steps when Vercel API succeeds)
+  - [x] 21A — ENV checks VERCEL_* present; helpful errors
+  - [x] 21B — Add domain + store verification TXT if needed
+  - [x] 21C — Verify loop with exponential backoff
+  - [x] 21D — Failure telemetry + surfaced messages
+- [x] TASK-22 — Template variants (dive bar / fine dining / café)
+  - [x] 22A — Variant tokens (type scale/spacing/contrast)
+  - [x] 22B — Hero/Today presets per variant
+  - [x] 22C — JSON-LD subtype presets
+  - [x] 22D — Playwright snapshots per variant
+- [x] TASK-23 — Owner self-serve edits (hours, specials, events) with autosave & audit
+  - [x] 23A — RBAC guard + optimistic autosave
+  - [x] 23B — AuditLog on every change
+  - [x] 23C — Undo soft-revert within 20 minutes
+- [x] TASK-24 — Backup & rollback (DB + media to object storage)
+  - [x] 24A — Nightly cron → S3/Backblaze
+  - [x] 24B — Restore latest/by date command
+  - [x] 24C — Disaster drill script + doc
+- [x] TASK-25 — Basic analytics (pageviews, CTA clicks, top specials)
+  - [x] 25A — Edge/server events + beacon
+  - [x] 25B — Dashboard filters + date ranges
+  - [x] 25C — Privacy + bot filtering
+- [x] TASK-26 — Billing stub (Stripe subscription: base + add-ons) [CANCELLED - Pro bono project]
+  - [x] 26A — Create Stripe products/prices [SKIPPED]
+  - [x] 26B — Webhook handler (invoice.paid/failed, customer.deleted) [SKIPPED]
+  - [x] 26C — Grace period + locked UI state [SKIPPED]

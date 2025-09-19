@@ -41,6 +41,7 @@ model User {
   // Relations
   memberships Membership[]
   auditLogs   AuditLog[]
+  analyticsEvents AnalyticsEvent[]
 
   @@map("users")
 }
@@ -65,6 +66,8 @@ model Site {
   menuItems   MenuItem[]
   auditLogs   AuditLog[]
   healthPings HealthPing[]
+  analyticsEvents AnalyticsEvent[]
+  analyticsSummaries AnalyticsSummary[]
 
   @@map("sites")
 }
@@ -90,13 +93,60 @@ model Domain {
   status      DomainStatus   @default(PENDING)
   provider    DomainProvider @default(MANUAL)
   verifiedAt  DateTime?
+  
+  // Verification fields
+  verificationTxt    String?   // TXT record value for verification
+  verificationRecord String?   // Full DNS record (e.g., "verification=abc123")
+  verificationHost   String?   // Host for TXT record (e.g., "_vercel" or "@")
+  
+  // Vercel-specific fields
+  vercelProjectId String?      // Vercel project ID
+  vercelDomainId  String?      // Vercel domain ID
+  
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
 
   // Relations
   site Site @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  verificationAttempts VerificationAttempt[]
+  telemetryEvents TelemetryEvent[]
 
   @@map("domains")
+}
+
+model VerificationAttempt {
+  id          String   @id @default(cuid())
+  domainId    String
+  attempt     Int      @default(1)
+  maxAttempts Int      @default(10)
+  nextRetryAt DateTime
+  status      String   @default("pending") // pending, verified, failed, timeout
+  error       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  domain Domain @relation(fields: [domainId], references: [id], onDelete: Cascade)
+
+  @@map("verification_attempts")
+}
+
+model TelemetryEvent {
+  id        String   @id @default(cuid())
+  domainId  String
+  eventType String   // verification_started, verification_success, verification_failed, etc.
+  severity  String   // info, warning, error, critical
+  message   String
+  details   String?  // JSON string
+  timestamp DateTime @default(now())
+  resolved  Boolean  @default(false)
+  resolvedAt DateTime?
+  resolvedBy String?
+
+  // Relations
+  domain Domain @relation(fields: [domainId], references: [id], onDelete: Cascade)
+
+  @@map("telemetry_events")
 }
 
 model Hours {
@@ -152,12 +202,27 @@ model Special {
 }
 
 model AuditLog {
-  id        String   @id @default(cuid())
-  userId    String
-  siteId    String?
-  action    String   // "CREATE_SITE", "UPDATE_EVENT", etc.
-  details   String?  // JSON string with additional details
-  createdAt DateTime @default(now())
+  id           String   @id @default(cuid())
+  userId       String
+  userRole     Role
+  userEmail    String?
+  userName     String?
+  action       String   // "create", "update", "delete", "rollback", etc.
+  resource     String   // "events", "specials", "menu", "hours", "profile", etc.
+  resourceId   String?  // ID of the specific resource being modified
+  siteId       String?
+  siteName     String?
+  oldValue     String?  // JSON string of previous state
+  newValue     String?  // JSON string of new state
+  changes      String?  // JSON string of specific changes
+  success      Boolean  @default(true)
+  errorMessage String?
+  ipAddress    String?
+  userAgent    String?
+  timestamp    DateTime @default(now())
+  metadata     String?  // JSON string with additional context
+  rollbackData String?  // JSON string of data needed for rollback
+  canRollback  Boolean  @default(false)
 
   // Relations
   user User  @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -199,4 +264,66 @@ model HealthPing {
   site Site @relation(fields: [siteId], references: [id], onDelete: Cascade)
 
   @@map("health_pings")
+}
+
+model AnalyticsEvent {
+  id          String   @id @default(cuid())
+  siteId      String
+  eventType   String   // "pageview", "click", "cta_click", "special_view", "menu_view", etc.
+  eventName   String   // Specific event name (e.g., "hero_cta", "special_123", "menu_breakfast")
+  page        String   // Page path (e.g., "/", "/specials", "/menu")
+  element     String?  // HTML element that was clicked (e.g., "button", "link", "image")
+  elementId   String?  // Element ID or class
+  elementText String?  // Text content of the element
+  url         String   // Full URL
+  referrer    String?  // Referrer URL
+  userAgent   String?  // User agent string
+  ipAddress   String?  // IP address (hashed for privacy)
+  sessionId   String?  // Session identifier
+  userId      String?  // User ID if logged in
+  metadata    String?  // JSON string with additional event data
+  timestamp   DateTime @default(now())
+
+  // Relations
+  site Site  @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@map("analytics_events")
+}
+
+model AnalyticsSummary {
+  id          String   @id @default(cuid())
+  siteId      String
+  date        DateTime // Date (YYYY-MM-DD)
+  period      String   // "daily", "weekly", "monthly"
+  
+  // Page metrics
+  pageviews   Int      @default(0)
+  uniqueVisitors Int   @default(0)
+  sessions    Int      @default(0)
+  avgSessionDuration Int @default(0) // in seconds
+  
+  // Engagement metrics
+  ctaClicks   Int      @default(0)
+  specialViews Int     @default(0)
+  menuViews   Int      @default(0)
+  eventViews  Int      @default(0)
+  
+  // Top content (JSON arrays)
+  topPages    String   @default("[]") // [{"page": "/", "views": 100}, ...]
+  topSpecials String   @default("[]") // [{"specialId": "123", "views": 50}, ...]
+  topEvents   String   @default("[]") // [{"eventId": "456", "views": 25}, ...]
+  
+  // Device/browser data
+  deviceTypes String   @default("[]") // [{"type": "mobile", "count": 60}, ...]
+  browsers    String   @default("[]") // [{"browser": "Chrome", "count": 40}, ...]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  site Site @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  @@unique([siteId, date, period])
+  @@map("analytics_summaries")
 }

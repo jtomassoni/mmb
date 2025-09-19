@@ -522,6 +522,14 @@ export const QUESTION_SETS: Record<BusinessType, QuestionSet> = {
 
 // Helper functions
 export function getQuestionSet(businessType: BusinessType): QuestionSet {
+  if (!businessType || typeof businessType !== 'string') {
+    throw new Error('Invalid business type: must be a valid BusinessType string')
+  }
+  
+  if (!QUESTION_SETS[businessType]) {
+    throw new Error(`Invalid business type: ${businessType} is not supported`)
+  }
+  
   return QUESTION_SETS[businessType]
 }
 

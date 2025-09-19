@@ -3,9 +3,9 @@
 import { useState } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { BusinessType, getBusinessTypeDisplayName } from '../../lib/ai-intake'
-import AIIntakeChat from '../../components/ai-intake-chat'
-import SitePreview from '../../components/site-preview'
+// import { BusinessType, getBusinessTypeDisplayName } from '../../lib/ai-intake'
+// import AIIntakeChat from '../../components/ai-intake-chat'
+// import SitePreview from '../../components/site-preview'
 
 export default function AIIntakeWizard() {
   const { data: session, status } = useSession()
