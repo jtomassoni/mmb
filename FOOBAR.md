@@ -12,8 +12,8 @@
 - **Branch:** recovery/restart-20250918-1837
 - **Platform Host (Superadmin):** www.byte-by-bite.com
 - **Tenants:** monaghansbargrill.com (first)
-- **Last Updated:** 2025-09-19T02:35:00.000Z
-**Next Step:** TASK-19/19A — Blueprint: type-specific question sets (dive bar/café/fine dining)
+- **Last Updated:** 2025-09-19T03:00:00.000Z
+**Next Step:** TASK-20/20A — OCR pipeline + price/emoji scrub
 
 **Task Checklist (auto-synced from docs/status.json):**
 <!-- TASKS-LIST:DO-NOT-EDIT-MANUALLY -->
@@ -92,11 +92,11 @@
   - [x] 18A — Add domain via UI/API
   - [x] 18B — DNS records correct (CNAME/A/ALIAS)
   - [x] 18C — Verify + smoke test routes
-- [ ] TASK-19 — AI intake wizard (tailored Q&A by business type)
-  - [ ] 19A — Blueprint: type-specific question sets (dive bar/café/fine dining)
-  - [ ] 19B — Prompt packs + slot map (hours, parking, TVs, reservations)
-  - [ ] 19C — UX: chat → preview site → accept → seed
-  - [ ] 19D — PII/profanity guardrails + follow-up flags
+- [x] TASK-19 — AI intake wizard (tailored Q&A by business type)
+  - [x] 19A — Blueprint: type-specific question sets (dive bar/café/fine dining)
+  - [x] 19B — Prompt packs + slot map (hours, parking, TVs, reservations)
+  - [x] 19C — UX: chat → preview site → accept → seed
+  - [x] 19D — PII/profanity guardrails + follow-up flags
   - [ ] 19E — Fixtures & tests for nonsense input
 - [ ] TASK-20 — Menu parser (PDF/image → structured Specials/Menu rows)
   - [ ] 20A — OCR pipeline + price/emoji scrub

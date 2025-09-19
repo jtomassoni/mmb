@@ -1,0 +1,700 @@
+<testsuites id="" name="" tests="45" failures="33" skipped="0" errors="0" time="14.500446">
+<testsuite name="deployment.test.ts" timestamp="2025-09-19T02:38:11.611Z" hostname="chromium" tests="9" failures="3" skipped="0" time="27.6" errors="0">
+<testcase name="Deployment Readiness › should serve platform admin interface" classname="deployment.test.ts" time="6.12">
+</testcase>
+<testcase name="Deployment Readiness › should serve restaurant site" classname="deployment.test.ts" time="3.447">
+<failure message="deployment.test.ts:16:7 should serve restaurant site" type="FAILURE">
+<![CDATA[  [chromium] › deployment.test.ts:16:7 › Deployment Readiness › should serve restaurant site ───────
+
+    Error: expect.toBeVisible: Error: strict mode violation: locator('img[alt*="Monaghan"]') resolved to 2 elements:
+        1) <img sizes="100vw" decoding="async" data-nimg="fill" class="object-cover" src="/_next/image?url=%2Fpics%2Fhero.png&w=3840&q=75" alt="Monaghan's Bar & Grill - Interior view showing bar and dining area" srcset="/_next/image?url=%2Fpics%2Fhero.png&w=640&q=75 640w, /_next/image?url=%2Fpics%2Fhero.png&w=750&q=75 750w, /_next/image?url=%2Fpics%2Fhero.png&w=828&q=75 828w, /_next/image?url=%2Fpics%2Fhero.png&w=1080&q=75 1080w, /_next/image?url=%2Fpics%2Fhero.png&w=1200&q=75 1200w, /_next/image?url=%2Fpics%…/> aka getByRole('img', { name: 'Monaghan\'s Bar & Grill -' })
+        2) <img loading="lazy" decoding="async" data-nimg="fill" class="object-cover" sizes="(max-width: 768px) 50vw, 25vw" alt="Pool tables at Monaghan's Bar & Grill" src="/_next/image?url=%2Fpics%2Fmonaghans-billiards.jpg&w=3840&q=75" srcset="/_next/image?url=%2Fpics%2Fmonaghans-billiards.jpg&w=256&q=75 256w, /_next/image?url=%2Fpics%2Fmonaghans-billiards.jpg&w=384&q=75 384w, /_next/image?url=%2Fpics%2Fmonaghans-billiards.jpg&w=640&q=75 640w, /_next/image?url=%2Fpics%2Fmonaghans-billiards.jpg&w=750&q=75 750…/> aka getByRole('img', { name: 'Pool tables at Monaghan\'s Bar' })
+
+    Call log:
+      - Expect "toBeVisible" with timeout 10000ms
+      - waiting for locator('img[alt*="Monaghan"]')
+
+
+      19 |     // Should show Monaghan's content
+      20 |     await expect(page.locator('h1')).toContainText('Monaghan')
+    > 21 |     await expect(page.locator('img[alt*="Monaghan"]')).toBeVisible()
+         |                                                        ^
+      22 |   })
+      23 |
+      24 |   test('should handle domain management APIs', async ({ page }) => {
+        at /Users/jtomassoni/monaghans-midnight-smash/tests/e2e/deployment.test.ts:21:56
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/deployment-Deployment-Readiness-should-serve-restaurant-site-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../test-results/deployment-Deployment-Readiness-should-serve-restaurant-site-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../test-results/deployment-Deployment-Readiness-should-serve-restaurant-site-chromium/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|deployment-Deployment-Readiness-should-serve-restaurant-site-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|deployment-Deployment-Readiness-should-serve-restaurant-site-chromium/video.webm]]
+
+[[ATTACHMENT|deployment-Deployment-Readiness-should-serve-restaurant-site-chromium/error-context.md]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Deployment Readiness › should handle domain management APIs" classname="deployment.test.ts" time="2.592">
+</testcase>
+<testcase name="Deployment Readiness › should serve health check endpoints" classname="deployment.test.ts" time="1.796">
+<failure message="deployment.test.ts:34:7 should serve health check endpoints" type="FAILURE">
+<![CDATA[  [chromium] › deployment.test.ts:34:7 › Deployment Readiness › should serve health check endpoints 
+
+    Error: expect(received).toHaveProperty(path, value)
+
+    Expected path: "status"
+    Received path: []
+
+    Expected value: "ok"
+    Received value: {"recentPings": [], "siteStats": [], "timestamp": "2025-09-19T02:38:13.990Z"}
+
+      38 |     
+      39 |     const pingData = await pingResponse.json()
+    > 40 |     expect(pingData).toHaveProperty('status', 'ok')
+         |                      ^
+      41 |     expect(pingData).toHaveProperty('timestamp')
+      42 |     
+      43 |     // Test health stats
+        at /Users/jtomassoni/monaghans-midnight-smash/tests/e2e/deployment.test.ts:40:22
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/deployment-Deployment-Read-0d29a-erve-health-check-endpoints-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../test-results/deployment-Deployment-Read-0d29a-erve-health-check-endpoints-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|deployment-Deployment-Read-0d29a-erve-health-check-endpoints-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|deployment-Deployment-Read-0d29a-erve-health-check-endpoints-chromium/video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Deployment Readiness › should serve events and specials APIs" classname="deployment.test.ts" time="1.803">
+<failure message="deployment.test.ts:52:7 should serve events and specials APIs" type="FAILURE">
+<![CDATA[  [chromium] › deployment.test.ts:52:7 › Deployment Readiness › should serve events and specials APIs 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      56 |     
+      57 |     const eventsData = await eventsResponse.json()
+    > 58 |     expect(Array.isArray(eventsData)).toBe(true)
+         |                                       ^
+      59 |     
+      60 |     // Test specials API
+      61 |     const specialsResponse = await page.request.get('/api/specials')
+        at /Users/jtomassoni/monaghans-midnight-smash/tests/e2e/deployment.test.ts:58:39
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/deployment-Deployment-Read-57589-ve-events-and-specials-APIs-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../test-results/deployment-Deployment-Read-57589-ve-events-and-specials-APIs-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|deployment-Deployment-Read-57589-ve-events-and-specials-APIs-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|deployment-Deployment-Read-57589-ve-events-and-specials-APIs-chromium/video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Deployment Readiness › should handle image optimization" classname="deployment.test.ts" time="3.236">
+</testcase>
+<testcase name="Deployment Readiness › should serve proper meta tags for SEO" classname="deployment.test.ts" time="2.398">
+</testcase>
+<testcase name="Deployment Readiness › should handle 404 errors gracefully" classname="deployment.test.ts" time="3.145">
+</testcase>
+<testcase name="Deployment Readiness › should serve sitemap and robots.txt" classname="deployment.test.ts" time="3.063">
+</testcase>
+</testsuite>
+<testsuite name="deployment.test.ts" timestamp="2025-09-19T02:38:11.611Z" hostname="firefox" tests="9" failures="9" skipped="0" time="0.023" errors="0">
+<testcase name="Deployment Readiness › should serve platform admin interface" classname="deployment.test.ts" time="0.002">
+<failure message="deployment.test.ts:4:7 should serve platform admin interface" type="FAILURE">
+<![CDATA[  [firefox] › deployment.test.ts:4:7 › Deployment Readiness › should serve platform admin interface 
+
+    Error: browserType.launch: Executable doesn't exist at /Users/jtomassoni/Library/Caches/ms-playwright/firefox-1490/firefox/Nightly.app/Contents/MacOS/firefox
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+<testcase name="Deployment Readiness › should serve restaurant site" classname="deployment.test.ts" time="0.003">
+<failure message="deployment.test.ts:16:7 should serve restaurant site" type="FAILURE">
+<![CDATA[  [firefox] › deployment.test.ts:16:7 › Deployment Readiness › should serve restaurant site ────────
+
+    Error: browserType.launch: Executable doesn't exist at /Users/jtomassoni/Library/Caches/ms-playwright/firefox-1490/firefox/Nightly.app/Contents/MacOS/firefox
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+<testcase name="Deployment Readiness › should handle domain management APIs" classname="deployment.test.ts" time="0.003">
+<failure message="deployment.test.ts:24:7 should handle domain management APIs" type="FAILURE">
+<![CDATA[  [firefox] › deployment.test.ts:24:7 › Deployment Readiness › should handle domain management APIs 
+
+    Error: browserType.launch: Executable doesn't exist at /Users/jtomassoni/Library/Caches/ms-playwright/firefox-1490/firefox/Nightly.app/Contents/MacOS/firefox
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+<testcase name="Deployment Readiness › should serve health check endpoints" classname="deployment.test.ts" time="0.002">
+<failure message="deployment.test.ts:34:7 should serve health check endpoints" type="FAILURE">
+<![CDATA[  [firefox] › deployment.test.ts:34:7 › Deployment Readiness › should serve health check endpoints ─
+
+    Error: browserType.launch: Executable doesn't exist at /Users/jtomassoni/Library/Caches/ms-playwright/firefox-1490/firefox/Nightly.app/Contents/MacOS/firefox
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+<testcase name="Deployment Readiness › should serve events and specials APIs" classname="deployment.test.ts" time="0.003">
+<failure message="deployment.test.ts:52:7 should serve events and specials APIs" type="FAILURE">
+<![CDATA[  [firefox] › deployment.test.ts:52:7 › Deployment Readiness › should serve events and specials APIs 
+
+    Error: browserType.launch: Executable doesn't exist at /Users/jtomassoni/Library/Caches/ms-playwright/firefox-1490/firefox/Nightly.app/Contents/MacOS/firefox
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+<testcase name="Deployment Readiness › should handle image optimization" classname="deployment.test.ts" time="0.002">
+<failure message="deployment.test.ts:68:7 should handle image optimization" type="FAILURE">
+<![CDATA[  [firefox] › deployment.test.ts:68:7 › Deployment Readiness › should handle image optimization ────
+
+    Error: browserType.launch: Executable doesn't exist at /Users/jtomassoni/Library/Caches/ms-playwright/firefox-1490/firefox/Nightly.app/Contents/MacOS/firefox
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+<testcase name="Deployment Readiness › should serve proper meta tags for SEO" classname="deployment.test.ts" time="0.002">
+<failure message="deployment.test.ts:85:7 should serve proper meta tags for SEO" type="FAILURE">
+<![CDATA[  [firefox] › deployment.test.ts:85:7 › Deployment Readiness › should serve proper meta tags for SEO 
+
+    Error: browserType.launch: Executable doesn't exist at /Users/jtomassoni/Library/Caches/ms-playwright/firefox-1490/firefox/Nightly.app/Contents/MacOS/firefox
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+<testcase name="Deployment Readiness › should handle 404 errors gracefully" classname="deployment.test.ts" time="0.004">
+<failure message="deployment.test.ts:98:7 should handle 404 errors gracefully" type="FAILURE">
+<![CDATA[  [firefox] › deployment.test.ts:98:7 › Deployment Readiness › should handle 404 errors gracefully ─
+
+    Error: browserType.launch: Executable doesn't exist at /Users/jtomassoni/Library/Caches/ms-playwright/firefox-1490/firefox/Nightly.app/Contents/MacOS/firefox
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+<testcase name="Deployment Readiness › should serve sitemap and robots.txt" classname="deployment.test.ts" time="0.002">
+<failure message="deployment.test.ts:106:7 should serve sitemap and robots.txt" type="FAILURE">
+<![CDATA[  [firefox] › deployment.test.ts:106:7 › Deployment Readiness › should serve sitemap and robots.txt 
+
+    Error: browserType.launch: Executable doesn't exist at /Users/jtomassoni/Library/Caches/ms-playwright/firefox-1490/firefox/Nightly.app/Contents/MacOS/firefox
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+</testsuite>
+<testsuite name="deployment.test.ts" timestamp="2025-09-19T02:38:11.611Z" hostname="webkit" tests="9" failures="9" skipped="0" time="0.026" errors="0">
+<testcase name="Deployment Readiness › should serve platform admin interface" classname="deployment.test.ts" time="0.002">
+<failure message="deployment.test.ts:4:7 should serve platform admin interface" type="FAILURE">
+<![CDATA[  [webkit] › deployment.test.ts:4:7 › Deployment Readiness › should serve platform admin interface ─
+
+    Error: browserType.launch: Executable doesn't exist at /Users/jtomassoni/Library/Caches/ms-playwright/webkit-2203/pw_run.sh
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+<testcase name="Deployment Readiness › should serve restaurant site" classname="deployment.test.ts" time="0.004">
+<failure message="deployment.test.ts:16:7 should serve restaurant site" type="FAILURE">
+<![CDATA[  [webkit] › deployment.test.ts:16:7 › Deployment Readiness › should serve restaurant site ─────────
+
+    Error: browserType.launch: Executable doesn't exist at /Users/jtomassoni/Library/Caches/ms-playwright/webkit-2203/pw_run.sh
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+<testcase name="Deployment Readiness › should handle domain management APIs" classname="deployment.test.ts" time="0.003">
+<failure message="deployment.test.ts:24:7 should handle domain management APIs" type="FAILURE">
+<![CDATA[  [webkit] › deployment.test.ts:24:7 › Deployment Readiness › should handle domain management APIs ─
+
+    Error: browserType.launch: Executable doesn't exist at /Users/jtomassoni/Library/Caches/ms-playwright/webkit-2203/pw_run.sh
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+<testcase name="Deployment Readiness › should serve health check endpoints" classname="deployment.test.ts" time="0.002">
+<failure message="deployment.test.ts:34:7 should serve health check endpoints" type="FAILURE">
+<![CDATA[  [webkit] › deployment.test.ts:34:7 › Deployment Readiness › should serve health check endpoints ──
+
+    Error: browserType.launch: Executable doesn't exist at /Users/jtomassoni/Library/Caches/ms-playwright/webkit-2203/pw_run.sh
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+<testcase name="Deployment Readiness › should serve events and specials APIs" classname="deployment.test.ts" time="0.002">
+<failure message="deployment.test.ts:52:7 should serve events and specials APIs" type="FAILURE">
+<![CDATA[  [webkit] › deployment.test.ts:52:7 › Deployment Readiness › should serve events and specials APIs 
+
+    Error: browserType.launch: Executable doesn't exist at /Users/jtomassoni/Library/Caches/ms-playwright/webkit-2203/pw_run.sh
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+<testcase name="Deployment Readiness › should handle image optimization" classname="deployment.test.ts" time="0.002">
+<failure message="deployment.test.ts:68:7 should handle image optimization" type="FAILURE">
+<![CDATA[  [webkit] › deployment.test.ts:68:7 › Deployment Readiness › should handle image optimization ─────
+
+    Error: browserType.launch: Executable doesn't exist at /Users/jtomassoni/Library/Caches/ms-playwright/webkit-2203/pw_run.sh
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+<testcase name="Deployment Readiness › should serve proper meta tags for SEO" classname="deployment.test.ts" time="0.002">
+<failure message="deployment.test.ts:85:7 should serve proper meta tags for SEO" type="FAILURE">
+<![CDATA[  [webkit] › deployment.test.ts:85:7 › Deployment Readiness › should serve proper meta tags for SEO 
+
+    Error: browserType.launch: Executable doesn't exist at /Users/jtomassoni/Library/Caches/ms-playwright/webkit-2203/pw_run.sh
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+<testcase name="Deployment Readiness › should handle 404 errors gracefully" classname="deployment.test.ts" time="0.007">
+<failure message="deployment.test.ts:98:7 should handle 404 errors gracefully" type="FAILURE">
+<![CDATA[  [webkit] › deployment.test.ts:98:7 › Deployment Readiness › should handle 404 errors gracefully ──
+
+    Error: browserType.launch: Executable doesn't exist at /Users/jtomassoni/Library/Caches/ms-playwright/webkit-2203/pw_run.sh
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+<testcase name="Deployment Readiness › should serve sitemap and robots.txt" classname="deployment.test.ts" time="0.002">
+<failure message="deployment.test.ts:106:7 should serve sitemap and robots.txt" type="FAILURE">
+<![CDATA[  [webkit] › deployment.test.ts:106:7 › Deployment Readiness › should serve sitemap and robots.txt ─
+
+    Error: browserType.launch: Executable doesn't exist at /Users/jtomassoni/Library/Caches/ms-playwright/webkit-2203/pw_run.sh
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+</testsuite>
+<testsuite name="deployment.test.ts" timestamp="2025-09-19T02:38:11.611Z" hostname="mobile-chrome" tests="9" failures="3" skipped="0" time="9.847" errors="0">
+<testcase name="Deployment Readiness › should serve platform admin interface" classname="deployment.test.ts" time="2.669">
+</testcase>
+<testcase name="Deployment Readiness › should serve restaurant site" classname="deployment.test.ts" time="1.849">
+<failure message="deployment.test.ts:16:7 should serve restaurant site" type="FAILURE">
+<![CDATA[  [mobile-chrome] › deployment.test.ts:16:7 › Deployment Readiness › should serve restaurant site ──
+
+    Error: expect.toBeVisible: Error: strict mode violation: locator('img[alt*="Monaghan"]') resolved to 2 elements:
+        1) <img sizes="100vw" decoding="async" data-nimg="fill" class="object-cover" src="/_next/image?url=%2Fpics%2Fhero.png&w=3840&q=75" alt="Monaghan's Bar & Grill - Interior view showing bar and dining area" srcset="/_next/image?url=%2Fpics%2Fhero.png&w=640&q=75 640w, /_next/image?url=%2Fpics%2Fhero.png&w=750&q=75 750w, /_next/image?url=%2Fpics%2Fhero.png&w=828&q=75 828w, /_next/image?url=%2Fpics%2Fhero.png&w=1080&q=75 1080w, /_next/image?url=%2Fpics%2Fhero.png&w=1200&q=75 1200w, /_next/image?url=%2Fpics%…/> aka getByRole('img', { name: 'Monaghan\'s Bar & Grill -' })
+        2) <img loading="lazy" decoding="async" data-nimg="fill" class="object-cover" sizes="(max-width: 768px) 50vw, 25vw" alt="Pool tables at Monaghan's Bar & Grill" src="/_next/image?url=%2Fpics%2Fmonaghans-billiards.jpg&w=3840&q=75" srcset="/_next/image?url=%2Fpics%2Fmonaghans-billiards.jpg&w=256&q=75 256w, /_next/image?url=%2Fpics%2Fmonaghans-billiards.jpg&w=384&q=75 384w, /_next/image?url=%2Fpics%2Fmonaghans-billiards.jpg&w=640&q=75 640w, /_next/image?url=%2Fpics%2Fmonaghans-billiards.jpg&w=750&q=75 750…/> aka getByRole('img', { name: 'Pool tables at Monaghan\'s Bar' })
+
+    Call log:
+      - Expect "toBeVisible" with timeout 10000ms
+      - waiting for locator('img[alt*="Monaghan"]')
+
+
+      19 |     // Should show Monaghan's content
+      20 |     await expect(page.locator('h1')).toContainText('Monaghan')
+    > 21 |     await expect(page.locator('img[alt*="Monaghan"]')).toBeVisible()
+         |                                                        ^
+      22 |   })
+      23 |
+      24 |   test('should handle domain management APIs', async ({ page }) => {
+        at /Users/jtomassoni/monaghans-midnight-smash/tests/e2e/deployment.test.ts:21:56
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/deployment-Deployment-Readiness-should-serve-restaurant-site-mobile-chrome/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../test-results/deployment-Deployment-Readiness-should-serve-restaurant-site-mobile-chrome/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../test-results/deployment-Deployment-Readiness-should-serve-restaurant-site-mobile-chrome/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|deployment-Deployment-Readiness-should-serve-restaurant-site-mobile-chrome/test-failed-1.png]]
+
+[[ATTACHMENT|deployment-Deployment-Readiness-should-serve-restaurant-site-mobile-chrome/video.webm]]
+
+[[ATTACHMENT|deployment-Deployment-Readiness-should-serve-restaurant-site-mobile-chrome/error-context.md]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Deployment Readiness › should handle domain management APIs" classname="deployment.test.ts" time="0.401">
+</testcase>
+<testcase name="Deployment Readiness › should serve health check endpoints" classname="deployment.test.ts" time="0.221">
+<failure message="deployment.test.ts:34:7 should serve health check endpoints" type="FAILURE">
+<![CDATA[  [mobile-chrome] › deployment.test.ts:34:7 › Deployment Readiness › should serve health check endpoints 
+
+    Error: expect(received).toHaveProperty(path, value)
+
+    Expected path: "status"
+    Received path: []
+
+    Expected value: "ok"
+    Received value: {"recentPings": [], "siteStats": [], "timestamp": "2025-09-19T02:38:19.114Z"}
+
+      38 |     
+      39 |     const pingData = await pingResponse.json()
+    > 40 |     expect(pingData).toHaveProperty('status', 'ok')
+         |                      ^
+      41 |     expect(pingData).toHaveProperty('timestamp')
+      42 |     
+      43 |     // Test health stats
+        at /Users/jtomassoni/monaghans-midnight-smash/tests/e2e/deployment.test.ts:40:22
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/deployment-Deployment-Read-0d29a-erve-health-check-endpoints-mobile-chrome/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../test-results/deployment-Deployment-Read-0d29a-erve-health-check-endpoints-mobile-chrome/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|deployment-Deployment-Read-0d29a-erve-health-check-endpoints-mobile-chrome/test-failed-1.png]]
+
+[[ATTACHMENT|deployment-Deployment-Read-0d29a-erve-health-check-endpoints-mobile-chrome/video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Deployment Readiness › should serve events and specials APIs" classname="deployment.test.ts" time="0.269">
+<failure message="deployment.test.ts:52:7 should serve events and specials APIs" type="FAILURE">
+<![CDATA[  [mobile-chrome] › deployment.test.ts:52:7 › Deployment Readiness › should serve events and specials APIs 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      56 |     
+      57 |     const eventsData = await eventsResponse.json()
+    > 58 |     expect(Array.isArray(eventsData)).toBe(true)
+         |                                       ^
+      59 |     
+      60 |     // Test specials API
+      61 |     const specialsResponse = await page.request.get('/api/specials')
+        at /Users/jtomassoni/monaghans-midnight-smash/tests/e2e/deployment.test.ts:58:39
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/deployment-Deployment-Read-57589-ve-events-and-specials-APIs-mobile-chrome/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../test-results/deployment-Deployment-Read-57589-ve-events-and-specials-APIs-mobile-chrome/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|deployment-Deployment-Read-57589-ve-events-and-specials-APIs-mobile-chrome/test-failed-1.png]]
+
+[[ATTACHMENT|deployment-Deployment-Read-57589-ve-events-and-specials-APIs-mobile-chrome/video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Deployment Readiness › should handle image optimization" classname="deployment.test.ts" time="1.666">
+</testcase>
+<testcase name="Deployment Readiness › should serve proper meta tags for SEO" classname="deployment.test.ts" time="1.405">
+</testcase>
+<testcase name="Deployment Readiness › should handle 404 errors gracefully" classname="deployment.test.ts" time="0.875">
+</testcase>
+<testcase name="Deployment Readiness › should serve sitemap and robots.txt" classname="deployment.test.ts" time="0.492">
+</testcase>
+</testsuite>
+<testsuite name="deployment.test.ts" timestamp="2025-09-19T02:38:11.611Z" hostname="mobile-safari" tests="9" failures="9" skipped="0" time="0.023" errors="0">
+<testcase name="Deployment Readiness › should serve platform admin interface" classname="deployment.test.ts" time="0.002">
+<failure message="deployment.test.ts:4:7 should serve platform admin interface" type="FAILURE">
+<![CDATA[  [mobile-safari] › deployment.test.ts:4:7 › Deployment Readiness › should serve platform admin interface 
+
+    Error: browserType.launch: Executable doesn't exist at /Users/jtomassoni/Library/Caches/ms-playwright/webkit-2203/pw_run.sh
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+<testcase name="Deployment Readiness › should serve restaurant site" classname="deployment.test.ts" time="0.005">
+<failure message="deployment.test.ts:16:7 should serve restaurant site" type="FAILURE">
+<![CDATA[  [mobile-safari] › deployment.test.ts:16:7 › Deployment Readiness › should serve restaurant site ──
+
+    Error: browserType.launch: Executable doesn't exist at /Users/jtomassoni/Library/Caches/ms-playwright/webkit-2203/pw_run.sh
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+<testcase name="Deployment Readiness › should handle domain management APIs" classname="deployment.test.ts" time="0.003">
+<failure message="deployment.test.ts:24:7 should handle domain management APIs" type="FAILURE">
+<![CDATA[  [mobile-safari] › deployment.test.ts:24:7 › Deployment Readiness › should handle domain management APIs 
+
+    Error: browserType.launch: Executable doesn't exist at /Users/jtomassoni/Library/Caches/ms-playwright/webkit-2203/pw_run.sh
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+<testcase name="Deployment Readiness › should serve health check endpoints" classname="deployment.test.ts" time="0.002">
+<failure message="deployment.test.ts:34:7 should serve health check endpoints" type="FAILURE">
+<![CDATA[  [mobile-safari] › deployment.test.ts:34:7 › Deployment Readiness › should serve health check endpoints 
+
+    Error: browserType.launch: Executable doesn't exist at /Users/jtomassoni/Library/Caches/ms-playwright/webkit-2203/pw_run.sh
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+<testcase name="Deployment Readiness › should serve events and specials APIs" classname="deployment.test.ts" time="0.002">
+<failure message="deployment.test.ts:52:7 should serve events and specials APIs" type="FAILURE">
+<![CDATA[  [mobile-safari] › deployment.test.ts:52:7 › Deployment Readiness › should serve events and specials APIs 
+
+    Error: browserType.launch: Executable doesn't exist at /Users/jtomassoni/Library/Caches/ms-playwright/webkit-2203/pw_run.sh
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+<testcase name="Deployment Readiness › should handle image optimization" classname="deployment.test.ts" time="0.002">
+<failure message="deployment.test.ts:68:7 should handle image optimization" type="FAILURE">
+<![CDATA[  [mobile-safari] › deployment.test.ts:68:7 › Deployment Readiness › should handle image optimization 
+
+    Error: browserType.launch: Executable doesn't exist at /Users/jtomassoni/Library/Caches/ms-playwright/webkit-2203/pw_run.sh
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+<testcase name="Deployment Readiness › should serve proper meta tags for SEO" classname="deployment.test.ts" time="0.003">
+<failure message="deployment.test.ts:85:7 should serve proper meta tags for SEO" type="FAILURE">
+<![CDATA[  [mobile-safari] › deployment.test.ts:85:7 › Deployment Readiness › should serve proper meta tags for SEO 
+
+    Error: browserType.launch: Executable doesn't exist at /Users/jtomassoni/Library/Caches/ms-playwright/webkit-2203/pw_run.sh
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+<testcase name="Deployment Readiness › should handle 404 errors gracefully" classname="deployment.test.ts" time="0.002">
+<failure message="deployment.test.ts:98:7 should handle 404 errors gracefully" type="FAILURE">
+<![CDATA[  [mobile-safari] › deployment.test.ts:98:7 › Deployment Readiness › should handle 404 errors gracefully 
+
+    Error: browserType.launch: Executable doesn't exist at /Users/jtomassoni/Library/Caches/ms-playwright/webkit-2203/pw_run.sh
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+<testcase name="Deployment Readiness › should serve sitemap and robots.txt" classname="deployment.test.ts" time="0.002">
+<failure message="deployment.test.ts:106:7 should serve sitemap and robots.txt" type="FAILURE">
+<![CDATA[  [mobile-safari] › deployment.test.ts:106:7 › Deployment Readiness › should serve sitemap and robots.txt 
+
+    Error: browserType.launch: Executable doesn't exist at /Users/jtomassoni/Library/Caches/ms-playwright/webkit-2203/pw_run.sh
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+</testsuite>
+</testsuites>

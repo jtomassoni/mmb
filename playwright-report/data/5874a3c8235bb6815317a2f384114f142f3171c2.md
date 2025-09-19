@@ -1,0 +1,171 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - link "Skip to main content" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - generic [ref=e3]:
+    - heading "Accessibility Options" [level=2] [ref=e4]
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - generic [ref=e7]: Font Size
+        - generic [ref=e8]:
+          - button "Normal font size" [ref=e9]: A
+          - button "Large font size (+20%)" [ref=e10]: A+
+          - button "Larger font size (+35%)" [ref=e11]: A++
+      - generic [ref=e13]:
+        - checkbox "Toggle high contrast mode" [ref=e14]
+        - generic [ref=e15]: High Contrast
+      - generic [ref=e17]:
+        - checkbox "Toggle reduced motion" [ref=e18]
+        - generic [ref=e19]: Reduced Motion
+      - generic [ref=e21]:
+        - checkbox "Toggle dyslexia-friendly font" [ref=e22]
+        - generic [ref=e23]: Dyslexia Font
+  - banner [ref=e24]:
+    - generic [ref=e26]:
+      - link "Monaghan's Bar & Grill" [ref=e28] [cursor=pointer]:
+        - /url: /
+      - navigation [ref=e29]:
+        - link "Menu" [ref=e30] [cursor=pointer]:
+          - /url: /menu
+        - link "Specials" [ref=e31] [cursor=pointer]:
+          - /url: /specials
+        - link "Events" [ref=e32] [cursor=pointer]:
+          - /url: /events
+        - link "About" [ref=e33] [cursor=pointer]:
+          - /url: /about
+        - link "Visit" [ref=e34] [cursor=pointer]:
+          - /url: /visit
+      - generic [ref=e36]: Loading...
+  - main [ref=e37]:
+    - generic [ref=e38]:
+      - generic [ref=e39]:
+        - img "Monaghan's Bar & Grill - Interior view showing bar and dining area" [ref=e40]
+        - generic [ref=e42]:
+          - heading "Monaghan's Bar & Grill" [level=1] [ref=e43]
+          - paragraph [ref=e44]: Where Denver comes to eat, drink, and play
+      - generic [ref=e47]:
+        - heading "Today at Monaghan's" [level=2] [ref=e48]
+        - generic [ref=e49]:
+          - paragraph [ref=e50]: We're Open!
+          - paragraph [ref=e51]: "Monday: 11:00 AM - 2:00 AM"
+        - generic [ref=e52]:
+          - paragraph [ref=e53]: "Tonight's Event: Poker Night"
+          - paragraph [ref=e54]: Monday 7:00 PM - Join us for Texas Hold'em!
+      - generic [ref=e56]:
+        - heading "What Makes Us Special" [level=2] [ref=e57]
+        - generic [ref=e58]:
+          - generic [ref=e59]:
+            - generic [ref=e61]: 🍺
+            - heading "Great Drinks" [level=2] [ref=e62]
+            - paragraph [ref=e63]: Full bar with local craft beers and signature cocktails
+          - generic [ref=e64]:
+            - generic [ref=e66]: 🎱
+            - heading "Pool Tables" [level=2] [ref=e67]
+            - paragraph [ref=e68]: Multiple pool tables and games for entertainment
+          - generic [ref=e69]:
+            - generic [ref=e71]: 🎤
+            - heading "Karaoke" [level=2] [ref=e72]
+            - paragraph [ref=e73]: Weekly karaoke nights and live entertainment
+      - generic [ref=e75]:
+        - heading "This Week's Events" [level=2] [ref=e76]
+        - generic [ref=e77]:
+          - generic [ref=e78]:
+            - heading "Monday - Poker Night" [level=2] [ref=e79]
+            - paragraph [ref=e80]: 7:00 PM
+            - paragraph [ref=e81]: Texas Hold'em tournament with prizes
+          - generic [ref=e82]:
+            - heading "Thursday - Bingo Night" [level=2] [ref=e83]
+            - paragraph [ref=e84]: 7:00 PM
+            - paragraph [ref=e85]: Traditional bingo with cash prizes
+          - generic [ref=e86]:
+            - heading "Sunday - Broncos Potluck" [level=2] [ref=e87]
+            - paragraph [ref=e88]: Game Time
+            - paragraph [ref=e89]: Watch the Broncos with potluck dinner
+        - link "View All Events" [ref=e91] [cursor=pointer]:
+          - /url: /events
+      - generic [ref=e93]:
+        - heading "Today's Specials" [level=2] [ref=e94]
+        - generic [ref=e95]:
+          - generic [ref=e96]:
+            - img "Fish & Chips - Beer-battered cod with crispy fries" [ref=e98]
+            - generic [ref=e99]:
+              - heading "Fish & Chips" [level=2] [ref=e100]
+              - paragraph [ref=e101]: Beer-battered cod with crispy fries
+              - paragraph [ref=e102]: $11.99
+          - generic [ref=e103]:
+            - img "Taco Platter - Fresh tacos with rice and beans" [ref=e105]
+            - generic [ref=e106]:
+              - heading "Taco Platter" [level=2] [ref=e107]
+              - paragraph [ref=e108]: Fresh tacos with all the fixings
+              - paragraph [ref=e109]: $13.99
+          - generic [ref=e110]:
+            - img "Chicken Quesadilla - Grilled cheese and chicken quesadilla" [ref=e112]
+            - generic [ref=e113]:
+              - heading "Chicken Quesadilla" [level=2] [ref=e114]
+              - paragraph [ref=e115]: Grilled cheese and chicken quesadilla
+              - paragraph [ref=e116]: $10.99
+        - link "View All Specials" [ref=e118] [cursor=pointer]:
+          - /url: /specials
+      - generic [ref=e120]:
+        - heading "What Our Customers Say" [level=2] [ref=e121]
+        - generic [ref=e122]:
+          - generic [ref=e123]:
+            - generic [ref=e124]:
+              - generic [ref=e125]: ★★★★★
+              - generic [ref=e126]: 5.0 stars
+            - paragraph [ref=e127]: "\"Best bar in Denver! Great food, friendly staff, and the pool tables are always in perfect condition.\""
+            - paragraph [ref=e128]: "- Sarah M."
+          - generic [ref=e129]:
+            - generic [ref=e130]:
+              - generic [ref=e131]: ★★★★★
+              - generic [ref=e132]: 5.0 stars
+            - paragraph [ref=e133]: "\"Love the poker nights! The atmosphere is perfect and the drinks are reasonably priced.\""
+            - paragraph [ref=e134]: "- Mike D."
+        - link "Read More Reviews" [ref=e136] [cursor=pointer]:
+          - /url: /reviews
+      - generic [ref=e138]:
+        - heading "See Our Space" [level=2] [ref=e139]
+        - generic [ref=e140]:
+          - img "Pool tables at Monaghan's Bar & Grill" [ref=e142]
+          - img "Bar area with pool tables and seating" [ref=e144]
+          - img "Breakfast Biscuit - Fresh biscuit with eggs and bacon" [ref=e146]
+          - img "Outdoor patio seating area" [ref=e148]
+        - link "View Full Gallery" [ref=e150] [cursor=pointer]:
+          - /url: /gallery
+      - generic [ref=e152]:
+        - heading "Visit Us" [level=2] [ref=e153]
+        - generic [ref=e154]:
+          - generic [ref=e155]:
+            - heading "Location & Hours" [level=2] [ref=e156]
+            - generic [ref=e157]:
+              - paragraph [ref=e158]: 1234 Main Street
+              - paragraph [ref=e159]: Denver, CO 80202
+              - paragraph [ref=e160]: "Phone: (303) 555-0123"
+              - generic [ref=e161]:
+                - heading "Hours:" [level=3] [ref=e162]
+                - paragraph [ref=e163]: "Monday - Thursday: 11:00 AM - 2:00 AM"
+                - paragraph [ref=e164]: "Friday - Saturday: 11:00 AM - 3:00 AM"
+                - paragraph [ref=e165]: "Sunday: 12:00 PM - 2:00 AM"
+          - generic [ref=e166]:
+            - heading "Get Directions" [level=2] [ref=e167]
+            - generic [ref=e169]: Map placeholder
+  - contentinfo [ref=e170]:
+    - generic [ref=e171]:
+      - paragraph [ref=e172]: © 2024 Monaghan's Bar & Grill
+      - link "Owner / Staff Login" [ref=e173] [cursor=pointer]:
+        - /url: /login
+  - generic [ref=e178] [cursor=pointer]:
+    - button "Open Next.js Dev Tools" [ref=e179] [cursor=pointer]:
+      - img [ref=e180] [cursor=pointer]
+    - generic [ref=e183] [cursor=pointer]:
+      - button "Open issues overlay" [ref=e184] [cursor=pointer]:
+        - generic [ref=e185] [cursor=pointer]:
+          - generic [ref=e186] [cursor=pointer]: "0"
+          - generic [ref=e187] [cursor=pointer]: "1"
+        - generic [ref=e188] [cursor=pointer]: Issue
+      - button "Collapse issues badge" [ref=e189] [cursor=pointer]:
+        - img [ref=e190] [cursor=pointer]
+  - alert [ref=e192]
+```

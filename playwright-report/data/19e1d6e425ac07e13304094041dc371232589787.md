@@ -1,0 +1,149 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - link "Skip to main content" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - generic [ref=e3]:
+    - heading "Accessibility Options" [level=2] [ref=e4]
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - generic [ref=e7]: Font Size
+        - generic [ref=e8]:
+          - button "Normal font size" [ref=e9]: A
+          - button "Large font size (+20%)" [ref=e10]: A+
+          - button "Larger font size (+35%)" [ref=e11]: A++
+      - generic [ref=e13]:
+        - checkbox "Toggle high contrast mode" [ref=e14]
+        - generic [ref=e15]: High Contrast
+      - generic [ref=e17]:
+        - checkbox "Toggle reduced motion" [ref=e18]
+        - generic [ref=e19]: Reduced Motion
+      - generic [ref=e21]:
+        - checkbox "Toggle dyslexia-friendly font" [ref=e22]
+        - generic [ref=e23]: Dyslexia Font
+  - banner [ref=e24]:
+    - generic [ref=e26]:
+      - link "Monaghan's Bar & Grill" [ref=e28] [cursor=pointer]:
+        - /url: /
+      - generic [ref=e30]: Loading...
+  - main [ref=e31]:
+    - generic [ref=e32]:
+      - generic [ref=e33]:
+        - img "Monaghan's Bar & Grill - Interior view showing bar and dining area" [ref=e34]
+        - generic [ref=e36]:
+          - heading "Monaghan's Bar & Grill" [level=1] [ref=e37]
+          - paragraph [ref=e38]: Where Denver comes to eat, drink, and play
+      - generic [ref=e41]:
+        - heading "Today at Monaghan's" [level=2] [ref=e42]
+        - generic [ref=e43]:
+          - paragraph [ref=e44]: We're Open!
+          - paragraph [ref=e45]: "Monday: 11:00 AM - 2:00 AM"
+        - generic [ref=e46]:
+          - paragraph [ref=e47]: "Tonight's Event: Poker Night"
+          - paragraph [ref=e48]: Monday 7:00 PM - Join us for Texas Hold'em!
+      - generic [ref=e50]:
+        - heading "What Makes Us Special" [level=2] [ref=e51]
+        - generic [ref=e52]:
+          - generic [ref=e53]:
+            - generic [ref=e55]: 🍺
+            - heading "Great Drinks" [level=2] [ref=e56]
+            - paragraph [ref=e57]: Full bar with local craft beers and signature cocktails
+          - generic [ref=e58]:
+            - generic [ref=e60]: 🎱
+            - heading "Pool Tables" [level=2] [ref=e61]
+            - paragraph [ref=e62]: Multiple pool tables and games for entertainment
+          - generic [ref=e63]:
+            - generic [ref=e65]: 🎤
+            - heading "Karaoke" [level=2] [ref=e66]
+            - paragraph [ref=e67]: Weekly karaoke nights and live entertainment
+      - generic [ref=e69]:
+        - heading "This Week's Events" [level=2] [ref=e70]
+        - generic [ref=e71]:
+          - generic [ref=e72]:
+            - heading "Monday - Poker Night" [level=2] [ref=e73]
+            - paragraph [ref=e74]: 7:00 PM
+            - paragraph [ref=e75]: Texas Hold'em tournament with prizes
+          - generic [ref=e76]:
+            - heading "Thursday - Bingo Night" [level=2] [ref=e77]
+            - paragraph [ref=e78]: 7:00 PM
+            - paragraph [ref=e79]: Traditional bingo with cash prizes
+          - generic [ref=e80]:
+            - heading "Sunday - Broncos Potluck" [level=2] [ref=e81]
+            - paragraph [ref=e82]: Game Time
+            - paragraph [ref=e83]: Watch the Broncos with potluck dinner
+        - link "View All Events" [ref=e85] [cursor=pointer]:
+          - /url: /events
+      - generic [ref=e87]:
+        - heading "Today's Specials" [level=2] [ref=e88]
+        - generic [ref=e89]:
+          - generic [ref=e90]:
+            - img "Fish & Chips - Beer-battered cod with crispy fries" [ref=e92]
+            - generic [ref=e93]:
+              - heading "Fish & Chips" [level=2] [ref=e94]
+              - paragraph [ref=e95]: Beer-battered cod with crispy fries
+              - paragraph [ref=e96]: $11.99
+          - generic [ref=e97]:
+            - img "Taco Platter - Fresh tacos with rice and beans" [ref=e99]
+            - generic [ref=e100]:
+              - heading "Taco Platter" [level=2] [ref=e101]
+              - paragraph [ref=e102]: Fresh tacos with all the fixings
+              - paragraph [ref=e103]: $13.99
+          - generic [ref=e104]:
+            - img "Chicken Quesadilla - Grilled cheese and chicken quesadilla" [ref=e106]
+            - generic [ref=e107]:
+              - heading "Chicken Quesadilla" [level=2] [ref=e108]
+              - paragraph [ref=e109]: Grilled cheese and chicken quesadilla
+              - paragraph [ref=e110]: $10.99
+        - link "View All Specials" [ref=e112] [cursor=pointer]:
+          - /url: /specials
+      - generic [ref=e114]:
+        - heading "What Our Customers Say" [level=2] [ref=e115]
+        - generic [ref=e116]:
+          - generic [ref=e117]:
+            - generic [ref=e118]:
+              - generic [ref=e119]: ★★★★★
+              - generic [ref=e120]: 5.0 stars
+            - paragraph [ref=e121]: "\"Best bar in Denver! Great food, friendly staff, and the pool tables are always in perfect condition.\""
+            - paragraph [ref=e122]: "- Sarah M."
+          - generic [ref=e123]:
+            - generic [ref=e124]:
+              - generic [ref=e125]: ★★★★★
+              - generic [ref=e126]: 5.0 stars
+            - paragraph [ref=e127]: "\"Love the poker nights! The atmosphere is perfect and the drinks are reasonably priced.\""
+            - paragraph [ref=e128]: "- Mike D."
+        - link "Read More Reviews" [ref=e130] [cursor=pointer]:
+          - /url: /reviews
+      - generic [ref=e132]:
+        - heading "See Our Space" [level=2] [ref=e133]
+        - generic [ref=e134]:
+          - img "Pool tables at Monaghan's Bar & Grill" [ref=e136]
+          - img "Bar area with pool tables and seating" [ref=e138]
+          - img "Breakfast Biscuit - Fresh biscuit with eggs and bacon" [ref=e140]
+          - img "Outdoor patio seating area" [ref=e142]
+        - link "View Full Gallery" [ref=e144] [cursor=pointer]:
+          - /url: /gallery
+      - generic [ref=e146]:
+        - heading "Visit Us" [level=2] [ref=e147]
+        - generic [ref=e148]:
+          - generic [ref=e149]:
+            - heading "Location & Hours" [level=2] [ref=e150]
+            - generic [ref=e151]:
+              - paragraph [ref=e152]: 1234 Main Street
+              - paragraph [ref=e153]: Denver, CO 80202
+              - paragraph [ref=e154]: "Phone: (303) 555-0123"
+              - generic [ref=e155]:
+                - heading "Hours:" [level=3] [ref=e156]
+                - paragraph [ref=e157]: "Monday - Thursday: 11:00 AM - 2:00 AM"
+                - paragraph [ref=e158]: "Friday - Saturday: 11:00 AM - 3:00 AM"
+                - paragraph [ref=e159]: "Sunday: 12:00 PM - 2:00 AM"
+          - generic [ref=e160]:
+            - heading "Get Directions" [level=2] [ref=e161]
+            - generic [ref=e163]: Map placeholder
+  - contentinfo [ref=e164]:
+    - generic [ref=e165]:
+      - paragraph [ref=e166]: © 2024 Monaghan's Bar & Grill
+      - link "Owner / Staff Login" [ref=e167] [cursor=pointer]:
+        - /url: /login
+  - alert [ref=e168]
+```
