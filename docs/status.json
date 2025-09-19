@@ -1,0 +1,107 @@
+{
+  "meta": {
+    "lastUpdated": "2025-09-19T00:37:15.211Z",
+    "branch": "rebuild/monaghans-main",
+    "platformHost": "www.byte-by-bite.com",
+    "tenants": [
+      "monaghansbargrill.com"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "TASK-00",
+      "title": "Create FOOBAR.md runbook",
+      "state": "done"
+    },
+    {
+      "id": "TASK-01",
+      "title": "Create recovery branch",
+      "state": "todo"
+    },
+    {
+      "id": "TASK-02",
+      "title": "Repo audit & scaffold missing infra",
+      "state": "todo"
+    },
+    {
+      "id": "TASK-03",
+      "title": "Prisma multi-tenant models present",
+      "state": "todo"
+    },
+    {
+      "id": "TASK-04",
+      "title": "Auth.js + RBAC + redirect rules",
+      "state": "todo"
+    },
+    {
+      "id": "TASK-05",
+      "title": "Middleware host routing + superadmin lock",
+      "state": "todo"
+    },
+    {
+      "id": "TASK-06",
+      "title": "Admin (site) + Superadmin dashboards",
+      "state": "todo"
+    },
+    {
+      "id": "TASK-07",
+      "title": "Create Site wizard",
+      "state": "todo"
+    },
+    {
+      "id": "TASK-08",
+      "title": "Vercel Domain add/verify API",
+      "state": "todo"
+    },
+    {
+      "id": "TASK-09",
+      "title": "Per-host SEO (sitemap/robots/JSON-LD)",
+      "state": "todo"
+    },
+    {
+      "id": "TASK-10",
+      "title": "SPA home sections + routes",
+      "state": "todo"
+    },
+    {
+      "id": "TASK-11",
+      "title": "Accessibility toolbar + a11y passes",
+      "state": "todo"
+    },
+    {
+      "id": "TASK-12",
+      "title": "Footer/header Login + role redirects",
+      "state": "todo"
+    },
+    {
+      "id": "TASK-13",
+      "title": "Health cards & scheduled pings",
+      "state": "todo"
+    },
+    {
+      "id": "TASK-14",
+      "title": "Events defaults (Mon poker, Thu bingo, Sun potluck)",
+      "state": "todo"
+    },
+    {
+      "id": "TASK-15",
+      "title": "30 rotating specials in CMS",
+      "state": "todo"
+    },
+    {
+      "id": "TASK-16",
+      "title": "Images alt text wired",
+      "state": "todo"
+    },
+    {
+      "id": "TASK-17",
+      "title": "Playwright + Axe + Lighthouse CI",
+      "state": "todo"
+    },
+    {
+      "id": "TASK-18",
+      "title": "Monaghans domain attached & verified",
+      "state": "todo"
+    }
+  ]
+}
