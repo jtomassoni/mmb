@@ -7,7 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "status": "tsx scripts/update-status.ts"
+    "status": "tsx scripts/update-status.ts",
+    "bootstrap": "tsx scripts/bootstrap.ts",
+    "verify-env": "tsx scripts/verify-env.ts",
+    "predev": "npm run verify-env"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.10.0",

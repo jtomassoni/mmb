@@ -21,12 +21,12 @@
   - [x] 00A — Create FOOBAR.md with runbook content verbatim
   - [x] 00B — Ensure marker <!-- TASKS-LIST:DO-NOT-EDIT-MANUALLY --> present
   - [x] 00C — Commit snapshot [TASK-00]
-- [ ] TASK-01 — Create recovery branch
+- [x] TASK-01 — Create recovery branch
   - [x] 01A — Create branch recovery/restart-$(date +%Y%m%d-%H%M)
-  - [ ] 01B — Commit current state [TASK-01]
+  - [x] 01B — Commit current state [TASK-01]
 - [ ] TASK-02 — Repo audit & scaffold missing infra
-  - [ ] 02A — Run bootstrap script to create folders, .gitkeep, .env.local
-  - [ ] 02B — Add verify-env predev gate
+  - [x] 02A — Run bootstrap script to create folders, .gitkeep, .env.local
+  - [x] 02B — Add verify-env predev gate
   - [ ] 02C — Commit [TASK-02]
 - [ ] TASK-03 — Prisma multi-tenant models present
   - [ ] 03A — Define models with siteId scoping; no cross-tenant leakage
