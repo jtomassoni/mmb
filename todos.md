@@ -13,7 +13,16 @@
 - **Platform Host (Superadmin):** www.byte-by-bite.com
 - **Tenants:** monaghansbargrill.com (first)
 - **Last Updated:** 2025-09-19T07:45:00.000Z
-**Next Step:** All core tasks completed! 🎉
+**Next Step:** Broncos Games & Potluck System Implementation - COMPLETED! 🎉
+
+**Current Broncos Tasks:**
+- [x] Get Broncos 2024 schedule
+- [x] Add Broncos games to events page  
+- [x] Create potluck event type in CMS
+- [x] Add random main dishes for potlucks
+- [x] Make sure the nav is the same on the home page as it is on the other pages
+- [x] Create data objects for all games of the football season but only display the next 3
+- [x] Update schedule to 2025-2026 season (current season)
 
 **Task Checklist (auto-synced from docs/status.json):**
 <!-- TASKS-LIST:DO-NOT-EDIT-MANUALLY -->

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { AnalyticsService } from '../../../lib/analytics'
-import { prisma } from '../../../lib/prisma'
+import { AnalyticsService } from '../../../../lib/analytics'
+import { prisma } from '../../../../lib/prisma'
 
 export async function POST(request: NextRequest) {
   try {

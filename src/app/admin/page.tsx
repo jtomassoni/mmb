@@ -82,6 +82,13 @@ export default function SiteAdminDashboard() {
                 <div className="font-medium">Update Menu</div>
                 <div className="text-sm text-gray-500">Edit menu items and descriptions</div>
               </button>
+              <a 
+                href="/admin/calendar"
+                className="block w-full text-left p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <div className="font-medium">Calendar Management</div>
+                <div className="text-sm text-gray-500">Manage events, specials, and Broncos games</div>
+              </a>
             </div>
           </div>
 

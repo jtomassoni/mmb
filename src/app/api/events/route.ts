@@ -143,7 +143,7 @@ export async function POST(request: NextRequest) {
             description: "Where Denver comes to eat, drink, and play",
             address: "1234 Main Street, Denver, CO 80202",
             phone: "(303) 555-0123",
-            email: "info@monaghansbargrill.com"
+            email: "Monaghanv061586@gmail.com"
           }
         })
       }

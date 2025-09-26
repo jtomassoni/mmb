@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 
-export function AccessibilityToolbar() {
+export function AccessibilityDropdown() {
   const [isOpen, setIsOpen] = useState(false)
   const [fontScale, setFontScale] = useState<'normal' | 'large' | 'larger'>('normal')
   const [highContrast, setHighContrast] = useState(false)
@@ -26,7 +26,7 @@ export function AccessibilityToolbar() {
   }, [])
 
   useEffect(() => {
-    // Handle Escape key to close panel
+    // Handle Escape key to close dropdown
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape' && isOpen) {
         setIsOpen(false)
@@ -118,13 +118,15 @@ export function AccessibilityToolbar() {
   }
 
   return (
-    <div className="fixed top-4 right-4 z-50">
-      {/* Toggle Button */}
+    <div className="relative">
+      {/* Dropdown Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-        aria-label={isOpen ? "Close accessibility options" : "Open accessibility options"}
+        className="flex items-center text-white/70 hover:text-white p-2 rounded-md hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-black/50 transition-all duration-300"
+        aria-label="Accessibility options"
         aria-expanded={isOpen}
+        aria-haspopup="true"
+        title="Accessibility options"
       >
         <svg 
           className="w-5 h-5" 
@@ -133,102 +135,98 @@ export function AccessibilityToolbar() {
           viewBox="0 0 24 24"
           aria-hidden="true"
         >
-          {isOpen ? (
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          ) : (
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
-          )}
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
         </svg>
       </button>
 
-      {/* Accessibility Panel */}
+      {/* Dropdown Panel */}
       {isOpen && (
-        <div className="mt-2 bg-white border border-gray-300 rounded-lg shadow-lg p-4 min-w-64">
-          <h2 className="text-sm font-semibold text-gray-900 mb-3">Accessibility Options</h2>
+        <div className="absolute right-0 mt-2 w-64 bg-white border border-gray-300 rounded-lg shadow-lg p-4 z-50">
+          <h3 className="text-sm font-semibold text-gray-900 mb-3">Accessibility Options</h3>
           
           <div className="space-y-3">
-        {/* Font Scale */}
-        <div>
-          <label className="block text-xs font-medium text-gray-700 mb-1">Font Size</label>
-          <div className="flex space-x-1">
-            <button
-              onClick={() => handleFontScaleChange('normal')}
-              className={`px-2 py-1 text-xs rounded ${
-                fontScale === 'normal' 
-                  ? 'bg-blue-600 text-white' 
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
-              aria-label="Normal font size"
-            >
-              A
-            </button>
-            <button
-              onClick={() => handleFontScaleChange('large')}
-              className={`px-2 py-1 text-xs rounded ${
-                fontScale === 'large' 
-                  ? 'bg-blue-600 text-white' 
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
-              aria-label="Large font size (+20%)"
-            >
-              A+
-            </button>
-            <button
-              onClick={() => handleFontScaleChange('larger')}
-              className={`px-2 py-1 text-xs rounded ${
-                fontScale === 'larger' 
-                  ? 'bg-blue-600 text-white' 
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
-              aria-label="Larger font size (+35%)"
-            >
-              A++
-            </button>
+            {/* Font Scale */}
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Font Size</label>
+              <div className="flex space-x-1">
+                <button
+                  onClick={() => handleFontScaleChange('normal')}
+                  className={`px-2 py-1 text-xs rounded ${
+                    fontScale === 'normal' 
+                      ? 'bg-blue-600 text-white' 
+                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  }`}
+                  aria-label="Normal font size"
+                >
+                  A
+                </button>
+                <button
+                  onClick={() => handleFontScaleChange('large')}
+                  className={`px-2 py-1 text-xs rounded ${
+                    fontScale === 'large' 
+                      ? 'bg-blue-600 text-white' 
+                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  }`}
+                  aria-label="Large font size (+20%)"
+                >
+                  A+
+                </button>
+                <button
+                  onClick={() => handleFontScaleChange('larger')}
+                  className={`px-2 py-1 text-xs rounded ${
+                    fontScale === 'larger' 
+                      ? 'bg-blue-600 text-white' 
+                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  }`}
+                  aria-label="Larger font size (+35%)"
+                >
+                  A++
+                </button>
+              </div>
+            </div>
+
+            {/* High Contrast */}
+            <div>
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={highContrast}
+                  onChange={handleHighContrastToggle}
+                  className="mr-2"
+                  aria-label="Toggle high contrast mode"
+                />
+                <span className="text-xs text-gray-700">High Contrast</span>
+              </label>
+            </div>
+
+            {/* Reduced Motion */}
+            <div>
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={reducedMotion}
+                  onChange={handleReducedMotionToggle}
+                  className="mr-2"
+                  aria-label="Toggle reduced motion"
+                />
+                <span className="text-xs text-gray-700">Reduced Motion</span>
+              </label>
+            </div>
+
+            {/* Dyslexia Font */}
+            <div>
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={dyslexiaFont}
+                  onChange={handleDyslexiaFontToggle}
+                  className="mr-2"
+                  aria-label="Toggle dyslexia-friendly font"
+                />
+                <span className="text-xs text-gray-700">Dyslexia Font</span>
+              </label>
+            </div>
           </div>
-        </div>
-
-        {/* High Contrast */}
-        <div>
-          <label className="flex items-center">
-            <input
-              type="checkbox"
-              checked={highContrast}
-              onChange={handleHighContrastToggle}
-              className="mr-2"
-              aria-label="Toggle high contrast mode"
-            />
-            <span className="text-xs text-gray-700">High Contrast</span>
-          </label>
-        </div>
-
-        {/* Reduced Motion */}
-        <div>
-          <label className="flex items-center">
-            <input
-              type="checkbox"
-              checked={reducedMotion}
-              onChange={handleReducedMotionToggle}
-              className="mr-2"
-              aria-label="Toggle reduced motion"
-            />
-            <span className="text-xs text-gray-700">Reduced Motion</span>
-          </label>
-        </div>
-
-        {/* Dyslexia Font */}
-        <div>
-          <label className="flex items-center">
-            <input
-              type="checkbox"
-              checked={dyslexiaFont}
-              onChange={handleDyslexiaFontToggle}
-              className="mr-2"
-              aria-label="Toggle dyslexia-friendly font"
-            />
-            <span className="text-xs text-gray-700">Dyslexia Font</span>
-          </label>
-        </div>
-      </div>
         </div>
       )}
     </div>

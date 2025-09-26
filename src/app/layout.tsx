@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "../components/providers";
-import { AccessibilityToolbar } from "../components/accessibility-toolbar";
-import { Header } from "../components/header";
+import { ConditionalHeader } from "../components/conditional-header";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,12 +32,8 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         suppressHydrationWarning={true}
       >
-        <a href="#main-content" className="skip-link">
-          Skip to main content
-        </a>
-        <AccessibilityToolbar />
         <Providers>
-          <Header />
+          <ConditionalHeader />
           <main id="main-content" tabIndex={-1}>
             {children}
           </main>
@@ -47,7 +42,7 @@ export default function RootLayout({
               <p className="text-sm">&copy; 2024 Monaghan&apos;s Bar & Grill</p>
               <a 
                 href="/login" 
-                className="text-sm hover:underline focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 rounded"
+                className="text-sm hover:underline hover:text-green-400 transition-all duration-300 hover:shadow-lg hover:shadow-green-400/20 px-3 py-1 rounded-md focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
                 aria-label="Owner / Staff Login"
               >
                 Owner / Staff Login

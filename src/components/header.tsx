@@ -3,6 +3,7 @@
 import { useSession, signOut } from 'next-auth/react'
 import Link from 'next/link'
 import { getRedirectUrl } from '../lib/redirect'
+import { AccessibilityDropdown } from './accessibility-dropdown'
 
 export function Header() {
   const { data: session, status } = useSession()
@@ -13,61 +14,56 @@ export function Header() {
         <div className="flex justify-between items-center h-16">
           {/* Logo/Brand */}
           <div className="flex-shrink-0">
-            <Link href="/" className="text-xl font-bold text-gray-900">
+            <Link href="/" className="text-xl font-bold text-gray-900 hover:text-green-600 transition-all duration-300 hover:drop-shadow-lg">
               Monaghan&apos;s Bar & Grill
             </Link>
           </div>
 
           {/* Navigation */}
           <nav className="hidden md:flex space-x-8">
-            <Link href="/menu" className="text-gray-600 hover:text-gray-900 px-3 py-2 text-sm font-medium">
+            <Link href="/" className="text-gray-600 hover:text-gray-900 px-3 py-2 text-sm font-medium transition-all duration-300 hover:shadow-lg hover:shadow-gray-200 rounded-md">
+              Home
+            </Link>
+            <Link href="/menu" className="text-gray-600 hover:text-gray-900 px-3 py-2 text-sm font-medium transition-all duration-300 hover:shadow-lg hover:shadow-gray-200 rounded-md">
               Menu
             </Link>
-            <Link href="/specials" className="text-gray-600 hover:text-gray-900 px-3 py-2 text-sm font-medium">
-              Specials
+            <Link href="/whats-happening" className="text-gray-600 hover:text-gray-900 px-3 py-2 text-sm font-medium transition-all duration-300 hover:shadow-lg hover:shadow-gray-200 rounded-md">
+              What's Happening
             </Link>
-            <Link href="/events" className="text-gray-600 hover:text-gray-900 px-3 py-2 text-sm font-medium">
-              Events
-            </Link>
-            <Link href="/about" className="text-gray-600 hover:text-gray-900 px-3 py-2 text-sm font-medium">
-              About
-            </Link>
-            <Link href="/visit" className="text-gray-600 hover:text-gray-900 px-3 py-2 text-sm font-medium">
+            <Link href="/about" className="text-gray-600 hover:text-gray-900 px-3 py-2 text-sm font-medium transition-all duration-300 hover:shadow-lg hover:shadow-gray-200 rounded-md">
               Visit
             </Link>
           </nav>
 
           {/* Login/Auth Section */}
           <div className="flex items-center space-x-4">
+            {/* Accessibility Options */}
+            <AccessibilityDropdown />
+            
             {status === 'loading' ? (
               <div className="text-sm text-gray-500">Loading...</div>
             ) : session ? (
-              <div className="flex items-center space-x-4">
-                <span className="text-sm text-gray-700">
-                  Welcome, {session.user?.name || session.user?.email}
+              <div className="flex items-center space-x-3">
+                <span className="text-sm text-gray-600">
+                  {session.user?.name || session.user?.email}
                 </span>
                 <div className="flex items-center space-x-2">
                   <a
                     href={getRedirectUrl(session.user?.role || 'STAFF')}
-                    className="text-sm text-indigo-600 hover:text-indigo-500"
+                    className="bg-indigo-600 text-white px-3 py-1 rounded text-sm hover:bg-indigo-700 transition-colors"
                   >
-                    {session.user?.role === 'SUPERADMIN' ? 'Superadmin' : 'Admin'} Dashboard
+                    Dashboard
                   </a>
                   <button
                     onClick={() => signOut({ callbackUrl: '/' })}
-                    className="text-sm text-gray-600 hover:text-gray-900"
+                    className="text-sm text-gray-500 hover:text-gray-700 px-2 py-1 rounded hover:bg-gray-100 transition-colors"
                   >
                     Sign Out
                   </button>
                 </div>
               </div>
             ) : (
-              <Link
-                href="/login"
-                className="text-sm text-indigo-600 hover:text-indigo-500 font-medium"
-              >
-                Owner / Staff Login
-              </Link>
+              <div></div>
             )}
           </div>
         </div>
