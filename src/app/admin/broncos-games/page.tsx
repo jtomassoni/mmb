@@ -87,7 +87,7 @@ export default function BroncosGamesAdmin() {
 
   const handleCancel = () => {
     setEditingGame(null)
-    setEditForm({ mainDish: '', description: '' })
+    setEditForm({ mainDish: '', description: '', whatWeProvide: '' })
   }
 
   if (isLoading) {

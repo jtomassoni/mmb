@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
         console.error(`Failed to generate summary for site ${site.id}:`, error)
         results.push({
           siteId: site.id,
-          date: yesterday.toISOString().split('T')[0],
+          date: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split('T')[0],
           status: 'error',
           error: error instanceof Error ? error.message : 'Unknown error'
         })

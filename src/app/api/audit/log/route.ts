@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '../../../../lib/prisma'
-import { hasPermission } from '../../../../lib/rbac'
+import { hasPermission, UserRole } from '../../../../lib/rbac'
 import { AuditLogEntry } from '../../../../lib/audit-log'
 
 export async function POST(request: NextRequest) {
@@ -87,7 +87,7 @@ export async function GET(request: NextRequest) {
     const orderDirection = searchParams.get('orderDirection') || 'desc'
 
     // Check permissions
-    const userRoleParam = userRole || 'STAFF'
+    const userRoleParam = (userRole || 'STAFF') as UserRole
     if (!hasPermission(userRoleParam, 'audit', 'read')) {
       return NextResponse.json(
         { error: 'Insufficient permissions to read audit logs' },

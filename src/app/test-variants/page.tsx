@@ -25,7 +25,7 @@ const testBusinessInfo: Record<BusinessVariant, BusinessInfo> = {
     acceptsReservations: false,
     hasMenu: 'https://thelocaldive.com/menu',
     paymentAccepted: ['Cash', 'Credit Card'],
-    currenciesAccepted: 'USD'
+    currenciesAccepted: ['USD']
   },
   fine_dining: {
     name: 'Chef\'s Table',
@@ -46,7 +46,7 @@ const testBusinessInfo: Record<BusinessVariant, BusinessInfo> = {
     acceptsReservations: true,
     hasMenu: 'https://chefstable.com/menu',
     paymentAccepted: ['Credit Card', 'Debit Card'],
-    currenciesAccepted: 'USD'
+    currenciesAccepted: ['USD']
   },
   cafe: {
     name: 'Morning Brew Café',
@@ -67,7 +67,7 @@ const testBusinessInfo: Record<BusinessVariant, BusinessInfo> = {
     acceptsReservations: false,
     hasMenu: 'https://morningbrew.com/menu',
     paymentAccepted: ['Cash', 'Credit Card', 'Mobile Payment'],
-    currenciesAccepted: 'USD'
+    currenciesAccepted: ['USD']
   },
   sports_bar: {
     name: 'Game Day Sports Bar',
@@ -88,7 +88,7 @@ const testBusinessInfo: Record<BusinessVariant, BusinessInfo> = {
     acceptsReservations: true,
     hasMenu: 'https://gamedaysports.com/menu',
     paymentAccepted: ['Cash', 'Credit Card'],
-    currenciesAccepted: 'USD'
+    currenciesAccepted: ['USD']
   },
   family_restaurant: {
     name: 'Family Table Restaurant',
@@ -109,7 +109,7 @@ const testBusinessInfo: Record<BusinessVariant, BusinessInfo> = {
     acceptsReservations: true,
     hasMenu: 'https://familytable.com/menu',
     paymentAccepted: ['Cash', 'Credit Card'],
-    currenciesAccepted: 'USD'
+    currenciesAccepted: ['USD']
   }
 }
 

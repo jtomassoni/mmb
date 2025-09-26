@@ -318,7 +318,6 @@ export function generateTimeBasedHighlights(
   variant: BusinessVariant,
   timeOfDay: 'morning' | 'afternoon' | 'evening' | 'night'
 ): TodayHighlight[] {
-  const preset = getTodayPreset(variant)
   const timeBasedHighlights: TodayHighlight[] = []
   
   switch (variant) {

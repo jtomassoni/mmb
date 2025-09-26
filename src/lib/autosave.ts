@@ -132,10 +132,10 @@ export class AutosaveManager {
       
       if (response.success) {
         this.handleSaveSuccess(response.data)
-      } else if (response.conflict) {
+      } else if (response.conflict && response.conflictData) {
         this.handleConflict(response.conflictData)
       } else {
-        this.handleSaveError(response.error)
+        this.handleSaveError(response.error || 'Unknown error')
       }
     } catch (error) {
       this.handleSaveError(error instanceof Error ? error.message : 'Unknown error')

@@ -81,7 +81,8 @@ export const broncosGames2025: BroncosGame[] = [
     opponent: 'New York Jets',
     homeAway: 'home',
     mainDish: 'Sliders',
-    description: 'Week 4 - Broncos vs Jets. Slider Sunday! We\'re making mini burgers with all the toppings. Bring a side or dessert to share.'
+    description: 'Week 4 - Broncos vs Jets. Slider Sunday! We\'re making mini burgers with all the toppings. Bring a side or dessert to share.',
+    whatWeProvide: 'Mini burgers with all the toppings'
   },
   {
     id: 'broncos-raiders-week5',
@@ -90,7 +91,8 @@ export const broncosGames2025: BroncosGame[] = [
     opponent: 'Las Vegas Raiders',
     homeAway: 'home',
     mainDish: 'Pizza',
-    description: 'Week 5 - Broncos vs Raiders. Pizza party! We\'ll have multiple pizza varieties. Bring a side or dessert to complete the feast.'
+    description: 'Week 5 - Broncos vs Raiders. Pizza party! We\'ll have multiple pizza varieties. Bring a side or dessert to complete the feast.',
+    whatWeProvide: 'Multiple pizza varieties'
   },
   {
     id: 'broncos-chargers-week6',
@@ -99,7 +101,8 @@ export const broncosGames2025: BroncosGame[] = [
     opponent: 'Los Angeles Chargers',
     homeAway: 'away',
     mainDish: 'Nachos',
-    description: 'Week 6 - Broncos vs Chargers. Loaded nachos for everyone! We\'re serving up the works. Bring a side or dessert to share.'
+    description: 'Week 6 - Broncos vs Chargers. Loaded nachos for everyone! We\'re serving up the works. Bring a side or dessert to share.',
+    whatWeProvide: 'Loaded nachos with all the works'
   },
   {
     id: 'broncos-saints-week7',
@@ -108,7 +111,8 @@ export const broncosGames2025: BroncosGame[] = [
     opponent: 'New Orleans Saints',
     homeAway: 'home',
     mainDish: 'Breakfast Bar',
-    description: 'Week 7 - Broncos vs Saints. Brunch game! We\'re doing a breakfast bar with eggs, bacon, and more. Bring a side or dessert.'
+    description: 'Week 7 - Broncos vs Saints. Brunch game! We\'re doing a breakfast bar with eggs, bacon, and more. Bring a side or dessert.',
+    whatWeProvide: 'Breakfast bar with eggs, bacon, and more'
   },
   {
     id: 'broncos-browns-week8',
@@ -117,7 +121,8 @@ export const broncosGames2025: BroncosGame[] = [
     opponent: 'Cleveland Browns',
     homeAway: 'away',
     mainDish: 'Taco Bar',
-    description: 'Week 8 - Broncos vs Browns. Taco time again! We\'re bringing back the taco bar. Bring your favorite side or dessert.'
+    description: 'Week 8 - Broncos vs Browns. Taco time again! We\'re bringing back the taco bar. Bring your favorite side or dessert.',
+    whatWeProvide: 'Taco bar with all the fixings'
   },
   {
     id: 'broncos-chiefs-week9',
@@ -126,7 +131,8 @@ export const broncosGames2025: BroncosGame[] = [
     opponent: 'Kansas City Chiefs',
     homeAway: 'home',
     mainDish: 'Pulled Pork',
-    description: 'Week 9 - Broncos vs Chiefs. Rivalry game! Pulled pork sandwiches for the big game. Bring a side or dessert to share.'
+    description: 'Week 9 - Broncos vs Chiefs. Rivalry game! Pulled pork sandwiches for the big game. Bring a side or dessert to share.',
+    whatWeProvide: 'Pulled pork sandwiches'
   },
   {
     id: 'broncos-bills-week10',
@@ -135,7 +141,8 @@ export const broncosGames2025: BroncosGame[] = [
     opponent: 'Buffalo Bills',
     homeAway: 'away',
     mainDish: 'Pasta Bar',
-    description: 'Week 10 - Broncos vs Bills. Pasta night! We\'ll have multiple pasta options. Bring a side or dessert to complete the meal.'
+    description: 'Week 10 - Broncos vs Bills. Pasta night! We\'ll have multiple pasta options. Bring a side or dessert to complete the meal.',
+    whatWeProvide: 'Multiple pasta options'
   },
   {
     id: 'broncos-dolphins-week11',
@@ -144,7 +151,8 @@ export const broncosGames2025: BroncosGame[] = [
     opponent: 'Miami Dolphins',
     homeAway: 'home',
     mainDish: 'Sliders',
-    description: 'Week 11 - Broncos vs Dolphins. Slider Sunday! Mini burgers with all the fixings. Bring a side or dessert to share.'
+    description: 'Week 11 - Broncos vs Dolphins. Slider Sunday! Mini burgers with all the fixings. Bring a side or dessert to share.',
+    whatWeProvide: 'Mini burgers with all the fixings'
   },
   {
     id: 'broncos-panthers-week12',
@@ -153,7 +161,8 @@ export const broncosGames2025: BroncosGame[] = [
     opponent: 'Carolina Panthers',
     homeAway: 'away',
     mainDish: 'Pizza',
-    description: 'Week 12 - Broncos vs Panthers. Pizza party! Multiple pizza varieties for everyone. Bring a side or dessert to share.'
+    description: 'Week 12 - Broncos vs Panthers. Pizza party! Multiple pizza varieties for everyone. Bring a side or dessert to share.',
+    whatWeProvide: 'Multiple pizza varieties'
   },
   {
     id: 'broncos-texans-week13',
@@ -162,7 +171,8 @@ export const broncosGames2025: BroncosGame[] = [
     opponent: 'Houston Texans',
     homeAway: 'home',
     mainDish: 'Nachos',
-    description: 'Week 13 - Broncos vs Texans. Loaded nachos! We\'re serving up the works. Bring a side or dessert to complete the spread.'
+    description: 'Week 13 - Broncos vs Texans. Loaded nachos! We\'re serving up the works. Bring a side or dessert to complete the spread.',
+    whatWeProvide: 'Loaded nachos with all the works'
   },
   {
     id: 'broncos-jaguars-week14',
@@ -171,7 +181,8 @@ export const broncosGames2025: BroncosGame[] = [
     opponent: 'Jacksonville Jaguars',
     homeAway: 'away',
     mainDish: 'Breakfast Bar',
-    description: 'Week 14 - Broncos vs Jaguars. Brunch game! Breakfast bar with eggs, bacon, and more. Bring a side or dessert to share.'
+    description: 'Week 14 - Broncos vs Jaguars. Brunch game! Breakfast bar with eggs, bacon, and more. Bring a side or dessert to share.',
+    whatWeProvide: 'Breakfast bar with eggs, bacon, and more'
   },
   {
     id: 'broncos-colts-week15',
@@ -180,7 +191,8 @@ export const broncosGames2025: BroncosGame[] = [
     opponent: 'Indianapolis Colts',
     homeAway: 'home',
     mainDish: 'Taco Bar',
-    description: 'Week 15 - Broncos vs Colts. Taco time! We\'re bringing back the taco bar. Bring your favorite side or dessert.'
+    description: 'Week 15 - Broncos vs Colts. Taco time! We\'re bringing back the taco bar. Bring your favorite side or dessert.',
+    whatWeProvide: 'Taco bar with all the fixings'
   },
   {
     id: 'broncos-titans-week16',
@@ -189,7 +201,8 @@ export const broncosGames2025: BroncosGame[] = [
     opponent: 'Tennessee Titans',
     homeAway: 'away',
     mainDish: 'Pulled Pork',
-    description: 'Week 16 - Broncos vs Titans. Pulled pork sandwiches for the holiday game! Bring a side or dessert to share.'
+    description: 'Week 16 - Broncos vs Titans. Pulled pork sandwiches for the holiday game! Bring a side or dessert to share.',
+    whatWeProvide: 'Pulled pork sandwiches'
   },
   {
     id: 'broncos-chiefs-week17',
@@ -198,7 +211,8 @@ export const broncosGames2025: BroncosGame[] = [
     opponent: 'Kansas City Chiefs',
     homeAway: 'home',
     mainDish: 'Pasta Bar',
-    description: 'Week 17 - Broncos vs Chiefs. Season finale! Pasta bar to celebrate the end of the season. Bring a side or dessert.'
+    description: 'Week 17 - Broncos vs Chiefs. Season finale! Pasta bar to celebrate the end of the season. Bring a side or dessert.',
+    whatWeProvide: 'Pasta bar with multiple options'
   },
 
   // Playoff Games (2026)
@@ -209,7 +223,8 @@ export const broncosGames2025: BroncosGame[] = [
     opponent: 'TBD - Wild Card',
     homeAway: 'home',
     mainDish: 'BBQ Ribs',
-    description: 'Wild Card Playoff - Broncos vs TBD. Playoff football! We\'re serving BBQ ribs for the big game. Bring a side or dessert to share.'
+    description: 'Wild Card Playoff - Broncos vs TBD. Playoff football! We\'re serving BBQ ribs for the big game. Bring a side or dessert to share.',
+    whatWeProvide: 'BBQ ribs'
   },
   {
     id: 'broncos-divisional',
@@ -218,7 +233,8 @@ export const broncosGames2025: BroncosGame[] = [
     opponent: 'TBD - Divisional',
     homeAway: 'away',
     mainDish: 'Chili Bar',
-    description: 'Divisional Playoff - Broncos vs TBD. Championship football! We\'re doing a chili bar with all the toppings. Bring a side or dessert.'
+    description: 'Divisional Playoff - Broncos vs TBD. Championship football! We\'re doing a chili bar with all the toppings. Bring a side or dessert.',
+    whatWeProvide: 'Chili bar with all the toppings'
   },
   {
     id: 'broncos-conference',
@@ -227,7 +243,8 @@ export const broncosGames2025: BroncosGame[] = [
     opponent: 'TBD - Conference',
     homeAway: 'home',
     mainDish: 'Wing Bar',
-    description: 'Conference Championship - Broncos vs TBD. AFC Championship! We\'re serving wings in multiple flavors. Bring a side or dessert to share.'
+    description: 'Conference Championship - Broncos vs TBD. AFC Championship! We\'re serving wings in multiple flavors. Bring a side or dessert to share.',
+    whatWeProvide: 'Wings in multiple flavors'
   },
   {
     id: 'broncos-superbowl',
@@ -236,7 +253,8 @@ export const broncosGames2025: BroncosGame[] = [
     opponent: 'TBD - Super Bowl',
     homeAway: 'neutral',
     mainDish: 'Burger Bar',
-    description: 'Super Bowl - Broncos vs TBD. The Big Game! We\'re doing a burger bar with all the fixings. Bring a side or dessert to complete the feast.'
+    description: 'Super Bowl - Broncos vs TBD. The Big Game! We\'re doing a burger bar with all the fixings. Bring a side or dessert to complete the feast.',
+    whatWeProvide: 'Burger bar with all the fixings'
   }
 ];
 

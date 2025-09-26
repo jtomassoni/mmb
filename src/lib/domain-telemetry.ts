@@ -71,8 +71,8 @@ export async function createTelemetryEvent(
     details: event.details ? JSON.parse(event.details) : undefined,
     timestamp: event.timestamp,
     resolved: event.resolved,
-    resolvedAt: event.resolvedAt,
-    resolvedBy: event.resolvedBy
+    resolvedAt: event.resolvedAt || undefined,
+    resolvedBy: event.resolvedBy || undefined
   }
 }
 
@@ -110,7 +110,7 @@ export async function getFailureSummary(domainId: string): Promise<FailureSummar
   failureEvents.forEach(event => {
     failureTypes[event.eventType] = (failureTypes[event.eventType] || 0) + 1
     
-    const errorInfo = getActionableErrorInfo(event.eventType, event.message, event.details)
+    const errorInfo = getActionableErrorInfo(event.eventType as any, event.message, event.details ? JSON.parse(event.details) : undefined)
     if (errorInfo.actionable) {
       actionableErrors.push(errorInfo.message)
       suggestedActions.push(...errorInfo.actions)
@@ -306,8 +306,8 @@ export async function getTelemetryStats(): Promise<TelemetryStats> {
       details: event.details ? JSON.parse(event.details) : undefined,
       timestamp: event.timestamp,
       resolved: event.resolved,
-      resolvedAt: event.resolvedAt,
-      resolvedBy: event.resolvedBy
+      resolvedAt: event.resolvedAt || undefined,
+      resolvedBy: event.resolvedBy || undefined
     })),
     domainsWithIssues,
     averageResolutionTime
@@ -369,7 +369,7 @@ export async function getDomainEvents(domainId: string): Promise<TelemetryEvent[
     details: event.details ? JSON.parse(event.details) : undefined,
     timestamp: event.timestamp,
     resolved: event.resolved,
-    resolvedAt: event.resolvedAt,
-    resolvedBy: event.resolvedBy
+    resolvedAt: event.resolvedAt || undefined,
+    resolvedBy: event.resolvedBy || undefined
   }))
 }

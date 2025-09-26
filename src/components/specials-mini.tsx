@@ -10,6 +10,7 @@ interface Special {
   description: string | null
   price: string | null
   isActive: boolean
+  image?: string
 }
 
 export default function SpecialsMini() {

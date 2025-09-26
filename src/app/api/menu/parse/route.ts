@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
             price: item.price,
             category: section.name,
             isAvailable: item.isAvailable,
-            allergens: item.allergens || [],
+            allergens: Array.isArray(item.allergens) ? item.allergens.join(', ') : (item.allergens || ''),
             calories: item.calories || null,
             imageUrl: item.imageUrl || null,
             source: 'ocr'
@@ -92,9 +92,11 @@ export async function POST(request: NextRequest) {
     await prisma.auditLog.create({
       data: {
         userId: session.user.id,
+        userRole: 'STAFF',
         siteId: siteId,
         action: 'PARSE_MENU',
-        details: JSON.stringify({
+        resource: 'MENU',
+        metadata: JSON.stringify({
           fileName: file.name,
           fileSize: file.size,
           fileType: file.type,

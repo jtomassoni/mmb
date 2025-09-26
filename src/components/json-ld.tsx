@@ -18,7 +18,7 @@ export default function JsonLd({ hostname }: JsonLdProps) {
         return
       }
 
-      const structuredData = {
+      const structuredData: any = {
         '@context': 'https://schema.org',
         '@type': 'Restaurant',
         name: site.name,

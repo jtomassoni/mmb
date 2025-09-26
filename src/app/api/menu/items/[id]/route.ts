@@ -5,7 +5,7 @@ import { prisma } from '../../../../../lib/prisma'
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await getServerSession(authOptions)
   
@@ -14,7 +14,7 @@ export async function PATCH(
   }
 
   try {
-    const { id } = params
+    const { id } = await params
     const data = await request.json()
 
     // Get the menu item
@@ -52,9 +52,12 @@ export async function PATCH(
     await prisma.auditLog.create({
       data: {
         userId: session.user.id,
+        userRole: 'STAFF',
         siteId: menuItem.siteId,
         action: 'UPDATE_MENU_ITEM',
-        details: JSON.stringify({
+        resource: 'MENU_ITEM',
+        resourceId: id,
+        metadata: JSON.stringify({
           itemId: id,
           itemName: menuItem.name,
           changes: data
@@ -71,8 +74,8 @@ export async function PATCH(
 }
 
 export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await getServerSession(authOptions)
   
@@ -81,7 +84,7 @@ export async function DELETE(
   }
 
   try {
-    const { id } = params
+    const { id } = await params
 
     // Get the menu item
     const menuItem = await prisma.menuItem.findUnique({
@@ -114,9 +117,12 @@ export async function DELETE(
     await prisma.auditLog.create({
       data: {
         userId: session.user.id,
+        userRole: 'STAFF',
         siteId: menuItem.siteId,
         action: 'DELETE_MENU_ITEM',
-        details: JSON.stringify({
+        resource: 'MENU_ITEM',
+        resourceId: id,
+        metadata: JSON.stringify({
           itemId: id,
           itemName: menuItem.name
         })

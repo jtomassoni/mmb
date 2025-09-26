@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-// import { AnalyticsService } from '../../../lib/analytics'
-// import { getSiteIdFromHost } from '../../../lib/site'
+import { AnalyticsService } from '../../../../lib/analytics'
+import { getSiteIdFromHost } from '../../../../lib/site'
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,7 +18,6 @@ export async function POST(request: NextRequest) {
     const userAgent = request.headers.get('user-agent') || undefined
     const ipAddress = request.headers.get('x-forwarded-for') || 
                      request.headers.get('x-real-ip') || 
-                     request.ip || 
                      undefined
     const referrer = request.headers.get('referer') || undefined
 

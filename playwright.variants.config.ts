@@ -41,9 +41,6 @@ export default defineConfig({
     /* Record video on failure */
     video: 'retain-on-failure',
     
-    /* Disable animations for consistent snapshots */
-    reducedMotion: 'reduce',
-    
     /* Set consistent viewport for snapshots */
     viewport: { width: 1200, height: 800 },
     

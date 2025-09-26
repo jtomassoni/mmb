@@ -10,7 +10,7 @@ export async function GET() {
     const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
     const last7dEdits = await prisma.auditLog.count({
       where: {
-        createdAt: {
+        timestamp: {
           gte: sevenDaysAgo
         }
       }

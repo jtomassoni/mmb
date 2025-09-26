@@ -40,6 +40,24 @@ export async function getSiteByHostname(hostname: string) {
   }
 }
 
+export async function getSiteIdFromHost(hostname: string): Promise<string | null> {
+  try {
+    const domain = await prisma.domain.findUnique({
+      where: {
+        hostname: hostname.toLowerCase()
+      },
+      select: {
+        siteId: true
+      }
+    })
+
+    return domain?.siteId || null
+  } catch (error) {
+    console.error('Error fetching site ID from hostname:', error)
+    return null
+  }
+}
+
 export function getHostnameFromRequest(request: Request): string {
   const host = request.headers.get('host') || ''
   return host.toLowerCase()

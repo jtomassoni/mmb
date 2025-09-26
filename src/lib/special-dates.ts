@@ -92,9 +92,7 @@ export const DEFAULT_SPECIAL_DATE_RULES: SpecialDateRule[] = [
 
 // Helper functions for special dates
 export class SpecialDatesService {
-  static isSpecialDate(date: Date): SpecialDate | null {
-    const dateStr = date.toISOString().split('T')[0]
-    
+  static isSpecialDate(_date: Date): SpecialDate | null {
     // Check for specific special dates
     // This would typically query a database
     // For now, we'll use a simple check
@@ -179,25 +177,25 @@ export class SpecialDatesService {
 // API endpoints for managing special dates
 export const SPECIAL_DATES_API = {
   // Get all special dates for a date range
-  getSpecialDates: async (startDate: string, endDate: string): Promise<SpecialDate[]> => {
+  getSpecialDates: async (_startDate: string, _endDate: string): Promise<SpecialDate[]> => {
     // Implementation would fetch from database
     return []
   },
 
   // Create a new special date
-  createSpecialDate: async (specialDate: Omit<SpecialDate, 'id' | 'createdAt' | 'updatedAt'>): Promise<SpecialDate> => {
+  createSpecialDate: async (_specialDate: Omit<SpecialDate, 'id' | 'createdAt' | 'updatedAt'>): Promise<SpecialDate> => {
     // Implementation would save to database
     throw new Error('Not implemented')
   },
 
   // Update an existing special date
-  updateSpecialDate: async (id: string, updates: Partial<SpecialDate>): Promise<SpecialDate> => {
+  updateSpecialDate: async (_id: string, _updates: Partial<SpecialDate>): Promise<SpecialDate> => {
     // Implementation would update database
     throw new Error('Not implemented')
   },
 
   // Delete a special date
-  deleteSpecialDate: async (id: string): Promise<void> => {
+  deleteSpecialDate: async (_id: string): Promise<void> => {
     // Implementation would delete from database
     throw new Error('Not implemented')
   },
@@ -208,7 +206,7 @@ export const SPECIAL_DATES_API = {
   },
 
   // Create a new special date rule
-  createSpecialDateRule: async (rule: Omit<SpecialDateRule, 'id'>): Promise<SpecialDateRule> => {
+  createSpecialDateRule: async (_rule: Omit<SpecialDateRule, 'id'>): Promise<SpecialDateRule> => {
     // Implementation would save to database
     throw new Error('Not implemented')
   }

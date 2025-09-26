@@ -52,14 +52,6 @@ export default function SelfServeEditor({
   const canCreate = hasPermission(userRole, resource, 'create')
   const canDelete = hasPermission(userRole, resource, 'delete')
 
-  if (!canEdit && !canCreate) {
-    return (
-      <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-        <p className="text-red-800">You don't have permission to edit this resource.</p>
-      </div>
-    )
-  }
-
   // Autosave configuration
   const autosaveOptions = {
     resource,
@@ -183,6 +175,14 @@ export default function SelfServeEditor({
       autosaveState.resolveConflict(resolution)
     }
   }, [autosaveState])
+
+  if (!canEdit && !canCreate) {
+    return (
+      <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+        <p className="text-red-800">You don't have permission to edit this resource.</p>
+      </div>
+    )
+  }
 
   // Render field
   const renderField = useCallback((field: EditorField) => {

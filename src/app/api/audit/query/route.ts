@@ -57,7 +57,7 @@ export async function GET(request: NextRequest) {
     const entries = await prisma.auditLog.findMany({
       where,
       orderBy: {
-        [query.orderBy]: query.orderDirection
+        [query.orderBy as string]: query.orderDirection
       },
       skip: query.offset,
       take: query.limit
@@ -91,7 +91,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       entries: transformedEntries,
       total,
-      hasMore: query.offset + query.limit < total,
+      hasMore: (query.offset || 0) + (query.limit || 10) < total,
       query
     })
 

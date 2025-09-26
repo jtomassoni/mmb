@@ -454,7 +454,22 @@ export function useAuditLog() {
   const logAction = React.useCallback((
     action: string,
     resource: string,
-    options: Parameters<typeof createAuditLogEntry>[2] = {}
+    options: {
+      userId?: string
+      userRole?: UserRole
+      resourceId?: string
+      siteId?: string
+      siteName?: string
+      oldValue?: Record<string, any>
+      newValue?: Record<string, any>
+      success?: boolean
+      errorMessage?: string
+      ipAddress?: string
+      userAgent?: string
+      metadata?: Record<string, any>
+      userEmail?: string
+      userName?: string
+    } = {}
   ) => {
     const entry = createAuditLogEntry(
       options.userId || 'current-user',

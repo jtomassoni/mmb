@@ -1118,3 +1118,270 @@ export function getVariantInfo(variant: BusinessVariant): {
   
   return variants[variant]
 }
+
+/**
+ * Generate component-specific tokens
+ */
+export function generateComponentTokens(variant: BusinessVariant): Record<string, any> {
+  const tokens = getDesignTokens(variant)
+  
+  return {
+    button: {
+      primary: {
+        backgroundColor: tokens.colors.primary[600],
+        color: tokens.colors.neutral[50],
+        padding: `${tokens.spacing.sm} ${tokens.spacing.lg}`,
+        borderRadius: tokens.spacing.md,
+        fontSize: tokens.typography.fontSize.base,
+        fontWeight: tokens.typography.fontWeight.semibold,
+        fontFamily: tokens.typography.fontFamily.accent,
+        letterSpacing: tokens.typography.letterSpacing.wide,
+        boxShadow: tokens.shadows.md,
+        border: 'none',
+        cursor: 'pointer',
+        transition: 'all 0.2s ease'
+      },
+      secondary: {
+        backgroundColor: 'transparent',
+        color: tokens.colors.primary[600],
+        padding: `${tokens.spacing.sm} ${tokens.spacing.lg}`,
+        borderRadius: tokens.spacing.md,
+        fontSize: tokens.typography.fontSize.base,
+        fontWeight: tokens.typography.fontWeight.semibold,
+        fontFamily: tokens.typography.fontFamily.accent,
+        letterSpacing: tokens.typography.letterSpacing.wide,
+        border: `2px solid ${tokens.colors.primary[600]}`,
+        cursor: 'pointer',
+        transition: 'all 0.2s ease'
+      }
+    },
+    card: {
+      backgroundColor: tokens.colors.neutral[50],
+      padding: tokens.spacing.lg,
+      borderRadius: tokens.spacing.lg,
+      boxShadow: tokens.shadows.lg,
+      color: tokens.colors.neutral[700],
+      fontFamily: tokens.typography.fontFamily.body
+    },
+    input: {
+      backgroundColor: tokens.colors.neutral[50],
+      padding: tokens.spacing.sm,
+      borderRadius: tokens.spacing.md,
+      fontSize: tokens.typography.fontSize.base,
+      fontFamily: tokens.typography.fontFamily.body,
+      border: `1px solid ${tokens.colors.neutral[300]}`,
+      color: tokens.colors.neutral[700],
+      boxShadow: tokens.shadows.sm
+    },
+    heading: {
+      fontFamily: tokens.typography.fontFamily.heading,
+      fontSize: tokens.typography.fontSize['4xl'],
+      fontWeight: tokens.typography.fontWeight.bold,
+      lineHeight: tokens.typography.lineHeight.tight,
+      letterSpacing: tokens.typography.letterSpacing.tight,
+      color: tokens.colors.primary[900]
+    },
+    subheading: {
+      fontFamily: tokens.typography.fontFamily.heading,
+      fontSize: tokens.typography.fontSize['2xl'],
+      fontWeight: tokens.typography.fontWeight.semibold,
+      lineHeight: tokens.typography.lineHeight.snug,
+      color: tokens.colors.primary[800]
+    },
+    body: {
+      fontFamily: tokens.typography.fontFamily.body,
+      fontSize: tokens.typography.fontSize.base,
+      fontWeight: tokens.typography.fontWeight.normal,
+      lineHeight: tokens.typography.lineHeight.normal,
+      color: tokens.colors.neutral[700]
+    }
+  }
+}
+
+/**
+ * Generate responsive typography tokens
+ */
+export function generateResponsiveTypography(variant: BusinessVariant): Record<string, any> {
+  const tokens = getDesignTokens(variant)
+  
+  return {
+    mobile: {
+      heading: {
+        fontSize: tokens.typography.fontSize['2xl'],
+        lineHeight: tokens.typography.lineHeight.tight
+      },
+      subheading: {
+        fontSize: tokens.typography.fontSize.xl,
+        lineHeight: tokens.typography.lineHeight.snug
+      },
+      body: {
+        fontSize: tokens.typography.fontSize.sm,
+        lineHeight: tokens.typography.lineHeight.normal
+      }
+    },
+    tablet: {
+      heading: {
+        fontSize: tokens.typography.fontSize['3xl'],
+        lineHeight: tokens.typography.lineHeight.tight
+      },
+      subheading: {
+        fontSize: tokens.typography.fontSize['2xl'],
+        lineHeight: tokens.typography.lineHeight.snug
+      },
+      body: {
+        fontSize: tokens.typography.fontSize.base,
+        lineHeight: tokens.typography.lineHeight.normal
+      }
+    },
+    desktop: {
+      heading: {
+        fontSize: tokens.typography.fontSize['4xl'],
+        lineHeight: tokens.typography.lineHeight.tight
+      },
+      subheading: {
+        fontSize: tokens.typography.fontSize['2xl'],
+        lineHeight: tokens.typography.lineHeight.snug
+      },
+      body: {
+        fontSize: tokens.typography.fontSize.base,
+        lineHeight: tokens.typography.lineHeight.normal
+      }
+    }
+  }
+}
+
+/**
+ * Generate dark mode tokens
+ */
+export function generateDarkModeTokens(variant: BusinessVariant): Record<string, any> {
+  const tokens = getDesignTokens(variant)
+  
+  return {
+    button: {
+      primary: {
+        backgroundColor: tokens.colors.primary[500],
+        color: tokens.colors.neutral[900],
+        padding: `${tokens.spacing.sm} ${tokens.spacing.lg}`,
+        borderRadius: tokens.spacing.md,
+        fontSize: tokens.typography.fontSize.base,
+        fontWeight: tokens.typography.fontWeight.semibold,
+        fontFamily: tokens.typography.fontFamily.accent,
+        letterSpacing: tokens.typography.letterSpacing.wide,
+        boxShadow: tokens.shadows.lg,
+        border: 'none',
+        cursor: 'pointer',
+        transition: 'all 0.2s ease'
+      }
+    },
+    card: {
+      backgroundColor: tokens.colors.neutral[800],
+      padding: tokens.spacing.lg,
+      borderRadius: tokens.spacing.lg,
+      boxShadow: tokens.shadows.xl,
+      color: tokens.colors.neutral[200],
+      fontFamily: tokens.typography.fontFamily.body
+    },
+    input: {
+      backgroundColor: tokens.colors.neutral[800],
+      padding: tokens.spacing.sm,
+      borderRadius: tokens.spacing.md,
+      fontSize: tokens.typography.fontSize.base,
+      fontFamily: tokens.typography.fontFamily.body,
+      border: `1px solid ${tokens.colors.neutral[600]}`,
+      color: tokens.colors.neutral[200],
+      boxShadow: tokens.shadows.md
+    },
+    heading: {
+      fontFamily: tokens.typography.fontFamily.heading,
+      fontSize: tokens.typography.fontSize['4xl'],
+      fontWeight: tokens.typography.fontWeight.bold,
+      lineHeight: tokens.typography.lineHeight.tight,
+      letterSpacing: tokens.typography.letterSpacing.tight,
+      color: tokens.colors.neutral[100]
+    },
+    subheading: {
+      fontFamily: tokens.typography.fontFamily.heading,
+      fontSize: tokens.typography.fontSize['2xl'],
+      fontWeight: tokens.typography.fontWeight.semibold,
+      lineHeight: tokens.typography.lineHeight.snug,
+      color: tokens.colors.neutral[200]
+    },
+    body: {
+      fontFamily: tokens.typography.fontFamily.body,
+      fontSize: tokens.typography.fontSize.base,
+      fontWeight: tokens.typography.fontWeight.normal,
+      lineHeight: tokens.typography.lineHeight.normal,
+      color: tokens.colors.neutral[300]
+    }
+  }
+}
+
+/**
+ * Generate accessible tokens with high contrast
+ */
+export function generateAccessibleTokens(variant: BusinessVariant): Record<string, any> {
+  const tokens = getDesignTokens(variant)
+  
+  return {
+    button: {
+      primary: {
+        backgroundColor: tokens.colors.primary[700],
+        color: tokens.colors.neutral[50],
+        padding: `${tokens.spacing.md} ${tokens.spacing.xl}`,
+        borderRadius: tokens.spacing.md,
+        fontSize: tokens.typography.fontSize.lg,
+        fontWeight: tokens.typography.fontWeight.bold,
+        fontFamily: tokens.typography.fontFamily.accent,
+        letterSpacing: tokens.typography.letterSpacing.wide,
+        boxShadow: tokens.shadows.lg,
+        border: `2px solid ${tokens.colors.primary[800]}`,
+        cursor: 'pointer',
+        transition: 'all 0.3s ease',
+        minHeight: '44px',
+        minWidth: '44px'
+      }
+    },
+    card: {
+      backgroundColor: tokens.colors.neutral[50],
+      padding: tokens.spacing.xl,
+      borderRadius: tokens.spacing.lg,
+      boxShadow: tokens.shadows.xl,
+      color: tokens.colors.neutral[800],
+      fontFamily: tokens.typography.fontFamily.body,
+      border: `2px solid ${tokens.colors.neutral[200]}`
+    },
+    input: {
+      backgroundColor: tokens.colors.neutral[50],
+      padding: tokens.spacing.md,
+      borderRadius: tokens.spacing.md,
+      fontSize: tokens.typography.fontSize.lg,
+      fontFamily: tokens.typography.fontFamily.body,
+      border: `3px solid ${tokens.colors.neutral[400]}`,
+      color: tokens.colors.neutral[800],
+      boxShadow: tokens.shadows.md,
+      minHeight: '44px'
+    },
+    heading: {
+      fontFamily: tokens.typography.fontFamily.heading,
+      fontSize: tokens.typography.fontSize['5xl'],
+      fontWeight: tokens.typography.fontWeight.extrabold,
+      lineHeight: tokens.typography.lineHeight.tight,
+      letterSpacing: tokens.typography.letterSpacing.tight,
+      color: tokens.colors.neutral[900]
+    },
+    subheading: {
+      fontFamily: tokens.typography.fontFamily.heading,
+      fontSize: tokens.typography.fontSize['3xl'],
+      fontWeight: tokens.typography.fontWeight.bold,
+      lineHeight: tokens.typography.lineHeight.snug,
+      color: tokens.colors.neutral[800]
+    },
+    body: {
+      fontFamily: tokens.typography.fontFamily.body,
+      fontSize: tokens.typography.fontSize.lg,
+      fontWeight: tokens.typography.fontWeight.medium,
+      lineHeight: tokens.typography.lineHeight.relaxed,
+      color: tokens.colors.neutral[700]
+    }
+  }
+}

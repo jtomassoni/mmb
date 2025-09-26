@@ -60,17 +60,17 @@ export default function VariantTestWrapper({
       {/* Apply variant-specific styles */}
       <style jsx global>{`
         .variant-${variant} {
-          --variant-primary: ${tokens.colors.primary};
-          --variant-secondary: ${tokens.colors.secondary};
-          --variant-accent: ${tokens.colors.accent};
-          --variant-background: ${tokens.colors.background};
-          --variant-text: ${tokens.colors.text};
-          --variant-heading: ${tokens.colors.heading};
+          --variant-primary: ${tokens.colors.primary[600]};
+          --variant-secondary: ${tokens.colors.secondary[600]};
+          --variant-accent: ${tokens.colors.accent[600]};
+          --variant-background: ${tokens.colors.neutral[50]};
+          --variant-text: ${tokens.colors.neutral[700]};
+          --variant-heading: ${tokens.colors.neutral[900]};
           
-          --variant-font-heading: ${tokens.typography.heading.fontFamily};
-          --variant-font-body: ${tokens.typography.body.fontFamily};
-          --variant-size-heading: ${tokens.typography.heading.fontSize};
-          --variant-size-body: ${tokens.typography.body.fontSize};
+          --variant-font-heading: ${tokens.typography.fontFamily.heading};
+          --variant-font-body: ${tokens.typography.fontFamily.body};
+          --variant-size-heading: ${tokens.typography.fontSize['4xl']};
+          --variant-size-body: ${tokens.typography.fontSize.base};
           
           --variant-spacing-xs: ${tokens.spacing.xs};
           --variant-spacing-sm: ${tokens.spacing.sm};

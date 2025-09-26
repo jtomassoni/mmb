@@ -19,7 +19,7 @@ interface CalendarEvent {
 }
 
 // Mock data - in production this would come from database
-let calendarEvents: CalendarEvent[] = [
+const calendarEvents: CalendarEvent[] = [
   {
     id: '1',
     title: 'Monday Poker Night',

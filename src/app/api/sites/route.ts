@@ -86,9 +86,12 @@ export async function POST(request: NextRequest) {
     await prisma.auditLog.create({
       data: {
         userId: session.user.id,
+        userRole: 'STAFF',
         siteId: site.id,
         action: 'CREATE_SITE',
-        details: JSON.stringify({
+        resource: 'SITE',
+        resourceId: site.id,
+        metadata: JSON.stringify({
           businessType,
           source: 'ai_intake',
           features: Object.keys(siteData).filter(key => 

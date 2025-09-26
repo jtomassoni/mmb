@@ -20,13 +20,13 @@ const sampleData = {
     windows: ["10am–12pm", "3pm–7pm daily"] 
   },
   eventsToday: [
-    { title: "NFL Watch Party", type: "Sport", time: "6:15 PM" },
-    { title: "Music Bingo", type: "Entertainment", time: "8:00 PM" }
+    { title: "NFL Watch Party", type: "Sport" as const, time: "6:15 PM" },
+    { title: "Music Bingo", type: "Entertainment" as const, time: "8:00 PM" }
   ],
   week: {
     Mon: {
       foodSpecial: { title: "Chimichangas Special", desc: "Crispy chimichangas with rice and beans", price: "$10" },
-      events: [{ title: "Poker Night", type: "Entertainment", time: "7:00 PM" }]
+      events: [{ title: "Poker Night", type: "Entertainment" as const, time: "7:00 PM" }]
     },
     Tue: {
       foodSpecial: { title: "Taco Tuesday", desc: "Beef $1.50, chicken/carnitas $2, fish $3" },
@@ -39,15 +39,15 @@ const sampleData = {
     Thu: {
       foodSpecial: { title: "Philly Cheesesteak", desc: "Classic Philly with peppers & onions", price: "$12" },
       drinkSpecial: { title: "Thirsty Thursday", desc: "$1 off all tequila drinks" },
-      events: [{ title: "Music Bingo", type: "Entertainment", time: "8:00 PM" }]
+      events: [{ title: "Music Bingo", type: "Entertainment" as const, time: "8:00 PM" }]
     },
     Fri: {
       foodSpecial: { title: "Friday Night Specials", desc: "Check our menu" },
-      events: [{ title: "Weekend Karaoke", type: "Entertainment", time: "9:00 PM" }]
+      events: [{ title: "Weekend Karaoke", type: "Entertainment" as const, time: "9:00 PM" }]
     },
     Sat: {
       foodSpecial: { title: "Saturday Specials", desc: "Check our menu" },
-      events: [{ title: "Weekend Karaoke", type: "Entertainment", time: "9:00 PM" }]
+      events: [{ title: "Weekend Karaoke", type: "Entertainment" as const, time: "9:00 PM" }]
     },
     Sun: {
       foodSpecial: { title: "Sunday Funday", desc: "Open until sports games end" },

@@ -3,16 +3,30 @@
 import { useState } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-// import { BusinessType, getBusinessTypeDisplayName } from '../../lib/ai-intake'
-// import AIIntakeChat from '../../components/ai-intake-chat'
-// import SitePreview from '../../components/site-preview'
+
+// Define types locally since imports are commented out
+type BusinessType = 'dive_bar' | 'cafe' | 'fine_dining' | 'sports_bar' | 'family_restaurant' | 'brewery' | 'pizzeria' | 'food_truck'
+
+const getBusinessTypeDisplayName = (businessType: BusinessType): string => {
+  const displayNames: Record<BusinessType, string> = {
+    dive_bar: 'Dive Bar',
+    cafe: 'Café',
+    fine_dining: 'Fine Dining',
+    sports_bar: 'Sports Bar',
+    family_restaurant: 'Family Restaurant',
+    brewery: 'Brewery',
+    pizzeria: 'Pizzeria',
+    food_truck: 'Food Truck'
+  }
+  return displayNames[businessType]
+}
 
 export default function AIIntakeWizard() {
   const { data: session, status } = useSession()
   const router = useRouter()
   const [selectedBusinessType, setSelectedBusinessType] = useState<BusinessType | null>(null)
   const [showPreview, setShowPreview] = useState(false)
-  const [previewData, setPreviewData] = useState<Record<string, any> | null>(null)
+  const [previewData, setPreviewData] = useState<Record<string, unknown> | null>(null)
   const [isCreating, setIsCreating] = useState(false)
 
   // Redirect if not authenticated
@@ -44,12 +58,12 @@ export default function AIIntakeWizard() {
     setSelectedBusinessType(businessType)
   }
 
-  const handlePreview = (answers: Record<string, any>) => {
+  const handlePreview = (answers: Record<string, unknown>) => {
     setPreviewData(answers)
     setShowPreview(true)
   }
 
-  const handleComplete = async (answers: Record<string, any>) => {
+  const handleComplete = async (answers: Record<string, unknown>) => {
     setIsCreating(true)
     try {
       // Create the site
@@ -102,7 +116,10 @@ export default function AIIntakeWizard() {
             <p className="text-gray-600">Here's how your website will look to customers</p>
           </div>
           
-          <SitePreview data={previewData} businessType={selectedBusinessType!} />
+          {/* <SitePreview data={previewData} businessType={selectedBusinessType!} /> */}
+          <div className="p-8 text-center text-gray-500">
+            Site preview component not available
+          </div>
         </div>
       </div>
     )
@@ -120,17 +137,20 @@ export default function AIIntakeWizard() {
               ← Back to Business Type Selection
             </button>
             <h1 className="text-3xl font-bold text-gray-900">
-              {getBusinessTypeDisplayName(selectedBusinessType)} Setup
+              Business Setup
             </h1>
             <p className="text-gray-600">Let's chat about your business and create your website</p>
           </div>
           
           <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-            <AIIntakeChat
+            {/* <AIIntakeChat
               businessType={selectedBusinessType}
               onPreview={handlePreview}
               onComplete={handleComplete}
-            />
+            /> */}
+            <div className="p-8 text-center text-gray-500">
+              AI intake chat component not available
+            </div>
           </div>
         </div>
       </div>

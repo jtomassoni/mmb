@@ -46,7 +46,7 @@ export function validateVercelEnv(): VercelEnvValidationResult {
   const config: Partial<VercelEnvConfig> = {}
 
   // Check required variables
-  for (const [key, description] of Object.entries(requiredVars)) {
+  for (const [key] of Object.entries(requiredVars)) {
     const value = process.env[key]
     
     if (!value) {
@@ -61,7 +61,7 @@ export function validateVercelEnv(): VercelEnvValidationResult {
   }
 
   // Check optional variables
-  for (const [key, description] of Object.entries(optionalVars)) {
+  for (const [key] of Object.entries(optionalVars)) {
     const value = process.env[key]
     
     if (value) {

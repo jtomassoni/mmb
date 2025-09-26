@@ -226,7 +226,7 @@ function TodayTimeline({ data }: { data: SnapshotData }) {
         <div className="overflow-x-auto snap-x snap-mandatory">
           <div className="flex gap-4 pb-4" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
             {allItems.map((item, index) => {
-              const startTime = item.time ? parseTime(item.time) : null
+              const startTime = 'time' in item && item.time ? parseTime(item.time) : null
               const status = startTime ? getStatus(currentTime, startTime) : "Upcoming"
               
               return (
@@ -246,13 +246,13 @@ function TodayTimeline({ data }: { data: SnapshotData }) {
                   </div>
                   
                   <h3 className="font-semibold text-gray-900 mb-1">{item.title}</h3>
-                  <p className="text-sm text-gray-600 mb-2">{item.desc}</p>
+                  <p className="text-sm text-gray-600 mb-2">{'desc' in item ? item.desc : ''}</p>
                   
-                  {item.time && (
+                  {'time' in item && item.time && (
                     <div className="text-sm text-gray-500">{item.time}</div>
                   )}
                   
-                  {item.price && (
+                  {'price' in item && item.price && (
                     <div className="text-sm font-semibold text-emerald-600">{item.price}</div>
                   )}
                 </div>
@@ -311,38 +311,38 @@ function TabbedWeek({ data }: { data: SnapshotData }) {
         </div>
 
         {/* Tab Content */}
-        {activeTab && data.week?.[activeTab] && (
+        {activeTab && data.week?.[activeTab as keyof typeof data.week] && (
           <div className="bg-white rounded-2xl shadow-lg p-6">
             <h3 className="text-xl font-semibold text-gray-900 mb-4">{activeTab}day Specials</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Food Special */}
-              {data.week[activeTab].foodSpecial && (
+              {data.week[activeTab as keyof typeof data.week].foodSpecial && (
                 <div className="bg-gray-50 rounded-xl p-4">
                   <h4 className="font-semibold text-gray-900 mb-2">Food Special</h4>
                   <div className="text-gray-700">
-                    <div className="font-medium">{data.week[activeTab].foodSpecial?.title}</div>
-                    {data.week[activeTab].foodSpecial?.desc && (
-                      <div className="text-sm mt-1">{data.week[activeTab].foodSpecial?.desc}</div>
+                    <div className="font-medium">{data.week[activeTab as keyof typeof data.week].foodSpecial?.title}</div>
+                    {data.week[activeTab as keyof typeof data.week].foodSpecial?.desc && (
+                      <div className="text-sm mt-1">{data.week[activeTab as keyof typeof data.week].foodSpecial?.desc}</div>
                     )}
-                    {data.week[activeTab].foodSpecial?.price && (
-                      <div className="text-emerald-600 font-semibold mt-1">{data.week[activeTab].foodSpecial?.price}</div>
+                    {data.week[activeTab as keyof typeof data.week].foodSpecial?.price && (
+                      <div className="text-emerald-600 font-semibold mt-1">{data.week[activeTab as keyof typeof data.week].foodSpecial?.price}</div>
                     )}
                   </div>
                 </div>
               )}
 
               {/* Drink Special */}
-              {data.week[activeTab].drinkSpecial && (
+              {data.week[activeTab as keyof typeof data.week].drinkSpecial && (
                 <div className="bg-gray-50 rounded-xl p-4">
                   <h4 className="font-semibold text-gray-900 mb-2">Drink Special</h4>
                   <div className="text-gray-700">
-                    <div className="font-medium">{data.week[activeTab].drinkSpecial?.title}</div>
-                    {data.week[activeTab].drinkSpecial?.desc && (
-                      <div className="text-sm mt-1">{data.week[activeTab].drinkSpecial?.desc}</div>
+                    <div className="font-medium">{data.week[activeTab as keyof typeof data.week].drinkSpecial?.title}</div>
+                    {data.week[activeTab as keyof typeof data.week].drinkSpecial?.desc && (
+                      <div className="text-sm mt-1">{data.week[activeTab as keyof typeof data.week].drinkSpecial?.desc}</div>
                     )}
-                    {data.week[activeTab].drinkSpecial?.price && (
-                      <div className="text-emerald-600 font-semibold mt-1">{data.week[activeTab].drinkSpecial?.price}</div>
+                    {data.week[activeTab as keyof typeof data.week].drinkSpecial?.price && (
+                      <div className="text-emerald-600 font-semibold mt-1">{data.week[activeTab as keyof typeof data.week].drinkSpecial?.price}</div>
                     )}
                   </div>
                 </div>
@@ -350,11 +350,11 @@ function TabbedWeek({ data }: { data: SnapshotData }) {
             </div>
 
             {/* Events */}
-            {data.week[activeTab].events && data.week[activeTab].events!.length > 0 && (
+            {data.week[activeTab as keyof typeof data.week].events && data.week[activeTab as keyof typeof data.week].events!.length > 0 && (
               <div className="mt-6">
                 <h4 className="font-semibold text-gray-900 mb-3">Events</h4>
                 <div className="space-y-2">
-                  {data.week[activeTab].events!.map((event, index) => (
+                  {data.week[activeTab as keyof typeof data.week].events!.map((event, index) => (
                     <div key={index} className="flex items-center gap-3 bg-gray-50 rounded-lg p-3">
                       <span className="text-lg">{getEventIcon(event.type)}</span>
                       <div className="flex-1">

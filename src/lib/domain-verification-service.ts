@@ -92,7 +92,11 @@ export async function createVerificationAttempt(
     }
   )
   
-  return attempt
+  return {
+    ...attempt,
+    status: attempt.status as 'pending' | 'verified' | 'failed' | 'timeout',
+    error: attempt.error || undefined
+  }
 }
 
 /**
@@ -402,8 +406,12 @@ export async function getDomainVerificationStatus(domainId: string): Promise<{
   }
   
   return {
-    status: latestAttempt.status as any,
-    attempt: latestAttempt,
+    status: latestAttempt.status as 'verified' | 'pending' | 'failed' | 'timeout' | 'not_started',
+    attempt: {
+      ...latestAttempt,
+      status: latestAttempt.status as 'pending' | 'verified' | 'failed' | 'timeout',
+      error: latestAttempt.error || undefined
+    },
     nextRetryAt: latestAttempt.status === 'pending' ? latestAttempt.nextRetryAt : undefined,
     error: latestAttempt.error || undefined
   }
@@ -429,7 +437,7 @@ export async function cancelVerificationAttempt(domainId: string): Promise<void>
  * Gets all active verification attempts
  */
 export async function getActiveVerificationAttempts(): Promise<VerificationAttempt[]> {
-  return prisma.verificationAttempt.findMany({
+  const attempts = await prisma.verificationAttempt.findMany({
     where: {
       status: 'pending'
     },
@@ -440,4 +448,10 @@ export async function getActiveVerificationAttempts(): Promise<VerificationAttem
       nextRetryAt: 'asc'
     }
   })
+
+  return attempts.map(attempt => ({
+    ...attempt,
+    status: attempt.status as 'pending' | 'verified' | 'failed' | 'timeout',
+    error: attempt.error || undefined
+  }))
 }
