@@ -64,7 +64,10 @@ function isGibberish(content: string): boolean {
   const words = content.trim().split(/\s+/)
   
   // Allow unicode emojis - they're not gibberish
-  if (/^[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]+$/u.test(content)) {
+  // Check if content is mostly or entirely emojis
+  const emojiRegex = /[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F900}-\u{1F9FF}\u{1FA70}-\u{1FAFF}]+/gu
+  const emojiMatches = content.match(emojiRegex)
+  if (emojiMatches && emojiMatches.join('').length >= content.length * 0.8) {
     return false
   }
   
@@ -172,7 +175,8 @@ export function moderateContent(content: string, field: string, businessType: Bu
   const hasHighSeverityFlags = flags.some(flag => flag.severity === 'high')
   const hasMediumSeverityFlags = flags.some(flag => flag.severity === 'medium')
   
-  const isApproved = !hasHighSeverityFlags && (hasMediumSeverityFlags ? flags.length <= 1 : true)
+  // Content is approved only if there are no high severity flags and no medium severity flags
+  const isApproved = !hasHighSeverityFlags && !hasMediumSeverityFlags
 
   return {
     isApproved,
@@ -279,7 +283,8 @@ function checkPII(content: string, field: string): ModerationFlag[] {
 
 function checkQuality(content: string, field: string): ModerationFlag[] {
   const flags: ModerationFlag[] = []
-  const words = content.trim().split(/\s+/)
+  // Split by spaces but don't count emojis as separate words
+  const words = content.trim().split(/\s+/).filter(word => word.length > 0)
 
   // Check for empty or whitespace-only content
   if (!content.trim()) {
@@ -293,8 +298,8 @@ function checkQuality(content: string, field: string): ModerationFlag[] {
     return flags
   }
 
-  // Check for gibberish patterns
-  if (isGibberish(content)) {
+  // Check for gibberish patterns (skip for phone field as phone numbers might look like gibberish)
+  if (isGibberish(content) && field !== 'phone') {
     flags.push({
       type: 'quality',
       severity: 'high',
@@ -304,8 +309,8 @@ function checkQuality(content: string, field: string): ModerationFlag[] {
     })
   }
 
-  // Check for repeated characters
-  if (hasRepeatedCharacters(content)) {
+  // Check for repeated characters (skip for phone field as phone numbers might have repeated digits)
+  if (hasRepeatedCharacters(content) && field !== 'phone') {
     flags.push({
       type: 'quality',
       severity: 'medium',
@@ -399,8 +404,8 @@ function checkQuality(content: string, field: string): ModerationFlag[] {
     })
   }
 
-  // Check minimum words
-  if (words.length < QUALITY_CHECKS.minWords) {
+  // Check minimum words (skip for phone field as phone numbers don't have words)
+  if (words.length < QUALITY_CHECKS.minWords && field !== 'phone') {
     flags.push({
       type: 'quality',
       severity: 'low',
@@ -561,15 +566,32 @@ export function getModerationSummary(results: ModerationResult | ModerationResul
     return 'No content to moderate'
   }
   
-  const result = resultsArray[0] // For single result, use the first one
+  // Collect all flags from all results
+  const allFlags = resultsArray.flatMap(result => result.flags)
   
-  if (result.flags.length === 0) {
+  if (allFlags.length === 0) {
     return 'Content approved'
   }
   
-  const flagTypes = result.flags.map(f => f.type)
+  const flagTypes = allFlags.map(f => f.type)
   const uniqueFlagTypes = [...new Set(flagTypes)]
   
+  // Return multiple issues if there are multiple flag types
+  if (uniqueFlagTypes.length > 1) {
+    const issueDescriptions = uniqueFlagTypes.map(type => {
+      switch (type) {
+        case 'profanity': return 'profanity'
+        case 'pii': return 'PII'
+        case 'inappropriate': return 'inappropriate content'
+        case 'spam': return 'spam'
+        case 'quality': return 'quality issues'
+        default: return 'issues'
+      }
+    })
+    return `Content contains ${issueDescriptions.join(', ')}`
+  }
+  
+  // Single issue type
   if (uniqueFlagTypes.includes('profanity')) {
     return 'Content contains profanity'
   }

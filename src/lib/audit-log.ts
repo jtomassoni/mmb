@@ -229,7 +229,12 @@ export class AuditLogService {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`)
       }
 
-      return await response.json()
+      const data = await response.json()
+      return {
+        entries: data.entries,
+        total: data.total,
+        hasMore: data.hasMore
+      }
     } catch (error) {
       console.error('Failed to query audit logs:', error)
       return { entries: [], total: 0, hasMore: false }

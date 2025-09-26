@@ -29,11 +29,12 @@ describe('Domain Verification Service', () => {
   let testSite: any
 
   beforeEach(async () => {
-    // Create test site
+    // Create test site with unique slug
+    const uniqueSlug = `test-site-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
     testSite = await prisma.site.create({
       data: {
         name: 'Test Site',
-        slug: 'test-site',
+        slug: uniqueSlug,
         description: 'Test site for verification'
       }
     })
@@ -381,6 +382,9 @@ describe('Domain Verification Service', () => {
 
   describe('getActiveVerificationAttempts', () => {
     it('should return only pending attempts', async () => {
+      // Clear any existing verification attempts to ensure test isolation
+      await prisma.verificationAttempt.deleteMany({})
+      
       const attempt1 = await createVerificationAttempt(testDomain.id)
       
       // Create another domain and attempt

@@ -46,8 +46,15 @@ const parseTime = (timeStr: string): Date => {
   const [time, period] = timeStr.split(' ')
   const [hours, minutes] = time.split(':').map(Number)
   
+  let adjustedHours = hours
+  if (period === 'PM' && hours !== 12) {
+    adjustedHours = hours + 12
+  } else if (period === 'AM' && hours === 12) {
+    adjustedHours = 0
+  }
+  
   const date = new Date(now)
-  date.setHours(period === 'PM' && hours !== 12 ? hours + 12 : hours, minutes, 0, 0)
+  date.setHours(adjustedHours, minutes, 0, 0)
   
   return date
 }

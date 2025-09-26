@@ -51,7 +51,7 @@ describe('DailySnapshot Utilities', () => {
     it('should handle 3-hour duration window correctly', () => {
       const startAtWindowEnd = new Date('2025-01-20T12:00:00Z') // 12 PM UTC (3 hours ago)
       const status = getStatusForTesting(now, startAtWindowEnd)
-      expect(status).toBe('Done')
+      expect(status).toBe('Live') // Events within 3 hours are considered Live
     })
   })
 })

@@ -14,20 +14,25 @@ describe('Domain Telemetry', () => {
   let testSite: any
 
   beforeEach(async () => {
-    // Create test site
+    // Clear all telemetry events to ensure test isolation
+    await prisma.telemetryEvent.deleteMany({})
+    
+    // Create test site with unique slug
+    const uniqueSlug = `test-site-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
     testSite = await prisma.site.create({
       data: {
         name: 'Test Site',
-        slug: 'test-site',
+        slug: uniqueSlug,
         description: 'Test site for telemetry'
       }
     })
 
-    // Create test domain
+    // Create test domain with unique hostname
+    const uniqueHostname = `test-${Date.now()}-${Math.random().toString(36).substr(2, 9)}.example.com`
     testDomain = await prisma.domain.create({
       data: {
         siteId: testSite.id,
-        hostname: 'test.example.com',
+        hostname: uniqueHostname,
         status: 'PENDING',
         provider: 'VERCEL'
       }
@@ -36,18 +41,22 @@ describe('Domain Telemetry', () => {
 
   afterEach(async () => {
     // Clean up test data
-    await prisma.telemetryEvent.deleteMany({
-      where: { domainId: testDomain.id }
-    })
-    await prisma.verificationAttempt.deleteMany({
-      where: { domainId: testDomain.id }
-    })
-    await prisma.domain.deleteMany({
-      where: { siteId: testSite.id }
-    })
-    await prisma.site.deleteMany({
-      where: { id: testSite.id }
-    })
+    if (testDomain?.id) {
+      await prisma.telemetryEvent.deleteMany({
+        where: { domainId: testDomain.id }
+      })
+      await prisma.verificationAttempt.deleteMany({
+        where: { domainId: testDomain.id }
+      })
+      await prisma.domain.deleteMany({
+        where: { id: testDomain.id }
+      })
+    }
+    if (testSite?.id) {
+      await prisma.site.deleteMany({
+        where: { id: testSite.id }
+      })
+    }
   })
 
   describe('createTelemetryEvent', () => {
@@ -146,7 +155,7 @@ describe('Domain Telemetry', () => {
 
       expect(summary).toBeDefined()
       expect(summary!.domainId).toBe(testDomain.id)
-      expect(summary!.hostname).toBe('test.example.com')
+      expect(summary!.hostname).toBe(testDomain.hostname)
       expect(summary!.totalFailures).toBe(0)
       expect(summary!.actionableErrors).toHaveLength(0)
       expect(summary!.suggestedActions).toHaveLength(0)
