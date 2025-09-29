@@ -8,8 +8,8 @@ export function middleware(req: Request) {
     const host = (req.headers.get('host') || '').toLowerCase();
     
     if (url.pathname.startsWith('/resto-admin') && host !== PLATFORM_HOST) {
-      url.host = PLATFORM_HOST;
-      return NextResponse.redirect(url);
+      const redirectUrl = new URL(url.pathname + url.search, `https://${PLATFORM_HOST}`);
+      return NextResponse.redirect(redirectUrl);
     }
     
     return NextResponse.next();
