@@ -3,19 +3,8 @@ import SpecialsMini from '../components/specials-mini';
 import { DynamicHero } from '../components/dynamic-hero';
 import { getImageAlt } from '../lib/image-alt';
 import { getRandomReviews } from '../lib/reviews-data';
-import { headers } from 'next/headers';
-import { isPlatformHost } from '../lib/site';
-import { redirect } from 'next/navigation';
 
-export default async function Home() {
-  // Check if this is the platform host
-  const headersList = await headers();
-  const host = headersList.get('host') || '';
-  
-  if (isPlatformHost(host)) {
-    // This is the platform host, redirect to login
-    redirect('/login');
-  }
+export default function Home() {
   // Get random reviews for this page load
   const randomReviews = getRandomReviews(2)
   

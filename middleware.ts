@@ -7,9 +7,15 @@ export function middleware(req: Request) {
     const url = new URL(req.url);
     const host = (req.headers.get('host') || '').toLowerCase();
     
-    // Only redirect /resto-admin requests to platform host
+    // Redirect /resto-admin requests to platform host
     if (url.pathname.startsWith('/resto-admin') && host !== PLATFORM_HOST) {
       const redirectUrl = new URL(url.pathname + url.search, `https://${PLATFORM_HOST}`);
+      return NextResponse.redirect(redirectUrl);
+    }
+    
+    // Redirect platform host root to login
+    if (host === PLATFORM_HOST && url.pathname === '/') {
+      const redirectUrl = new URL('/login', url.origin);
       return NextResponse.redirect(redirectUrl);
     }
     
@@ -21,5 +27,5 @@ export function middleware(req: Request) {
 }
 
 export const config = { 
-  matcher: ['/resto-admin/:path*'] 
+  matcher: ['/resto-admin/:path*', '/'] 
 };
