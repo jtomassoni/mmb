@@ -28,12 +28,5 @@
       "path": "/api/cron/health-check",
       "schedule": "*/5 * * * *"
     }
-  ],
-  "env": {
-    "NEXTAUTH_URL": "@nextauth_url",
-    "NEXTAUTH_SECRET": "@nextauth_secret",
-    "DATABASE_URL": "@database_url",
-    "VERCEL_TOKEN": "@vercel_token",
-    "VERCEL_PROJECT_ID": "@vercel_project_id"
-  }
+  ]
 }
