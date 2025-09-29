@@ -7,6 +7,7 @@ export function middleware(req: Request) {
     const url = new URL(req.url);
     const host = (req.headers.get('host') || '').toLowerCase();
     
+    // Only redirect /resto-admin requests
     if (url.pathname.startsWith('/resto-admin') && host !== PLATFORM_HOST) {
       const redirectUrl = new URL(url.pathname + url.search, `https://${PLATFORM_HOST}`);
       return NextResponse.redirect(redirectUrl);
@@ -20,5 +21,5 @@ export function middleware(req: Request) {
 }
 
 export const config = { 
-  matcher: ['/:path*'] 
+  matcher: ['/resto-admin/:path*'] 
 };
