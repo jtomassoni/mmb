@@ -13,9 +13,9 @@ export function middleware(req: Request) {
       return NextResponse.redirect(redirectUrl);
     }
     
-    // Redirect platform host root to login
+    // Redirect platform host root to platform-home
     if (host === PLATFORM_HOST && url.pathname === '/') {
-      const redirectUrl = new URL('/login', url.origin);
+      const redirectUrl = new URL('/platform-home', url.origin);
       return NextResponse.redirect(redirectUrl);
     }
     
