@@ -63,17 +63,19 @@ const superadminPermissions: Permission[] = [
 ]
 
 const ownerPermissions: Permission[] = [
-  // Full access to their own site
+  // Full access to their own site (same as superadmin except user management)
   { resource: RESOURCES.SITE, action: ACTIONS.MANAGE },
   { resource: RESOURCES.EVENTS, action: ACTIONS.MANAGE },
   { resource: RESOURCES.SPECIALS, action: ACTIONS.MANAGE },
   { resource: RESOURCES.MENU, action: ACTIONS.MANAGE },
   { resource: RESOURCES.HOURS, action: ACTIONS.MANAGE },
   { resource: RESOURCES.PROFILE, action: ACTIONS.MANAGE },
-  { resource: RESOURCES.USERS, action: ACTIONS.MANAGE },
-  { resource: RESOURCES.ANALYTICS, action: ACTIONS.READ },
+  { resource: RESOURCES.DOMAINS, action: ACTIONS.MANAGE },
+  { resource: RESOURCES.ANALYTICS, action: ACTIONS.MANAGE },
   { resource: RESOURCES.SETTINGS, action: ACTIONS.MANAGE },
-  { resource: RESOURCES.AUDIT, action: ACTIONS.READ }
+  { resource: RESOURCES.AUDIT, action: ACTIONS.MANAGE },
+  { resource: RESOURCES.BACKUP, action: ACTIONS.MANAGE }
+  // Note: Owners cannot manage users - only superadmins can
 ]
 
 const managerPermissions: Permission[] = [
@@ -111,12 +113,12 @@ const rolePermissions: RolePermissions[] = [
   {
     role: 'SUPERADMIN',
     permissions: superadminPermissions,
-    description: 'Full system access across all sites and features'
+    description: 'Full system access including user management and all sites'
   },
   {
     role: 'OWNER',
     permissions: ownerPermissions,
-    description: 'Full access to own restaurant site and management'
+    description: 'Full access to restaurant site management (same as superadmin except user management)'
   },
   {
     role: 'MANAGER',

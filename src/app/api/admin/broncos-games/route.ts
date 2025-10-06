@@ -2,15 +2,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '../../../../lib/auth'
-import { broncosGames2025, BroncosGame, mainDishOptions } from '../../../../lib/broncos-events'
+import { broncosSchedule2025, BroncosGame } from '../../../../lib/broncos-schedule'
 
 // GET - Fetch all Broncos games
 export async function GET() {
   try {
     return NextResponse.json({
       success: true,
-      games: broncosGames2025,
-      mainDishOptions
+      games: broncosSchedule2025
     })
   } catch (error) {
     console.error('Error fetching Broncos games:', error)
@@ -52,15 +51,8 @@ export async function PUT(request: NextRequest) {
         return obj
       }, {} as any)
 
-    if (updates.mainDish && !mainDishOptions.includes(updates.mainDish)) {
-      return NextResponse.json(
-        { success: false, error: 'Invalid main dish option' },
-        { status: 400 }
-      )
-    }
-
     // Find the game
-    const gameIndex = broncosGames2025.findIndex(game => game.id === gameId)
+    const gameIndex = broncosSchedule2025.findIndex(game => game.id === gameId)
     if (gameIndex === -1) {
       return NextResponse.json(
         { success: false, error: 'Game not found' },
@@ -70,7 +62,7 @@ export async function PUT(request: NextRequest) {
 
     // Update the game (in a real app, this would be a database update)
     const updatedGame = {
-      ...broncosGames2025[gameIndex],
+      ...broncosSchedule2025[gameIndex],
       ...filteredUpdates
     }
 

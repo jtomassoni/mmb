@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { getBroncosGameToday } from '@/lib/broncos-schedule'
 import { SpecialDatesService } from '../lib/special-dates'
 
 interface Event {
@@ -23,7 +24,7 @@ interface DailySnapshot {
   specialDayInfo?: string
 }
 
-export function DynamicHero() {
+export function DynamicHero({ siteDescription }: { siteDescription?: string }) {
   const [dailySnapshot, setDailySnapshot] = useState<DailySnapshot | null>(null)
   const [currentTime, setCurrentTime] = useState(new Date())
 
@@ -109,12 +110,14 @@ export function DynamicHero() {
       })
     }
     
-    // Broncos Games (when in season)
-    if (dayOfWeek === 0) {
+    // Broncos Games - Check if there's a Broncos game today
+    const broncosGameToday = getBroncosGameToday()
+    if (broncosGameToday) {
       events.push({
-        id: 'broncos-game',
-        title: 'Broncos Game Watch Party',
-        description: 'Game day potluck - bring a side!',
+        id: broncosGameToday.id,
+        title: `Broncos vs ${broncosGameToday.opponent}`,
+        description: broncosGameToday.description,
+        time: broncosGameToday.time,
         type: 'broncos',
         priority: 'high'
       })
@@ -123,86 +126,90 @@ export function DynamicHero() {
     return events
   }
 
+  // Calculate initial snapshot immediately
+  const calculateDailySnapshot = (): DailySnapshot => {
+    const now = new Date()
+    const dayOfWeek = now.getDay() // 0 = Sunday, 1 = Monday, etc.
+    
+    // Use special dates service to get hours
+    const hoursInfo = SpecialDatesService.calculateHoursForDate(now)
+    const isOpen = SpecialDatesService.isCurrentlyOpen(now)
+
+    // Daily food specials
+    const foodSpecials = {
+      0: "Sunday Funday - Open until sports games end",
+      1: "Chimichangas Special - Crispy chimichangas with rice and beans",
+      2: "Taco Tuesday - Beef $1.50, chicken/carnitas $2, fish $3",
+      3: "Southwest Eggrolls - Crispy eggrolls with rice and beans",
+      4: "Philly Cheesesteak - Classic Philly with peppers and onions",
+      5: "Friday Night Specials - Check our menu",
+      6: "Saturday Specials - Check our menu"
+    }
+
+    // Daily drink specials
+    const drinkSpecials = {
+      0: "Mexican Beer Specials - Dos Equis, Modelo, Pacifico, Corona $4",
+      1: "BOGO first round during happy hour",
+      2: "Mexican Beer Specials - Dos Equis, Modelo, Pacifico, Corona $4",
+      3: "Whiskey Wednesday - $1 off all whiskey drinks",
+      4: "Thirsty Thursday - $1 off all tequila drinks",
+      5: "BOGO first round during happy hour",
+      6: "BOGO first round during happy hour"
+    }
+
+    // Get structured events (exclude daily specials which are already shown above)
+    const allEvents = getTodaysStructuredEvents()
+    const events = allEvents.filter(event => 
+      !event.title.toLowerCase().includes('thirsty thursday') &&
+      !event.title.toLowerCase().includes('whiskey wednesday') &&
+      !event.title.toLowerCase().includes('taco tuesday') &&
+      !event.title.toLowerCase().includes('philly cheesesteak') &&
+      !event.title.toLowerCase().includes('chimichangas') &&
+      !event.title.toLowerCase().includes('southwest eggrolls')
+    )
+
+    let status = isOpen ? "We're Open!" : "We're Closed"
+    let nextOpenTime = ""
+
+    if (!isOpen) {
+      // Calculate next opening time
+      const tomorrow = new Date(now)
+      tomorrow.setDate(tomorrow.getDate() + 1)
+      const tomorrowHours = SpecialDatesService.calculateHoursForDate(tomorrow)
+      
+      if (tomorrowHours.open !== '00:00') {
+        nextOpenTime = SpecialDatesService.formatTime(tomorrowHours.open)
+      }
+    }
+
+    return {
+      isOpen,
+      status,
+      nextOpenTime,
+      foodSpecial: foodSpecials[dayOfWeek as keyof typeof foodSpecials],
+      drinkSpecial: drinkSpecials[dayOfWeek as keyof typeof drinkSpecials],
+      events,
+      isSpecialDay: hoursInfo.isSpecial,
+      specialDayInfo: hoursInfo.isSpecial ? `Special hours: ${SpecialDatesService.formatTime(hoursInfo.open)} - ${SpecialDatesService.formatTime(hoursInfo.close)}` : undefined
+    }
+  }
+
+  // Initialize with immediate calculation
+  const initialSnapshot = calculateDailySnapshot()
+
   useEffect(() => {
     // Update time every minute
     const timer = setInterval(() => {
       setCurrentTime(new Date())
     }, 60000)
 
-    // Calculate daily snapshot
-    const calculateDailySnapshot = (): DailySnapshot => {
-      const now = new Date()
-      const dayOfWeek = now.getDay() // 0 = Sunday, 1 = Monday, etc.
-      
-      // Use special dates service to get hours
-      const hoursInfo = SpecialDatesService.calculateHoursForDate(now)
-      const isOpen = SpecialDatesService.isCurrentlyOpen(now)
-
-      // Daily food specials
-      const foodSpecials = {
-        0: "Sunday Funday - Open until sports games end",
-        1: "Chimichangas Special - Crispy chimichangas with rice and beans",
-        2: "Taco Tuesday - Beef $1.50, chicken/carnitas $2, fish $3",
-        3: "Southwest Eggrolls - Crispy eggrolls with rice and beans",
-        4: "Philly Cheesesteak - Classic Philly with peppers and onions",
-        5: "Friday Night Specials - Check our menu",
-        6: "Saturday Specials - Check our menu"
-      }
-
-      // Daily drink specials
-      const drinkSpecials = {
-        0: "Mexican Beer Specials - Dos Equis, Modelo, Pacifico, Corona $4",
-        1: "BOGO first round during happy hour",
-        2: "Mexican Beer Specials - Dos Equis, Modelo, Pacifico, Corona $4",
-        3: "Whiskey Wednesday - $1 off all whiskey drinks",
-        4: "Thirsty Thursday - $1 off all tequila drinks",
-        5: "BOGO first round during happy hour",
-        6: "BOGO first round during happy hour"
-      }
-
-      // Get structured events (exclude daily specials which are already shown above)
-      const allEvents = getTodaysStructuredEvents()
-      const events = allEvents.filter(event => 
-        !event.title.toLowerCase().includes('thirsty thursday') &&
-        !event.title.toLowerCase().includes('whiskey wednesday') &&
-        !event.title.toLowerCase().includes('taco tuesday') &&
-        !event.title.toLowerCase().includes('philly cheesesteak') &&
-        !event.title.toLowerCase().includes('chimichangas') &&
-        !event.title.toLowerCase().includes('southwest eggrolls')
-      )
-
-      let status = isOpen ? "We're Open!" : "We're Closed"
-      let nextOpenTime = ""
-
-      if (!isOpen) {
-        // Calculate next opening time
-        const tomorrow = new Date(now)
-        tomorrow.setDate(tomorrow.getDate() + 1)
-        const tomorrowHours = SpecialDatesService.calculateHoursForDate(tomorrow)
-        
-        if (tomorrowHours.open !== '00:00') {
-          nextOpenTime = SpecialDatesService.formatTime(tomorrowHours.open)
-        }
-      }
-
-      return {
-        isOpen,
-        status,
-        nextOpenTime,
-        foodSpecial: foodSpecials[dayOfWeek as keyof typeof foodSpecials],
-        drinkSpecial: drinkSpecials[dayOfWeek as keyof typeof drinkSpecials],
-        events,
-        isSpecialDay: hoursInfo.isSpecial,
-        specialDayInfo: hoursInfo.isSpecial ? `Special hours: ${SpecialDatesService.formatTime(hoursInfo.open)} - ${SpecialDatesService.formatTime(hoursInfo.close)}` : undefined
-      }
-    }
-
-    setDailySnapshot(calculateDailySnapshot())
+    setDailySnapshot(initialSnapshot)
 
     return () => clearInterval(timer)
-  }, [currentTime])
+  }, [])
 
-  if (!dailySnapshot) return null
+  // Use initial snapshot if state hasn't been set yet
+  const snapshot = dailySnapshot || initialSnapshot
 
   const getTypeIcon = (type: string) => {
     switch (type) {
@@ -253,14 +260,14 @@ export function DynamicHero() {
                   <span className="block font-light">Monaghan's</span>
                   <span className="block text-green-400 font-black">BAR & GRILL</span>
                 </h1>
-                <p className="text-xl text-gray-300 font-light tracking-wide font-sans">Where Denver comes to eat, drink, and play</p>
+                <p className="text-xl text-gray-300 font-light tracking-wide font-sans">{siteDescription || "Where Denver comes to eat, drink, and play"}</p>
               </div>
 
               {/* Special Day Notice */}
-              {dailySnapshot.isSpecialDay && dailySnapshot.specialDayInfo && (
+              {snapshot.isSpecialDay && snapshot.specialDayInfo && (
                 <div className="bg-yellow-500/20 backdrop-blur-sm rounded-lg p-4 border border-yellow-400/30">
                   <p className="text-yellow-100 font-medium">Special Hours Today</p>
-                  <p className="text-yellow-100 text-sm">{dailySnapshot.specialDayInfo}</p>
+                  <p className="text-yellow-100 text-sm">{snapshot.specialDayInfo}</p>
                 </div>
               )}
 
@@ -280,11 +287,11 @@ export function DynamicHero() {
               
               {/* Status */}
               <div className="flex items-center mb-4 pb-4 border-b border-white/20">
-                <div className={`w-3 h-3 rounded-full mr-3 ${dailySnapshot.isOpen ? 'bg-green-400' : 'bg-red-400'}`}></div>
+                <div className={`w-3 h-3 rounded-full mr-3 ${snapshot.isOpen ? 'bg-green-400' : 'bg-red-400'}`}></div>
                 <h3 className="text-lg font-semibold text-white">
-                  {dailySnapshot.status}
-                  {!dailySnapshot.isOpen && dailySnapshot.nextOpenTime && (
-                    <span className="ml-2 text-gray-300 text-sm">• Opens {dailySnapshot.nextOpenTime}</span>
+                  {snapshot.status}
+                  {!snapshot.isOpen && snapshot.nextOpenTime && (
+                    <span className="ml-2 text-gray-300 text-sm">• Opens {snapshot.nextOpenTime}</span>
                   )}
                 </h3>
               </div>
@@ -292,12 +299,12 @@ export function DynamicHero() {
               <div className="space-y-3">
                 <div>
                   <h4 className="text-sm font-medium text-white/90 mb-1">Food Special</h4>
-                  <p className="text-white text-sm">{dailySnapshot.foodSpecial}</p>
+                  <p className="text-white text-sm">{snapshot.foodSpecial}</p>
                 </div>
 
                 <div>
                   <h4 className="text-sm font-medium text-white/90 mb-1">Drink Special</h4>
-                  <p className="text-white text-sm">{dailySnapshot.drinkSpecial}</p>
+                  <p className="text-white text-sm">{snapshot.drinkSpecial}</p>
                 </div>
 
                 <div>
@@ -305,11 +312,11 @@ export function DynamicHero() {
                   <p className="text-white text-sm">10am-12pm & 3pm-7pm daily</p>
                 </div>
 
-                {dailySnapshot.events.length > 0 && (
+                {snapshot.events.length > 0 && (
                   <div>
                     <h4 className="text-sm font-medium text-white/90 mb-2">Events Today</h4>
                     <div className="space-y-1">
-                      {dailySnapshot.events.map((event, index) => (
+                      {snapshot.events.map((event, index) => (
                         <div key={index} className="flex items-center text-sm text-gray-300">
                           <span className="text-xs text-gray-400 mr-2">{getTypeIcon(event.type)}</span>
                           <span className="flex-1">{event.title}</span>

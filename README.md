@@ -1,36 +1,128 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Monaghan's Bar & Grill - Restaurant CMS
 
-## Getting Started
+A single-tenant restaurant management system built with Next.js, featuring menu management, events, specials, and analytics.
 
-First, run the development server:
+## 🚀 Quick Start
+
+### Local Development
+
+1. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+2. **Set up the database:**
+   ```bash
+   npm run db:seed
+   ```
+
+3. **Start the development server:**
+   ```bash
+   npm run dev
+   ```
+
+4. **Open [http://localhost:3000](http://localhost:3000)** to see the restaurant site
+5. **Login at [http://localhost:3000/login](http://localhost:3000/login)** to access the CMS
+
+### Test Credentials
+
+All users have the password: **`test`**
+
+- **Super Admin:** `superadmin@monaghans.com` - Full system access
+- **Owner:** `owner@monaghans.com` - Full site management
+- **Manager:** `manager@monaghans.com` - Content management
+- **Staff:** `staff@monaghans.com` - Read-only access
+
+## 📋 Features
+
+- **Menu Management** - Upload and manage menu items
+- **Events Calendar** - Create and manage events
+- **Specials** - Manage daily/weekly specials
+- **Analytics** - Track site performance
+- **Role-Based Access** - Different permission levels
+- **Responsive Design** - Works on all devices
+
+## 🚀 Deployment
+
+### Coming Soon Page (Quick Deploy)
+
+Deploy a beautiful "coming soon" page while you work on the CMS:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+./deploy.sh coming-soon
+vercel --prod
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Full CMS Deployment
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+When ready to deploy the complete system:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+./deploy.sh full
+vercel --prod
+```
 
-## Learn More
+**Important:** Make sure to set up your production database and environment variables before deploying the full CMS.
 
-To learn more about Next.js, take a look at the following resources:
+## 🛠️ Development
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Database Commands
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+# Reset and seed database
+npm run db:reset
 
-## Deploy on Vercel
+# Run migrations
+npx prisma migrate dev
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+# View database
+npx prisma studio
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Testing
+
+```bash
+# Run tests
+npm test
+
+# Run Playwright tests
+npm run test:e2e
+```
+
+## 📁 Project Structure
+
+```
+src/
+├── app/                 # Next.js app router pages
+├── components/          # Reusable React components
+├── lib/                 # Utility functions and configurations
+└── hooks/               # Custom React hooks
+
+prisma/
+├── schema.prisma        # Database schema
+└── seed.ts             # Database seeding script
+```
+
+## 🔧 Configuration
+
+- **Database:** SQLite (development) / PostgreSQL (production)
+- **Authentication:** NextAuth.js with credentials
+- **Styling:** Tailwind CSS
+- **Deployment:** Vercel (recommended)
+
+## 📚 Documentation
+
+- [Test Credentials](./docs/PROD_TEST_CREDENTIALS.md)
+- [Deployment Guide](./DEPLOYMENT.md)
+- [Backup Procedures](./docs/BACKUP.md)
+
+## 🎯 Roadmap
+
+- [ ] Multi-tenant support (future)
+- [ ] Advanced analytics
+- [ ] Mobile app
+- [ ] Online ordering integration
+
+---
+
+Built with ❤️ for restaurant owners who want to manage their digital presence easily.

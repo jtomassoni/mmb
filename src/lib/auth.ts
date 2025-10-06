@@ -16,24 +16,31 @@ export const authOptions: NextAuthOptions = {
           return null
         }
 
-        // For MVP, we'll use a simple email-based auth
-        // In production, you'd want proper password hashing
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email }
-        })
+        try {
+          const user = await prisma.user.findUnique({
+            where: { email: credentials.email }
+          })
 
-        if (!user) {
+          if (!user || credentials.password !== user.password) {
+            return null
+          }
+
+          // Check if user is active
+          if (!user.isActive) {
+            console.log(`Login attempt for disabled user: ${user.email}`)
+            return null
+          }
+          
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            image: user.image,
+            role: user.role,
+          }
+        } catch (error) {
+          console.error('Auth error:', error)
           return null
-        }
-
-        // For now, accept any password for existing users
-        // TODO: Implement proper password hashing
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          image: user.image,
-          role: user.role,
         }
       }
     })

@@ -16,13 +16,8 @@ export function getCurrentHost(): string {
 export function getRedirectUrl(role: string, currentHost?: string): string {
   const host = currentHost || getCurrentHost()
   
-  if (role === 'SUPERADMIN') {
-    // SUPERADMIN always goes to platform host
-    return `${getPlatformHost()}/resto-admin`
-  } else {
-    // Other roles go to admin on current host
-    return `${host}/admin`
-  }
+  // All roles go to admin on current host
+  return `${host}/admin`
 }
 
 export function isPlatformHost(host?: string): boolean {

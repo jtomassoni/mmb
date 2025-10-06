@@ -2,6 +2,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { Breadcrumb, breadcrumbConfigs } from '@/components/breadcrumb'
 
 interface CalendarEvent {
   id: string
@@ -216,6 +217,11 @@ export default function CalendarAdmin() {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Breadcrumb */}
+        <div className="mb-6">
+          <Breadcrumb items={breadcrumbConfigs.calendar} />
+        </div>
+
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Calendar Management</h1>
           <p className="mt-2 text-gray-600">

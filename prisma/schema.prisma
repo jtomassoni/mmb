@@ -34,7 +34,12 @@ model User {
   email     String   @unique
   name      String?
   image     String?
+  password  String?  // For MVP testing
   role      Role     @default(STAFF)
+  isActive  Boolean  @default(true)  // For enabling/disabling users
+  disabledAt DateTime?  // When user was disabled
+  disabledBy String?     // Who disabled the user
+  disabledReason String? // Reason for disabling
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -54,6 +59,12 @@ model Site {
   address     String?
   phone       String?
   email       String?
+  timezone    String   @default("America/Denver")  // Company timezone
+  currency    String   @default("USD")             // Company currency
+  latitude    Float?   // GPS latitude
+  longitude   Float?   // GPS longitude
+  googlePlaceId String? // Google Places API place ID
+  googleMapsUrl String? // Google Maps share URL
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -64,6 +75,7 @@ model Site {
   events      Event[]
   specials    Special[]
   menuItems   MenuItem[]
+  menuCategories MenuCategory[]
   auditLogs   AuditLog[]
   healthPings HealthPing[]
   analyticsEvents AnalyticsEvent[]
@@ -169,13 +181,15 @@ model Hours {
 model Event {
   id          String    @id @default(cuid())
   siteId      String
-  title       String
+  name        String
   description String?
   startDate   DateTime
-  endDate     DateTime?
-  isRecurring Boolean   @default(false)
-  dayOfWeek   Int?      // For recurring events: 0 = Sunday, 1 = Monday, etc.
-  time        String?   // "19:00" for recurring events
+  endDate     DateTime
+  startTime   String?   // "19:00"
+  endTime     String?   // "22:00"
+  location    String?   // "Main Dining Room", "Patio", etc.
+  isActive    Boolean   @default(true)
+  image       String?   // Image URL
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
@@ -186,14 +200,18 @@ model Event {
 }
 
 model Special {
-  id          String   @id @default(cuid())
-  siteId      String
-  title       String
-  description String?
-  price       String?
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id           String   @id @default(cuid())
+  siteId       String
+  name         String
+  description  String?
+  price        Float?   // Special price
+  originalPrice Float?  // Original price for comparison
+  startDate    DateTime
+  endDate      DateTime
+  isActive     Boolean  @default(true)
+  image        String?  // Image URL
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   // Relations
   site Site @relation(fields: [siteId], references: [id], onDelete: Cascade)
@@ -236,12 +254,12 @@ model MenuItem {
   siteId      String
   name        String
   description String?
-  price       String
+  price       Float
   category    String
   isAvailable Boolean  @default(true)
+  image       String?  // Image URL
   allergens   String   @default("[]") // JSON array as string
   calories    Int?
-  imageUrl    String?
   source      String   @default("manual") // "manual", "ocr", "import"
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -250,6 +268,21 @@ model MenuItem {
   site Site @relation(fields: [siteId], references: [id], onDelete: Cascade)
 
   @@map("menu_items")
+}
+
+model MenuCategory {
+  id          String   @id @default(cuid())
+  siteId      String
+  name        String
+  description String?
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  site Site @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  @@map("menu_categories")
 }
 
 model HealthPing {

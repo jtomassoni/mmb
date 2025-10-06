@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { broncosGames2025, BroncosGame } from '../../lib/broncos-events'
+import { broncosSchedule2025, BroncosGame } from '../../lib/broncos-schedule'
 
 interface CalendarEvent {
   id: string
@@ -292,18 +292,26 @@ export default function WhatsHappeningPage() {
           {currentWeek.map((day, index) => {
             const today = new Date()
             const isToday = today.getDay() === index
+            const dayDate = new Date(today)
+            dayDate.setDate(today.getDate() - today.getDay() + index)
+            const isPastDay = dayDate < today && !isToday
             
             return (
               <div 
                 key={index} 
                 className={`bg-white rounded-lg shadow-sm overflow-hidden ${
                   isToday ? 'ring-2 ring-green-500 ring-opacity-50 shadow-lg' : ''
-                }`}
+                } ${isPastDay ? 'opacity-60' : ''}`}
               >
-                <div className={`${isToday ? 'bg-green-700' : 'bg-green-600'} text-white p-4 text-center relative`}>
+                <div className={`${isToday ? 'bg-green-700' : isPastDay ? 'bg-gray-500' : 'bg-green-600'} text-white p-4 text-center relative`}>
                   {isToday && (
                     <div className="absolute -top-2 -right-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-md">
                       TODAY
+                    </div>
+                  )}
+                  {isPastDay && (
+                    <div className="absolute -top-2 -right-2 bg-gray-400 text-white text-xs font-bold px-2 py-1 rounded-full shadow-md">
+                      PAST
                     </div>
                   )}
                   <h3 className="font-bold text-lg">{day.day}</h3>
@@ -312,17 +320,17 @@ export default function WhatsHappeningPage() {
               
               <div className="p-4 space-y-3">
                 {day.events.map((event, eventIndex) => (
-                  <div key={eventIndex} className="border-l-4 border-green-200 pl-3">
+                  <div key={eventIndex} className={`border-l-4 pl-3 ${isPastDay ? 'border-gray-200' : 'border-green-200'}`}>
                     <div className="flex items-center gap-2 mb-1">
-                      <span className={`text-xs px-2 py-1 rounded-full ${getTypeColor(event.type)}`}>
+                      <span className={`text-xs px-2 py-1 rounded-full ${isPastDay ? 'bg-gray-100 text-gray-600' : getTypeColor(event.type)}`}>
                         {getTypeIcon(event.type)}
                       </span>
                     </div>
-                    <h4 className="font-semibold text-gray-900 text-sm">{event.title}</h4>
-                    <p className="text-gray-600 text-xs mb-1">{event.time}</p>
-                    <p className="text-gray-700 text-xs">{event.description}</p>
+                    <h4 className={`font-semibold text-sm ${isPastDay ? 'text-gray-500' : 'text-gray-900'}`}>{event.title}</h4>
+                    <p className={`text-xs mb-1 ${isPastDay ? 'text-gray-400' : 'text-gray-600'}`}>{event.time}</p>
+                    <p className={`text-xs ${isPastDay ? 'text-gray-400' : 'text-gray-700'}`}>{event.description}</p>
                     {event.price && (
-                      <p className="text-green-600 font-semibold text-xs mt-1">{event.price}</p>
+                      <p className={`font-semibold text-xs mt-1 ${isPastDay ? 'text-gray-400' : 'text-green-600'}`}>{event.price}</p>
                     )}
                   </div>
                 ))}
@@ -336,7 +344,7 @@ export default function WhatsHappeningPage() {
         <div className="bg-white rounded-lg shadow-lg p-8 mb-12">
           <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Upcoming Broncos Games</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {broncosGames2025
+            {broncosSchedule2025
               .filter(game => new Date(game.date) >= new Date())
               .slice(0, 3)
               .map((game) => (
@@ -354,7 +362,7 @@ export default function WhatsHappeningPage() {
                   </p>
                   <div className="bg-blue-50 p-3 rounded-lg mb-3">
                     <p className="text-sm font-medium text-blue-800 mb-1">We're providing:</p>
-                    <p className="text-sm font-semibold text-blue-700">{game.whatWeProvide || game.mainDish}</p>
+                    <p className="text-sm font-semibold text-blue-700">{game.potluckFood}</p>
                   </div>
                   <div className="text-sm text-gray-700 mb-4 whitespace-pre-line">
                     {game.description}

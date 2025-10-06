@@ -1,5 +1,6 @@
 // src/app/api/public/calendar/route.ts
 import { NextRequest, NextResponse } from 'next/server'
+import { getBroncosGamesForWeek, broncosSchedule2025 } from '@/lib/broncos-schedule'
 
 interface CalendarEvent {
   id: string
@@ -24,7 +25,7 @@ const calendarEvents: CalendarEvent[] = [
     id: '1',
     title: 'Monday Poker Night',
     description: 'Weekly poker tournament with cash prizes',
-    date: '2025-01-20',
+    date: '2025-10-06',
     startTime: '19:00',
     endTime: '23:00',
     type: 'entertainment',
@@ -39,7 +40,7 @@ const calendarEvents: CalendarEvent[] = [
     id: '1b',
     title: 'Chimichangas Special',
     description: 'Crispy chimichangas with rice and beans',
-    date: '2025-01-20',
+    date: '2025-10-06',
     type: 'food',
     isRecurring: true,
     recurringPattern: 'weekly',
@@ -52,7 +53,7 @@ const calendarEvents: CalendarEvent[] = [
     id: '2',
     title: 'Taco Tuesday',
     description: 'Beef tacos $1.50, chicken/carnitas $2, fish $3',
-    date: '2025-01-21',
+    date: '2025-10-07',
     type: 'food',
     isRecurring: true,
     recurringPattern: 'weekly',
@@ -65,7 +66,7 @@ const calendarEvents: CalendarEvent[] = [
     id: '3',
     title: 'Whiskey Wednesday',
     description: '$1 off all whiskey drinks',
-    date: '2025-01-22',
+    date: '2025-10-08',
     type: 'drink',
     isRecurring: true,
     recurringPattern: 'weekly',
@@ -78,7 +79,7 @@ const calendarEvents: CalendarEvent[] = [
     id: '3b',
     title: 'Southwest Eggrolls Special',
     description: 'Crispy eggrolls with rice and beans',
-    date: '2025-01-22',
+    date: '2025-10-08',
     type: 'food',
     isRecurring: true,
     recurringPattern: 'weekly',
@@ -91,7 +92,7 @@ const calendarEvents: CalendarEvent[] = [
     id: '4',
     title: 'Thirsty Thursday - Drink Special',
     description: '$1 off all tequila drinks',
-    date: '2025-01-23',
+    date: '2025-10-09',
     type: 'drink',
     isRecurring: true,
     recurringPattern: 'weekly',
@@ -104,7 +105,7 @@ const calendarEvents: CalendarEvent[] = [
     id: '4b',
     title: 'Philly Cheesesteak Special',
     description: 'Classic Philly cheesesteak with peppers and onions',
-    date: '2025-01-23',
+    date: '2025-10-09',
     type: 'food',
     isRecurring: true,
     recurringPattern: 'weekly',
@@ -117,7 +118,7 @@ const calendarEvents: CalendarEvent[] = [
     id: '4c',
     title: 'Music Bingo',
     description: 'Music Bingo with cash prizes',
-    date: '2025-01-23',
+    date: '2025-10-09',
     startTime: '20:00',
     type: 'entertainment',
     isRecurring: true,
@@ -139,49 +140,18 @@ const calendarEvents: CalendarEvent[] = [
     createdAt: '2025-01-01T00:00:00Z',
     updatedAt: '2025-01-01T00:00:00Z'
   },
-  // Broncos Games
-  {
-    id: 'broncos-titans-week1',
-    title: 'Broncos vs Titans Potluck',
-    description: 'Week 1\n• Broncos vs Titans\n• Community potluck event\n• Bring a side or dessert',
-    date: '2024-09-07',
-    startTime: '13:00',
-    type: 'broncos',
-    isRecurring: false,
-    isActive: true,
-    createdAt: '2025-01-01T00:00:00Z',
-    updatedAt: '2025-01-01T00:00:00Z'
-  },
-  {
-    id: 'broncos-colts-week2',
-    title: 'Broncos vs Colts Potluck',
-    description: 'Week 2\n• Broncos vs Colts\n• Community potluck event\n• Bring your favorite side or dessert',
-    date: '2024-09-14',
-    startTime: '13:00',
-    type: 'broncos',
-    isRecurring: false,
-    isActive: true,
-    createdAt: '2025-01-01T00:00:00Z',
-    updatedAt: '2025-01-01T00:00:00Z'
-  },
-  {
-    id: 'broncos-chargers-week3',
-    title: 'Broncos vs Chargers Potluck',
-    description: 'Week 3\n• Broncos vs Chargers\n• Community potluck event\n• Bring a side or dessert',
-    date: '2024-09-21',
-    startTime: '13:00',
-    type: 'broncos',
-    isRecurring: false,
-    isActive: true,
-    createdAt: '2025-01-01T00:00:00Z',
-    updatedAt: '2025-01-01T00:00:00Z'
-  }
+  // Broncos Games will be added dynamically from broncos-schedule.ts
 ]
 
 // Generate recurring events for the next 30 days
 function generateRecurringEvents(baseEvents: CalendarEvent[]): CalendarEvent[] {
   const generatedEvents: CalendarEvent[] = []
   const today = new Date()
+  
+  // Start from beginning of current week (Sunday) to include past days
+  const startOfWeek = new Date(today)
+  startOfWeek.setDate(today.getDate() - today.getDay())
+  
   const endDate = new Date()
   endDate.setDate(today.getDate() + 30)
 
@@ -192,8 +162,8 @@ function generateRecurringEvents(baseEvents: CalendarEvent[]): CalendarEvent[] {
     }
 
     if (event.recurringPattern === 'weekly' && event.recurringDays) {
-      // Generate weekly recurring events
-      const startDate = new Date(event.date)
+      // Generate weekly recurring events starting from beginning of current week
+      const startDate = new Date(startOfWeek)
       
       for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
         if (event.recurringDays.includes(d.getDay())) {
@@ -206,8 +176,8 @@ function generateRecurringEvents(baseEvents: CalendarEvent[]): CalendarEvent[] {
         }
       }
     } else if (event.recurringPattern === 'daily') {
-      // Generate daily recurring events
-      const startDate = new Date(event.date)
+      // Generate daily recurring events starting from beginning of current week
+      const startDate = new Date(startOfWeek)
       
       for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
         const recurringEvent: CalendarEvent = {
@@ -234,6 +204,25 @@ export async function GET(request: NextRequest) {
 
     // Generate recurring events
     const allEvents = generateRecurringEvents(calendarEvents)
+    
+    // Add Broncos games for the requested date range
+    if (startDate && endDate) {
+      const broncosGames = getBroncosGamesForWeek(startDate, endDate)
+      broncosGames.forEach(game => {
+        allEvents.push({
+          id: game.id,
+          title: `Broncos vs ${game.opponent} Potluck`,
+          description: game.description,
+          date: game.date,
+          startTime: game.time,
+          type: 'broncos',
+          isRecurring: false,
+          isActive: true,
+          createdAt: '2025-01-01T00:00:00Z',
+          updatedAt: '2025-01-01T00:00:00Z'
+        })
+      })
+    }
     
     let filteredEvents = allEvents.filter(event => event.isActive)
 

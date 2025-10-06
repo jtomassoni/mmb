@@ -3,8 +3,13 @@ import SpecialsMini from '../components/specials-mini';
 import { DynamicHero } from '../components/dynamic-hero';
 import { getImageAlt } from '../lib/image-alt';
 import { getRandomReviews } from '../lib/reviews-data';
+import { MenuItemDemo } from '../components/menu-item-demo';
+import { getSiteData } from '../lib/site-data';
 
-export default function Home() {
+export default async function Home() {
+  // Get site data from database
+  const siteData = await getSiteData()
+  
   // Get random reviews for this page load
   const randomReviews = getRandomReviews(2)
   
@@ -12,24 +17,24 @@ export default function Home() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Restaurant",
-    "name": "Monaghan's Bar & Grill",
-    "description": "Where Denver comes to eat, drink, and play",
+    "name": siteData?.name || "Monaghan's Bar & Grill",
+    "description": siteData?.description || "Where Denver comes to eat, drink, and play",
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": "1234 Main Street",
+      "streetAddress": siteData?.address || "123 Main Street",
       "addressLocality": "Denver",
       "addressRegion": "CO",
       "postalCode": "80202"
     },
-    "telephone": "(303) 555-0123",
-    "email": "Monaghanv061586@gmail.com",
+    "telephone": siteData?.phone || "(303) 555-0123",
+    "email": siteData?.email || "info@monaghans.com",
     "url": "https://monaghansbargrill.com",
     "servesCuisine": "American",
     "priceRange": "$$",
     "openingHours": [
-      "Mo-Th 11:00-02:00",
-      "Fr-Sa 11:00-03:00", 
-      "Su 12:00-02:00"
+      "Mo-Th 11:00-22:00",
+      "Fr-Sa 11:00-23:00", 
+      "Su 10:00-21:00"
     ],
     "amenityFeature": [
       "Pool Tables",
@@ -45,20 +50,13 @@ export default function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      {/* Prefetch critical routes for better performance */}
-      <link rel="prefetch" href="/menu" />
-      <link rel="prefetch" href="/specials" />
-      <link rel="prefetch" href="/events" />
-      <link rel="prefetch" href="/reviews" />
-      <link rel="prefetch" href="/about" />
-      
       {/* Preload critical images */}
       <link rel="preload" as="image" href="/pics/hero.png" />
       <link rel="preload" as="image" href="/pics/monaghans-billiards.jpg" />
       <link rel="preload" as="image" href="/pics/monaghans-fish-n-chips.jpg" />
       <div className="min-h-screen bg-gray-50">
       {/* Dynamic Hero Section */}
-      <DynamicHero />
+      <DynamicHero siteDescription={siteData?.description} />
 
       {/* Upcoming Section */}
       <section className="py-16 bg-white">
@@ -260,6 +258,30 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Online Ordering Demo Section */}
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              Online Ordering Coming Soon!
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Experience our new online ordering system. Add items to your cart and see how easy it will be to order from Monaghan's.
+            </p>
+          </div>
+          
+          <div className="flex justify-center">
+            <MenuItemDemo />
+          </div>
+          
+          <div className="mt-8 text-center">
+            <p className="text-sm text-gray-500">
+              For now, please call us at <a href="tel:3035550123" className="text-green-600 hover:text-green-700 font-medium">(303) 555-0123</a> to place your order.
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* Location Section */}
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -267,9 +289,26 @@ export default function Home() {
             <div>
               <h2 className="text-xl font-semibold mb-4 text-gray-900">Location & Hours</h2>
               <div className="space-y-2 text-gray-600">
-                <p>3889 S King St</p>
-                <p>Denver, CO 80236</p>
-                <p>Phone: <a href="tel:3035550123" className="text-green-600 hover:text-green-700">(303) 555-0123</a></p>
+                <p>{siteData?.address || "123 Main Street, Denver, CO 80202"}</p>
+                <p>Phone: <a href={`tel:${siteData?.phone?.replace(/\D/g, '') || '3035550123'}`} className="text-green-600 hover:text-green-700">{siteData?.phone || "(303) 555-0123"}</a></p>
+                
+                {/* Get Directions Button */}
+                {siteData?.googleMapsUrl && (
+                  <div className="mt-4">
+                    <a 
+                      href={siteData.googleMapsUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                      Get Directions
+                    </a>
+                  </div>
+                )}
                 
                 {/* Social Media */}
                 <div className="mt-4">

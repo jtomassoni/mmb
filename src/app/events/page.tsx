@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { broncosGames2025, BroncosGame } from '../../lib/broncos-events'
+import { broncosSchedule2025, BroncosGame } from '../../lib/broncos-schedule'
 
 interface CalendarEvent {
   id: string
@@ -330,7 +330,7 @@ export default function EventsPage() {
               </button>
               <button
                 onClick={() => setBroncosOffset(broncosOffset + 3)}
-                disabled={broncosOffset + 3 >= broncosGames2025.filter(game => new Date(game.date) >= new Date()).length}
+                disabled={broncosOffset + 3 >= broncosSchedule2025.filter(game => new Date(game.date) >= new Date()).length}
                 className="px-3 py-1 bg-gray-200 text-gray-700 rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-300 transition-colors"
               >
                 Next
@@ -343,7 +343,7 @@ export default function EventsPage() {
           </p>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {broncosGames2025
+            {broncosSchedule2025
               .filter(game => new Date(game.date) >= new Date())
               .slice(broncosOffset, broncosOffset + 3)
               .map((game) => (
@@ -371,7 +371,7 @@ export default function EventsPage() {
                   </p>
                   <div className="bg-green-50 p-3 rounded-lg mb-3">
                     <p className="text-sm font-medium text-green-800 mb-1">We're providing:</p>
-                    <p className="text-lg font-semibold text-green-700">{game.whatWeProvide || game.mainDish}</p>
+                    <p className="text-lg font-semibold text-green-700">{game.potluckFood}</p>
                   </div>
                   <div className="text-sm text-gray-600 mb-3 whitespace-pre-line">
                     {game.description}

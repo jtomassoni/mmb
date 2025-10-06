@@ -1,5 +1,4 @@
 import { PrismaClient, Role } from '@prisma/client'
-import bcrypt from 'bcryptjs'
 
 const prisma = new PrismaClient()
 
@@ -15,14 +14,14 @@ async function main() {
       password: 'test'
     },
     {
-      email: 'owner@monaghans.com', 
+      email: 'owner@monaghans.com',
       name: 'Monaghan Owner',
       role: 'OWNER' as Role,
       password: 'test'
     },
     {
       email: 'manager@monaghans.com',
-      name: 'Restaurant Manager', 
+      name: 'Restaurant Manager',
       role: 'MANAGER' as Role,
       password: 'test'
     },
@@ -36,8 +35,6 @@ async function main() {
 
   // Create users
   for (const userData of users) {
-    const hashedPassword = await bcrypt.hash(userData.password, 10)
-    
     const user = await prisma.user.upsert({
       where: { email: userData.email },
       update: {},
@@ -45,8 +42,7 @@ async function main() {
         email: userData.email,
         name: userData.name,
         role: userData.role,
-        // Note: NextAuth doesn't store passwords in our User model
-        // Passwords are handled by the auth provider
+        password: userData.password // Store plain text for MVP testing
       }
     })
     
@@ -60,14 +56,45 @@ async function main() {
     create: {
       name: "Monaghan's Bar & Grill",
       slug: 'monaghans-bargrill',
-      description: 'Your neighborhood bar and grill with great food, drinks, and atmosphere',
-      address: '123 Main Street, Anytown, USA',
-      phone: '(555) 123-4567',
-      email: 'info@monaghans.com'
+      description: 'Your neighborhood bar and grill with great food, drinks, and atmosphere. Join us for live music, trivia nights, and daily specials!',
+      address: '123 Main Street, Denver, CO 80202',
+      phone: '(303) 555-0123',
+      email: 'info@monaghans.com',
+      timezone: 'America/Denver',
+      currency: 'USD',
+      latitude: 39.7392, // Denver coordinates (approximate)
+      longitude: -104.9903,
+      googleMapsUrl: 'https://maps.app.goo.gl/LA2AYUTPUreV9KyJ8'
     }
   })
   
   console.log(`✅ Created site: ${site.name}`)
+
+  // Create business hours
+  const businessHours = [
+    { dayOfWeek: 0, openTime: '10:00', closeTime: '21:00', isClosed: false }, // Sunday
+    { dayOfWeek: 1, openTime: '11:00', closeTime: '22:00', isClosed: false }, // Monday
+    { dayOfWeek: 2, openTime: '11:00', closeTime: '22:00', isClosed: false }, // Tuesday
+    { dayOfWeek: 3, openTime: '11:00', closeTime: '22:00', isClosed: false }, // Wednesday
+    { dayOfWeek: 4, openTime: '11:00', closeTime: '22:00', isClosed: false }, // Thursday
+    { dayOfWeek: 5, openTime: '11:00', closeTime: '23:00', isClosed: false }, // Friday
+    { dayOfWeek: 6, openTime: '10:00', closeTime: '23:00', isClosed: false }, // Saturday
+  ]
+
+  for (const hourData of businessHours) {
+    await prisma.hours.upsert({
+      where: { siteId_dayOfWeek: { siteId: site.id, dayOfWeek: hourData.dayOfWeek } },
+      update: {},
+      create: {
+        siteId: site.id,
+        dayOfWeek: hourData.dayOfWeek,
+        openTime: hourData.openTime,
+        closeTime: hourData.closeTime,
+        isClosed: hourData.isClosed
+      }
+    })
+  }
+  console.log(`✅ Created business hours`)
 
   // Create memberships for non-superadmin users
   const ownerUser = await prisma.user.findUnique({ where: { email: 'owner@monaghans.com' } })
@@ -113,27 +140,30 @@ async function main() {
     console.log(`✅ Created membership for staff`)
   }
 
+
   // Create some sample data
   const sampleEvents = [
     {
       siteId: site.id,
-      title: 'Live Music Friday',
+      name: 'Live Music Friday',
       description: 'Join us for live music every Friday night!',
       startDate: new Date('2025-09-20T19:00:00Z'),
       endDate: new Date('2025-09-20T23:00:00Z'),
-      isRecurring: true,
-      dayOfWeek: 5, // Friday
-      time: '19:00'
+      startTime: '19:00',
+      endTime: '23:00',
+      location: 'Main Dining Room',
+      isActive: true
     },
     {
       siteId: site.id,
-      title: 'Trivia Night',
+      name: 'Trivia Night',
       description: 'Test your knowledge and win prizes!',
       startDate: new Date('2025-09-25T18:00:00Z'),
       endDate: new Date('2025-09-25T21:00:00Z'),
-      isRecurring: true,
-      dayOfWeek: 3, // Wednesday
-      time: '18:00'
+      startTime: '18:00',
+      endTime: '21:00',
+      location: 'Main Dining Room',
+      isActive: true
     }
   ]
 
@@ -147,16 +177,22 @@ async function main() {
   const sampleSpecials = [
     {
       siteId: site.id,
-      title: 'Monday Burger Special',
+      name: 'Monday Burger Special',
       description: 'Get any burger with fries for just $12.99',
-      price: '$12.99',
+      price: 12.99,
+      originalPrice: 16.99,
+      startDate: new Date('2025-01-06T00:00:00Z'),
+      endDate: new Date('2025-01-06T23:59:59Z'),
       isActive: true
     },
     {
       siteId: site.id,
-      title: 'Happy Hour',
+      name: 'Happy Hour',
       description: 'Half price drinks and appetizers',
-      price: '50% off',
+      price: null,
+      originalPrice: null,
+      startDate: new Date('2025-01-06T16:00:00Z'),
+      endDate: new Date('2025-01-06T18:00:00Z'),
       isActive: true
     }
   ]
