@@ -514,3 +514,72 @@ export function useAuditLog() {
 
 // React import for the hook
 import React from 'react'
+
+/**
+ * Simple audit logging function for API routes
+ */
+export async function logAuditEvent(data: {
+  action: string
+  resource: string
+  resourceId?: string
+  userId: string
+  changes?: Record<string, any>
+  metadata?: Record<string, any>
+  previousValues?: Record<string, any>
+}) {
+  try {
+    const { prisma } = await import('./prisma')
+    
+    // Get user info for the audit log
+    const user = await prisma.user.findUnique({
+      where: { id: data.userId },
+      select: { role: true, email: true, name: true }
+    })
+
+    // Get site info if we have a siteId
+    let siteId: string | undefined
+    let siteName: string | undefined
+    
+    if (data.resourceId && data.resource === 'site_settings') {
+      siteId = data.resourceId
+      const site = await prisma.site.findUnique({
+        where: { id: data.resourceId },
+        select: { name: true }
+      })
+      siteName = site?.name
+    }
+
+    // Create audit log entry
+    await prisma.auditLog.create({
+      data: {
+        userId: data.userId,
+        userRole: user?.role || 'STAFF',
+        userEmail: user?.email,
+        userName: user?.name,
+        action: data.action,
+        resource: data.resource,
+        resourceId: data.resourceId,
+        siteId: siteId,
+        siteName: siteName,
+        oldValue: data.previousValues ? JSON.stringify(data.previousValues) : null,
+        newValue: data.changes ? JSON.stringify(data.changes) : null,
+        changes: data.changes ? JSON.stringify(data.changes) : null,
+        success: true,
+        metadata: data.metadata ? JSON.stringify(data.metadata) : null,
+        canRollback: ['UPDATE', 'CREATE', 'DELETE'].includes(data.action.toUpperCase())
+      }
+    })
+    
+    console.log('Audit Event logged:', {
+      timestamp: new Date().toISOString(),
+      action: data.action,
+      resource: data.resource,
+      userId: data.userId
+    })
+    
+    return true
+  } catch (error) {
+    console.error('Failed to log audit event:', error)
+    return false
+  }
+}

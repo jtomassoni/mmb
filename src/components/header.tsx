@@ -7,7 +7,7 @@ import { AccessibilityDropdown } from './accessibility-dropdown'
 import { useCart } from './cart-context'
 import { CartSidebar } from './cart-sidebar'
 
-export function Header() {
+export function HeaderClient({ siteName }: { siteName?: string }) {
   const { data: session, status } = useSession()
   const { totalItems, isOpen, setIsOpen } = useCart()
 
@@ -19,7 +19,7 @@ export function Header() {
             {/* Logo/Brand */}
             <div className="flex-shrink-0">
               <Link href="/" className="text-xl font-bold text-gray-900 hover:text-green-600 transition-all duration-300 hover:scale-105 hover:drop-shadow-lg relative group">
-                Monaghan&apos;s Bar & Grill
+                {siteName || "Monaghan's Bar & Grill"}
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-600 transition-all duration-300 group-hover:w-full"></span>
               </Link>
             </div>

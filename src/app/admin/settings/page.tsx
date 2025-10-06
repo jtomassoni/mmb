@@ -4,6 +4,7 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { Breadcrumb, breadcrumbConfigs } from '@/components/breadcrumb'
+import { useToast } from '@/components/toast'
 
 interface SiteSettings {
   name: string
@@ -31,10 +32,9 @@ interface BusinessHours {
 export default function SettingsPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
+  const { addToast } = useToast()
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
-  const [error, setError] = useState('')
-  const [success, setSuccess] = useState('')
 
   const [siteSettings, setSiteSettings] = useState<SiteSettings>({
     name: '',
@@ -104,8 +104,6 @@ export default function SettingsPage() {
   const handleSiteSettingsSave = async (e: React.FormEvent) => {
     e.preventDefault()
     setSaving(true)
-    setError('')
-    setSuccess('')
 
     try {
       const response = await fetch('/api/admin/site-settings', {
@@ -115,13 +113,28 @@ export default function SettingsPage() {
       })
 
       if (response.ok) {
-        setSuccess('Site settings saved successfully!')
-        setTimeout(() => setSuccess(''), 3000)
+        addToast({
+          type: 'success',
+          title: 'Settings Saved!',
+          message: 'Your restaurant information has been updated successfully.',
+          duration: 4000
+        })
       } else {
-        setError('Failed to save site settings')
+        const errorData = await response.json()
+        addToast({
+          type: 'error',
+          title: 'Save Failed',
+          message: errorData.error || 'Failed to save settings. Please try again.',
+          duration: 6000
+        })
       }
     } catch (error) {
-      setError('Failed to save site settings')
+      addToast({
+        type: 'error',
+        title: 'Save Failed',
+        message: 'Network error. Please check your connection and try again.',
+        duration: 6000
+      })
     } finally {
       setSaving(false)
     }

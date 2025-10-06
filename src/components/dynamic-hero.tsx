@@ -24,7 +24,7 @@ interface DailySnapshot {
   specialDayInfo?: string
 }
 
-export function DynamicHero({ siteDescription }: { siteDescription?: string }) {
+export function DynamicHero({ siteDescription, siteName }: { siteDescription?: string; siteName?: string }) {
   const [dailySnapshot, setDailySnapshot] = useState<DailySnapshot | null>(null)
   const [currentTime, setCurrentTime] = useState(new Date())
 
@@ -257,8 +257,8 @@ export function DynamicHero({ siteDescription }: { siteDescription?: string }) {
             <div className="text-white space-y-10">
               <div>
                 <h1 className="text-7xl lg:text-8xl font-black mb-8 leading-none tracking-tight font-display">
-                  <span className="block font-light">Monaghan's</span>
-                  <span className="block text-green-400 font-black">BAR & GRILL</span>
+                  <span className="block font-light">{siteName?.split(' ')[0] || "Monaghan's"}</span>
+                  <span className="block text-green-400 font-black">{siteName?.split(' ').slice(1).join(' ') || "BAR & GRILL"}</span>
                 </h1>
                 <p className="text-xl text-gray-300 font-light tracking-wide font-sans">{siteDescription || "Where Denver comes to eat, drink, and play"}</p>
               </div>

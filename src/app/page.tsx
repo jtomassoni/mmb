@@ -56,7 +56,7 @@ export default async function Home() {
       <link rel="preload" as="image" href="/pics/monaghans-fish-n-chips.jpg" />
       <div className="min-h-screen bg-gray-50">
       {/* Dynamic Hero Section */}
-      <DynamicHero siteDescription={siteData?.description} />
+      <DynamicHero siteDescription={siteData?.description} siteName={siteData?.name} />
 
       {/* Upcoming Section */}
       <section className="py-16 bg-white">
