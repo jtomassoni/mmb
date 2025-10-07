@@ -12,7 +12,17 @@ export async function GET() {
     }
 
     const events = await prisma.event.findMany({
-      orderBy: { createdAt: 'desc' }
+      where: { siteId: 'cmgfjti600004meoa7n4vy3o8' },
+      include: {
+        eventType: true,
+        images: {
+          orderBy: { sortOrder: 'asc' }
+        },
+        ctas: {
+          where: { isActive: true }
+        }
+      },
+      orderBy: { startDate: 'asc' }
     })
 
     return NextResponse.json({ events })
@@ -30,23 +40,63 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { name, description, startDate, endDate, startTime, endTime, location, isActive, image } = body
+    const { 
+      name, 
+      description, 
+      startDate, 
+      endDate, 
+      startTime, 
+      endTime, 
+      location, 
+      isActive,
+      eventTypeId,
+      price,
+      images,
+      ctas
+    } = body
 
-    if (!name || !startDate || !endDate) {
+    if (!name || !startDate) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
     const event = await prisma.event.create({
       data: {
+        siteId: 'cmgfjti600004meoa7n4vy3o8',
         name,
         description: description || '',
         startDate: new Date(startDate),
-        endDate: new Date(endDate),
+        endDate: endDate ? new Date(endDate) : new Date(startDate),
         startTime: startTime || null,
         endTime: endTime || null,
-        location: location || null,
+        location: location || 'Main Dining Room',
         isActive: isActive !== false,
-        image: image || null
+        eventTypeId: eventTypeId || null,
+        price: price || null,
+        images: images ? {
+          create: images.map((img: any, index: number) => ({
+            url: img.url,
+            alt: img.alt || '',
+            caption: img.caption || '',
+            sortOrder: index
+          }))
+        } : undefined,
+        ctas: ctas ? {
+          create: ctas.map((cta: any) => ({
+            text: cta.text,
+            url: cta.url,
+            type: cta.type || 'external',
+            isActive: true
+          }))
+        } : undefined
+      },
+      include: {
+        eventType: true,
+        images: {
+          orderBy: { sortOrder: 'asc' }
+        },
+        ctas: {
+          where: { isActive: true }
+        }
       }
     })
 
@@ -56,8 +106,21 @@ export async function POST(request: NextRequest) {
       resource: 'events',
       resourceId: event.id,
       userId: session.user.id,
-      changes: { name, startDate, endDate },
-      metadata: { description, startTime, endTime, location, isActive, image }
+      changes: { 
+        name, 
+        description: description || '',
+        startDate,
+        endDate: endDate || startDate,
+        startTime: startTime || null,
+        endTime: endTime || null,
+        location: location || 'Main Dining Room',
+        isActive: isActive !== false,
+        eventTypeId,
+        price,
+        imagesCount: images?.length || 0,
+        ctasCount: ctas?.length || 0
+      },
+      metadata: { siteId: 'cmgfjti600004meoa7n4vy3o8' }
     })
 
     return NextResponse.json({ event }, { status: 201 })

@@ -4,6 +4,8 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { Breadcrumb, breadcrumbConfigs } from '@/components/breadcrumb'
+import { formatTimeInTimezone, getRelativeTime, getCompanyTimezone } from '@/lib/timezone'
+import { CalendarPreview } from '@/components/calendar-preview'
 
 interface Special {
   id: string
@@ -34,6 +36,29 @@ interface Event {
   updatedAt: string
 }
 
+interface ActivityLog {
+  id: string
+  action: string
+  resource: string
+  resourceId: string | null
+  timestamp: string
+  user: {
+    id: string
+    name: string | null
+    email: string
+    role: string
+  }
+  site: {
+    id: string
+    name: string
+    timezone: string
+  } | null
+  changes: any
+  metadata: any
+  oldValue?: any
+  newValue?: any
+}
+
 export default function SpecialsEventsPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
@@ -42,10 +67,11 @@ export default function SpecialsEventsPage() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [activeTab, setActiveTab] = useState<'specials' | 'events' | 'calendar'>('specials')
+  const [activityLoading, setActivityLoading] = useState(false)
 
   const [specials, setSpecials] = useState<Special[]>([])
   const [events, setEvents] = useState<Event[]>([])
-  const [recentActivity, setRecentActivity] = useState<any[]>([])
+  const [recentActivity, setRecentActivity] = useState<ActivityLog[]>([])
 
   const [showCreateSpecial, setShowCreateSpecial] = useState(false)
   const [showCreateEvent, setShowCreateEvent] = useState(false)
@@ -86,10 +112,9 @@ export default function SpecialsEventsPage() {
 
   const fetchData = async () => {
     try {
-      const [specialsRes, eventsRes, activityRes] = await Promise.all([
+      const [specialsRes, eventsRes] = await Promise.all([
         fetch('/api/admin/specials'),
-        fetch('/api/admin/events'),
-        fetch('/api/admin/activity?limit=10&resource=specials,events')
+        fetch('/api/admin/events')
       ])
 
       if (specialsRes.ok) {
@@ -102,14 +127,27 @@ export default function SpecialsEventsPage() {
         setEvents(eventsData.events || [])
       }
 
-      if (activityRes.ok) {
-        const activityData = await activityRes.json()
-        setRecentActivity(activityData.logs || [])
-      }
+      // Fetch specials activity separately
+      await fetchSpecialsActivity()
     } catch (error) {
       console.error('Failed to fetch data:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const fetchSpecialsActivity = async () => {
+    try {
+      setActivityLoading(true)
+      const response = await fetch('/api/admin/activity?limit=5&filter=all')
+      if (response.ok) {
+        const data = await response.json()
+        setRecentActivity(data.logs)
+      }
+    } catch (error) {
+      console.error('Error fetching company activity:', error)
+    } finally {
+      setActivityLoading(false)
     }
   }
 
@@ -821,42 +859,21 @@ export default function SpecialsEventsPage() {
         {activeTab === 'calendar' && (
           <div className="space-y-6">
             <div className="flex justify-between items-center">
-              <h2 className="text-xl font-semibold text-gray-900">Calendar View</h2>
-              <a
-                href="/admin/calendar"
-                className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors"
-              >
-                Open Full Calendar
-              </a>
+              <h2 className="text-xl font-semibold text-gray-900">Calendar Preview</h2>
             </div>
             <div className="bg-white rounded-lg shadow p-6">
-              <p className="text-gray-600 mb-4">View all your specials and events in a calendar format:</p>
-              <div className="text-center py-8">
-                <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Calendar Management</h3>
-                <p className="text-gray-600 mb-4">Use the full calendar view to see all your specials and events organized by date.</p>
-                <a
-                  href="/admin/calendar"
-                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700"
-                >
-                  Open Calendar
-                </a>
-              </div>
+              <CalendarPreview />
             </div>
           </div>
         )}
 
         {/* Recent Activity */}
-        <div className="mt-8 bg-white rounded-lg shadow">
+        <div className="mt-8 bg-white rounded-lg shadow-sm border border-gray-200">
           <div className="px-6 py-4 border-b border-gray-200">
             <div className="flex justify-between items-center">
-              <h2 className="text-xl font-semibold text-gray-900">Recent Activity</h2>
-              <button
-                onClick={fetchData}
+              <h2 className="text-xl font-semibold text-gray-900">Company Activity</h2>
+              <button 
+                onClick={fetchSpecialsActivity}
                 className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
               >
                 Refresh
@@ -864,34 +881,276 @@ export default function SpecialsEventsPage() {
             </div>
           </div>
           <div className="p-6">
-            {recentActivity.length > 0 ? (
+            {activityLoading ? (
               <div className="space-y-4">
-                {recentActivity.map((log) => (
-                  <div key={log.id} className="flex items-center space-x-4 group hover:bg-gray-50 p-3 rounded-lg transition-colors">
-                    <div className="flex-shrink-0">
-                      <div className="w-8 h-8 rounded-full flex items-center justify-center bg-purple-100">
-                        <span className="text-sm text-purple-600">
-                          {log.resource === 'specials' ? '🍽️' : '🎉'}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm text-gray-900">
-                        <span className="font-medium">{log.user.name || log.user.email}</span> ({log.user.role})
-                        {' '}
-                        <span className="capitalize">{log.action}d</span>
-                        {' '}
-                        <span className="font-medium">{log.resource}</span>
-                        {log.resourceId && (
-                          <span className="text-gray-500"> #{log.resourceId.slice(-6)}</span>
-                        )}
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        {new Date(log.timestamp).toLocaleString()}
-                      </p>
+                {[...Array(3)].map((_, i) => (
+                  <div key={i} className="flex items-center space-x-4">
+                    <div className="animate-pulse bg-gray-200 w-8 h-8 rounded-full"></div>
+                    <div className="flex-1">
+                      <div className="animate-pulse bg-gray-200 h-4 w-3/4 rounded mb-2"></div>
+                      <div className="animate-pulse bg-gray-200 h-3 w-1/2 rounded"></div>
                     </div>
                   </div>
                 ))}
+              </div>
+            ) : recentActivity.length > 0 ? (
+              <div className="space-y-4">
+                {recentActivity.map((log) => {
+                  const timezone = log.site?.timezone || getCompanyTimezone()
+                  const relativeTime = getRelativeTime(log.timestamp, timezone)
+                  const fullTime = formatTimeInTimezone(log.timestamp, timezone)
+                  
+                  return (
+                    <div key={log.id} className="flex items-center space-x-4 group hover:bg-gray-50 p-3 rounded-lg transition-colors">
+                  <div className="flex-shrink-0">
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                      log.resource === 'site_settings' ? 'bg-indigo-100' :
+                      log.resource === 'business_hours' ? 'bg-green-100' :
+                      log.resource === 'special_day' ? 'bg-yellow-100' :
+                      log.resource === 'menu' ? 'bg-blue-100' :
+                      log.resource === 'menu_category' ? 'bg-indigo-100' :
+                      log.resource === 'specials' ? 'bg-orange-100' :
+                      log.resource === 'events' ? 'bg-purple-100' :
+                      'bg-gray-100'
+                    }`}>
+                      <span className={`text-sm ${
+                        log.resource === 'site_settings' ? 'text-indigo-600' :
+                        log.resource === 'business_hours' ? 'text-green-600' :
+                        log.resource === 'special_day' ? 'text-yellow-600' :
+                        log.resource === 'menu' ? 'text-blue-600' :
+                        log.resource === 'menu_category' ? 'text-indigo-600' :
+                        log.resource === 'specials' ? 'text-orange-600' :
+                        log.resource === 'events' ? 'text-purple-600' :
+                        'text-gray-600'
+                      }`}>
+                        {log.resource === 'site_settings' ? '⚙️' :
+                         log.resource === 'business_hours' ? '🕒' :
+                         log.resource === 'special_day' ? '📅' :
+                         log.resource === 'menu' ? '📝' :
+                         log.resource === 'menu_category' ? '📂' :
+                         log.resource === 'specials' ? '🍽️' :
+                         log.resource === 'events' ? '🎉' :
+                         '📄'}
+                      </span>
+                    </div>
+                  </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm text-gray-900">
+                          <span className="font-medium">{log.user.name || log.user.email}</span>
+                          {' '}
+                          <span className="lowercase">{log.action.toLowerCase() === 'update' ? 'updated' : log.action.toLowerCase()}</span>
+                          {' '}
+                            <span className="font-medium capitalize">
+                          {log.resource === 'site_settings' ? 'Company Info' : log.resource.replace('_', ' ')}
+                        </span>
+                        </p>
+                        
+                        {/* Show specific changes if available */}
+                        {log.changes && Object.keys(log.changes).length > 0 && (
+                          <div className="mt-2 text-xs text-gray-600 bg-gray-50 p-2 rounded border">
+                            <div className="font-medium text-gray-700 mb-1">Changes:</div>
+                            {Object.entries(log.changes).map(([key, value]) => {
+                              // Try to show before/after if we have oldValue data
+                              const oldValue = log.oldValue && typeof log.oldValue === 'object' ? log.oldValue[key] : null
+                              const newValue = value
+                              
+                          // Skip if values are the same (no actual change)
+                          if (oldValue && oldValue === newValue) {
+                            return null
+                          }
+                          
+                          // Handle business hours format (single object with all days)
+                          if (key === 'businessHours' && typeof value === 'object' && value !== null && !('old' in value) && !('new' in value)) {
+                            const oldBusinessHours = log.oldValue && typeof log.oldValue === 'object' && log.oldValue !== null ? log.oldValue[key] : null
+                            
+                            if (!oldBusinessHours || typeof oldBusinessHours !== 'object') {
+                              return null
+                            }
+                            
+                            // Find days that actually changed
+                            const changedDays = Object.entries(value).filter(([day, newDayHours]) => {
+                              const oldDayHours = (oldBusinessHours as any)[day]
+                              return !oldDayHours || JSON.stringify(oldDayHours) !== JSON.stringify(newDayHours)
+                            })
+                            
+                            if (changedDays.length === 0) {
+                              return null
+                            }
+                            
+                            return (
+                              <div key={key} className="mb-2">
+                                <div className="font-medium text-gray-700 mb-1">Business Hours:</div>
+                                {changedDays.map(([day, newDayHours]) => {
+                                  const oldDayHours = (oldBusinessHours as any)[day]
+                                  const dayName = day.charAt(0).toUpperCase() + day.slice(1)
+                                  
+                                  // Format hours for display
+                                  const formatHours = (hours: any) => {
+                                    if (!hours || typeof hours !== 'object') return 'No data'
+                                    if (hours.closed) return 'Closed'
+                                    if (!hours.open || !hours.close) return 'No hours set'
+                                    return `${hours.open} - ${hours.close}`
+                                  }
+                                  
+                                  const oldFormatted = formatHours(oldDayHours)
+                                  const newFormatted = formatHours(newDayHours)
+                                  
+                                  return (
+                                    <div key={day} className="ml-2 text-gray-600 mb-1">
+                                      <span className="font-medium">{dayName}:</span>
+                                      <div className="flex items-center space-x-2 ml-2">
+                                        <span className="text-red-600 line-through text-xs bg-red-50 px-1 rounded">
+                                          {oldFormatted}
+                                        </span>
+                                        <span className="text-gray-400 text-xs">→</span>
+                                        <span className="text-green-600 font-medium text-xs bg-green-50 px-1 rounded">
+                                          {newFormatted}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  )
+                                })}
+                              </div>
+                            )
+                          }
+                          
+                          // Handle specials formatting
+                              if (log.resource === 'specials' && key === 'price') {
+                                const oldPrice = oldValue && typeof oldValue === 'number' ? `$${oldValue.toFixed(2)}` : 'No price'
+                                const newPrice = newValue && typeof newValue === 'number' ? `$${newValue.toFixed(2)}` : 'No price'
+                                
+                                return (
+                                  <div key={key} className="flex items-start space-x-2 mb-1">
+                                    <span className="font-medium text-gray-700 min-w-0 flex-shrink-0">
+                                      Price:
+                                    </span>
+                                    <div className="text-gray-500 break-words">
+                                      <div className="flex items-center space-x-2">
+                                        <span className="text-red-600 line-through text-xs bg-red-50 px-1 rounded">
+                                          {oldPrice}
+                                        </span>
+                                        <span className="text-gray-400 text-xs">→</span>
+                                        <span className="text-green-600 font-medium text-xs bg-green-50 px-1 rounded">
+                                          {newPrice}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                )
+                              }
+                              
+                              if (log.resource === 'specials' && key === 'originalPrice') {
+                                const oldPrice = oldValue && typeof oldValue === 'number' ? `$${oldValue.toFixed(2)}` : 'No original price'
+                                const newPrice = newValue && typeof newValue === 'number' ? `$${newValue.toFixed(2)}` : 'No original price'
+                                
+                                return (
+                                  <div key={key} className="flex items-start space-x-2 mb-1">
+                                    <span className="font-medium text-gray-700 min-w-0 flex-shrink-0">
+                                      Original Price:
+                                    </span>
+                                    <div className="text-gray-500 break-words">
+                                      <div className="flex items-center space-x-2">
+                                        <span className="text-red-600 line-through text-xs bg-red-50 px-1 rounded">
+                                          {oldPrice}
+                                        </span>
+                                        <span className="text-gray-400 text-xs">→</span>
+                                        <span className="text-green-600 font-medium text-xs bg-green-50 px-1 rounded">
+                                          {newPrice}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                )
+                              }
+                              
+                              if (log.resource === 'specials' && (key === 'startDate' || key === 'endDate')) {
+                                const oldDate = oldValue && (typeof oldValue === 'string' || oldValue instanceof Date) ? new Date(oldValue).toLocaleDateString() : 'No date'
+                                const newDate = newValue && (typeof newValue === 'string' || newValue instanceof Date) ? new Date(newValue).toLocaleDateString() : 'No date'
+                                const fieldName = key === 'startDate' ? 'Start Date' : 'End Date'
+                                
+                                return (
+                                  <div key={key} className="flex items-start space-x-2 mb-1">
+                                    <span className="font-medium text-gray-700 min-w-0 flex-shrink-0">
+                                      {fieldName}:
+                                    </span>
+                                    <div className="text-gray-500 break-words">
+                                      <div className="flex items-center space-x-2">
+                                        <span className="text-red-600 line-through text-xs bg-red-50 px-1 rounded">
+                                          {oldDate}
+                                        </span>
+                                        <span className="text-gray-400 text-xs">→</span>
+                                        <span className="text-green-600 font-medium text-xs bg-green-50 px-1 rounded">
+                                          {newDate}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                )
+                              }
+                              
+                              if (log.resource === 'specials' && key === 'isActive') {
+                                const oldStatus = oldValue ? 'Active' : 'Inactive'
+                                const newStatus = newValue ? 'Active' : 'Inactive'
+                                
+                                return (
+                                  <div key={key} className="flex items-start space-x-2 mb-1">
+                                    <span className="font-medium text-gray-700 min-w-0 flex-shrink-0">
+                                      Status:
+                                    </span>
+                                    <div className="text-gray-500 break-words">
+                                      <div className="flex items-center space-x-2">
+                                        <span className={`line-through text-xs px-1 rounded ${
+                                          oldValue ? 'text-red-600 bg-red-50' : 'text-gray-600 bg-gray-50'
+                                        }`}>
+                                          {oldStatus}
+                                        </span>
+                                        <span className="text-gray-400 text-xs">→</span>
+                                        <span className={`font-medium text-xs px-1 rounded ${
+                                          newValue ? 'text-green-600 bg-green-50' : 'text-red-600 bg-red-50'
+                                        }`}>
+                                          {newStatus}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                )
+                              }
+                              
+                              return (
+                                <div key={key} className="flex items-start space-x-2 mb-1">
+                                  <span className="font-medium text-gray-700 min-w-0 flex-shrink-0">
+                                    {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}:
+                                  </span>
+                                  <div className="text-gray-500 break-words">
+                                    {oldValue && oldValue !== newValue ? (
+                                      <div className="flex items-center space-x-2">
+                                        <span className="text-red-600 line-through text-xs bg-red-50 px-1 rounded">
+                                          {String(oldValue)}
+                                        </span>
+                                        <span className="text-gray-400 text-xs">→</span>
+                                        <span className="text-green-600 font-medium text-xs bg-green-50 px-1 rounded">
+                                          {String(newValue)}
+                                        </span>
+                                      </div>
+                                    ) : (
+                                      <span className="text-xs">{typeof value === 'object' ? JSON.stringify(value) : String(value)}</span>
+                                    )}
+                                  </div>
+                                </div>
+                              )
+                            }).filter(Boolean)}
+                          </div>
+                        )}
+                        
+                        <div className="flex items-center space-x-2 text-sm text-gray-500 mt-1">
+                          <span title={`${fullTime} (${timezone})`}>{relativeTime}</span>
+                          <span>•</span>
+                          <span>{timezone}</span>
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })}
               </div>
             ) : (
               <div className="text-center py-8">
@@ -900,8 +1159,8 @@ export default function SpecialsEventsPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                   </svg>
                 </div>
-                <p className="text-gray-500">No recent activity</p>
-                <p className="text-sm text-gray-400 mt-1">Activity will appear here as you make changes</p>
+                <p className="mt-2 text-sm text-gray-500">No company activity found.</p>
+                <p className="text-xs text-gray-400">Changes to company settings will appear here.</p>
               </div>
             )}
           </div>

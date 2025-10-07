@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { Role } from '@prisma/client'
 import { Breadcrumb, breadcrumbConfigs } from '@/components/breadcrumb'
+import { scrollToFirstError } from '@/lib/smooth-scroll'
 
 interface User {
   id: string
@@ -33,6 +34,9 @@ export default function UserManagementPage() {
   const [error, setError] = useState<string | null>(null)
   const [showCreateForm, setShowCreateForm] = useState(false)
   const [editingUser, setEditingUser] = useState<User | null>(null)
+
+  // Error state for inline validation errors
+  const [formErrors, setFormErrors] = useState<Record<string, string[]>>({})
 
   // Form state
   const [formData, setFormData] = useState({
@@ -73,6 +77,7 @@ export default function UserManagementPage() {
 
   const handleCreateUser = async (e: React.FormEvent) => {
     e.preventDefault()
+    setFormErrors({}) // Clear previous errors
     try {
       const response = await fetch('/api/admin/users', {
         method: 'POST',
@@ -84,12 +89,37 @@ export default function UserManagementPage() {
 
       if (!response.ok) {
         const errorData = await response.json()
-        throw new Error(errorData.error || 'Failed to create user')
+        
+        // Handle validation errors with field-specific messages
+        if (errorData.details && Array.isArray(errorData.details)) {
+          const fieldErrors: Record<string, string[]> = {}
+          errorData.details.forEach((detail: string) => {
+            const [field, ...errorParts] = detail.split(': ')
+            const errorMessage = errorParts.join(': ')
+            if (!fieldErrors[field.toLowerCase()]) {
+              fieldErrors[field.toLowerCase()] = []
+            }
+            fieldErrors[field.toLowerCase()].push(errorMessage)
+          })
+          setFormErrors(fieldErrors)
+          
+          // Scroll to first error field with smooth animation
+          setTimeout(() => {
+            scrollToFirstError({
+              duration: 800,
+              offset: -50, // Slight offset above center
+              focusAfterScroll: true,
+              easing: 'easeInOutCubic'
+            })
+          }, 150)
+        } else {
+          throw new Error(errorData.error || 'Failed to create user')
+        }
+      } else {
+        await fetchUsers()
+        setShowCreateForm(false)
+        setFormData({ email: '', name: '', password: '', role: 'STAFF', disabledReason: '' })
       }
-
-      await fetchUsers()
-      setShowCreateForm(false)
-      setFormData({ email: '', name: '', password: '', role: 'STAFF', disabledReason: '' })
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create user')
     }
@@ -146,6 +176,25 @@ export default function UserManagementPage() {
       isActive: newStatus,
       disabledReason: reason
     })
+  }
+
+  // Helper component for displaying field errors
+  const FieldError = ({ fieldName }: { fieldName: string }) => {
+    const errors = formErrors[fieldName.toLowerCase()]
+    if (!errors || errors.length === 0) return null
+    
+    return (
+      <div className="mt-1">
+        {errors.map((error, index) => (
+          <p key={index} className="text-sm text-red-600 flex items-center gap-1">
+            <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+            </svg>
+            {error}
+          </p>
+        ))}
+      </div>
+    )
   }
 
   if (status === 'loading' || loading) {
@@ -210,9 +259,12 @@ export default function UserManagementPage() {
                     required
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500 ${
+                      formErrors.email ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300'
+                    }`}
                     placeholder="staff@monaghans.com"
                   />
+                  <FieldError fieldName="email" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -222,9 +274,12 @@ export default function UserManagementPage() {
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500 ${
+                      formErrors.name ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300'
+                    }`}
                     placeholder="John Smith"
                   />
+                  <FieldError fieldName="name" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -235,9 +290,12 @@ export default function UserManagementPage() {
                     required
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500 ${
+                      formErrors.password ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300'
+                    }`}
                     placeholder="They'll change this on first login"
                   />
+                  <FieldError fieldName="password" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">

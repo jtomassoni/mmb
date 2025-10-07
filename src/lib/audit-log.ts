@@ -540,7 +540,7 @@ export async function logAuditEvent(data: {
     let siteId: string | undefined
     let siteName: string | undefined
     
-    if (data.resourceId && data.resource === 'site_settings') {
+    if (data.resourceId && (data.resource === 'site_settings' || data.resource === 'business_hours')) {
       siteId = data.resourceId
       const site = await prisma.site.findUnique({
         where: { id: data.resourceId },

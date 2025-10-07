@@ -96,10 +96,56 @@ async function main() {
   }
   console.log(`✅ Created business hours`)
 
+  // Create default menu categories
+  const menuCategories = [
+    { name: 'Appetizers', description: 'Start your meal with our delicious appetizers', sortOrder: 1 },
+    { name: 'Entrees', description: 'Our main course specialties', sortOrder: 2 },
+    { name: 'Sides', description: 'Perfect accompaniments to your meal', sortOrder: 3 },
+    { name: 'Desserts', description: 'Sweet endings to your dining experience', sortOrder: 4 },
+    { name: 'Beverages', description: 'Refreshing drinks and specialty beverages', sortOrder: 5 },
+    { name: 'Specials', description: 'Chef\'s daily specials and seasonal offerings', sortOrder: 6 }
+  ]
+
+  for (const categoryData of menuCategories) {
+    // Check if category already exists
+    const existingCategory = await prisma.menuCategory.findFirst({
+      where: { 
+        siteId: site.id,
+        name: categoryData.name 
+      }
+    })
+
+    if (!existingCategory) {
+      await prisma.menuCategory.create({
+        data: {
+          siteId: site.id,
+          name: categoryData.name,
+          description: categoryData.description,
+          sortOrder: categoryData.sortOrder
+        }
+      })
+    }
+  }
+  console.log(`✅ Created default menu categories`)
+
   // Create memberships for non-superadmin users
+  const superadminUser = await prisma.user.findUnique({ where: { email: 'superadmin@monaghans.com' } })
   const ownerUser = await prisma.user.findUnique({ where: { email: 'owner@monaghans.com' } })
   const managerUser = await prisma.user.findUnique({ where: { email: 'manager@monaghans.com' } })
   const staffUser = await prisma.user.findUnique({ where: { email: 'staff@monaghans.com' } })
+
+  if (superadminUser) {
+    await prisma.membership.upsert({
+      where: { userId_siteId: { userId: superadminUser.id, siteId: site.id } },
+      update: {},
+      create: {
+        userId: superadminUser.id,
+        siteId: site.id,
+        role: 'SUPERADMIN'
+      }
+    })
+    console.log(`✅ Created membership for superadmin`)
+  }
 
   if (ownerUser) {
     await prisma.membership.upsert({
@@ -173,6 +219,57 @@ async function main() {
     })
   }
   console.log(`✅ Created sample events`)
+
+  // Create default event types
+  const eventTypes = [
+    {
+      siteId: site.id,
+      name: 'Food Special',
+      description: 'Daily food specials and promotions',
+      color: '#FF6B35',
+      icon: '🍽️',
+      isActive: true
+    },
+    {
+      siteId: site.id,
+      name: 'Drink Special',
+      description: 'Happy hour and drink promotions',
+      color: '#4ECDC4',
+      icon: '🍺',
+      isActive: true
+    },
+    {
+      siteId: site.id,
+      name: 'Entertainment',
+      description: 'Live music, trivia, and entertainment events',
+      color: '#9B59B6',
+      icon: '🎵',
+      isActive: true
+    },
+    {
+      siteId: site.id,
+      name: 'Sports Event',
+      description: 'Broncos games, watch parties, and sports events',
+      color: '#3498DB',
+      icon: '🏈',
+      isActive: true
+    },
+    {
+      siteId: site.id,
+      name: 'Special Event',
+      description: 'Holiday events, parties, and special occasions',
+      color: '#E74C3C',
+      icon: '🎉',
+      isActive: true
+    }
+  ]
+
+  for (const eventTypeData of eventTypes) {
+    await prisma.eventType.create({
+      data: eventTypeData
+    })
+  }
+  console.log(`✅ Created default event types`)
 
   const sampleSpecials = [
     {

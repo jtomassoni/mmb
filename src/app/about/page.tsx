@@ -1,4 +1,5 @@
 import { Metadata } from 'next'
+import Image from 'next/image'
 
 export const metadata: Metadata = {
   title: 'Our Story | Monaghan\'s Bar & Grill - Denver\'s Historic Legacy',
@@ -134,30 +135,129 @@ export default function AboutPage() {
             </div>
           </div>
 
-          {/* What Makes Us Different */}
-          <div className="text-center bg-white rounded-2xl shadow-lg p-12 mb-20">
-            <h2 className="text-4xl font-bold text-gray-900 mb-8">
-              What Makes Us Different
+          {/* Gallery Section */}
+          <div className="bg-white rounded-2xl shadow-lg p-12 mb-20">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl font-bold text-gray-900 mb-4">See Our Space</h2>
+              <p className="text-xl text-gray-600 max-w-2xl mx-auto">Take a look at our bar, pool tables, patio, and delicious food</p>
+            </div>
+            
+            {/* Gallery Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+              <div className="relative h-48 rounded-lg overflow-hidden hover:scale-105 transition-transform duration-300">
+                <Image
+                  src="/pics/monaghans-billiards.jpg"
+                  alt="Pool tables at Monaghan's Bar & Grill"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 50vw, 25vw"
+                />
+              </div>
+              <div className="relative h-48 rounded-lg overflow-hidden hover:scale-105 transition-transform duration-300">
+                <Image
+                  src="/pics/monaghans-billiard-room.jpg"
+                  alt="Pool room at Monaghan's Bar & Grill"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 50vw, 25vw"
+                />
+              </div>
+              <div className="relative h-48 rounded-lg overflow-hidden hover:scale-105 transition-transform duration-300">
+                <Image
+                  src="/pics/monaghans-breakfast-biscut.jpg"
+                  alt="Breakfast biscuit at Monaghan's Bar & Grill"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 50vw, 25vw"
+                />
+              </div>
+              <div className="relative h-48 rounded-lg overflow-hidden hover:scale-105 transition-transform duration-300">
+                <Image
+                  src="/pics/monaghans-patio.jpg"
+                  alt="Patio seating at Monaghan's Bar & Grill"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 50vw, 25vw"
+                />
+              </div>
+              <div className="relative h-48 rounded-lg overflow-hidden hover:scale-105 transition-transform duration-300">
+                <Image
+                  src="/pics/monaghans-fish-n-chips.jpg"
+                  alt="Fish and chips at Monaghan's Bar & Grill"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 50vw, 25vw"
+                />
+              </div>
+              <div className="relative h-48 rounded-lg overflow-hidden hover:scale-105 transition-transform duration-300">
+                <Image
+                  src="/pics/monaghans-quesadilla.jpg"
+                  alt="Quesadilla at Monaghan's Bar & Grill"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 50vw, 25vw"
+                />
+              </div>
+              <div className="relative h-48 rounded-lg overflow-hidden hover:scale-105 transition-transform duration-300">
+                <Image
+                  src="/pics/monaghans-taco-platter.jpg"
+                  alt="Taco platter at Monaghan's Bar & Grill"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 50vw, 25vw"
+                />
+              </div>
+              <div className="relative h-48 rounded-lg overflow-hidden hover:scale-105 transition-transform duration-300">
+                <Image
+                  src="/pics/monaghans-kareoke.jpg"
+                  alt="Karaoke night at Monaghan's Bar & Grill"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 50vw, 25vw"
+                />
+              </div>
+            </div>
+            
+            {/* Gallery Actions */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <a href="/gallery" className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 hover:shadow-lg transition-all duration-300">
+                View Full Gallery
+              </a>
+              <a 
+                href="https://www.facebook.com/people/Monaghans-Bar-and-Grill/100063611261508/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 hover:shadow-lg transition-all duration-300 flex items-center gap-2"
+              >
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                </svg>
+                Follow Us on Facebook
+              </a>
+            </div>
+          </div>
+
+          {/* Our Values */}
+          <div className="bg-white rounded-lg shadow-sm p-8 mb-20">
+            <h2 className="text-2xl font-semibold text-gray-900 mb-6 text-center">
+              Our Values
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="text-center">
-                <div className="text-5xl mb-4">🏛️</div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-3">Historic Authenticity</h3>
-                <p className="text-gray-600">
-                  Denver's oldest bar, preserving 130+ years of history and tradition
+                <h3 className="text-lg font-medium text-gray-900 mb-2">Historic Legacy</h3>
+                <p className="text-gray-600 text-sm">
+                  Denver's oldest bar, preserving over 130 years of history and tradition
                 </p>
               </div>
               <div className="text-center">
-                <div className="text-5xl mb-4">🤝</div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-3">Community First</h3>
-                <p className="text-gray-600">
+                <h3 className="text-lg font-medium text-gray-900 mb-2">Community Focus</h3>
+                <p className="text-gray-600 text-sm">
                   A gathering place for all Denverites, from miners to modern professionals
                 </p>
               </div>
               <div className="text-center">
-                <div className="text-5xl mb-4">👩‍💼</div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-3">Inclusive Leadership</h3>
-                <p className="text-gray-600">
+                <h3 className="text-lg font-medium text-gray-900 mb-2">Inclusive Ownership</h3>
+                <p className="text-gray-600 text-sm">
                   Minority woman-owned, ensuring everyone feels welcome and represented
                 </p>
               </div>
@@ -181,7 +281,7 @@ export default function AboutPage() {
                 View Our Menu
               </a>
               <a 
-                href="/whats-happening" 
+                href="/events" 
                 className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-amber-900 transition-colors"
               >
                 See What's Happening

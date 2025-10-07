@@ -1,5 +1,6 @@
 // src/app/api/public/calendar/route.ts
 import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
 import { getBroncosGamesForWeek, broncosSchedule2025 } from '@/lib/broncos-schedule'
 
 interface CalendarEvent {
@@ -9,7 +10,7 @@ interface CalendarEvent {
   date: string // YYYY-MM-DD
   startTime?: string // HH:MM
   endTime?: string // HH:MM
-  type: 'food' | 'drink' | 'entertainment' | 'broncos' | 'special'
+  type: 'food' | 'drink' | 'entertainment' | 'broncos' | 'special' | 'sports'
   isRecurring: boolean
   recurringPattern?: 'daily' | 'weekly' | 'monthly'
   recurringDays?: number[] // 0-6 for days of week
@@ -17,131 +18,25 @@ interface CalendarEvent {
   isActive: boolean
   createdAt: string
   updatedAt: string
+  eventType?: {
+    id: string
+    name: string
+    color?: string
+    icon?: string
+  }
+  images?: Array<{
+    id: string
+    url: string
+    alt?: string
+    caption?: string
+  }>
+  ctas?: Array<{
+    id: string
+    text: string
+    url: string
+    type: string
+  }>
 }
-
-// Mock data - in production this would come from database
-const calendarEvents: CalendarEvent[] = [
-  {
-    id: '1',
-    title: 'Monday Poker Night',
-    description: 'Weekly poker tournament with cash prizes',
-    date: '2025-10-06',
-    startTime: '19:00',
-    endTime: '23:00',
-    type: 'entertainment',
-    isRecurring: true,
-    recurringPattern: 'weekly',
-    recurringDays: [1], // Monday
-    isActive: true,
-    createdAt: '2025-01-01T00:00:00Z',
-    updatedAt: '2025-01-01T00:00:00Z'
-  },
-  {
-    id: '1b',
-    title: 'Chimichangas Special',
-    description: 'Crispy chimichangas with rice and beans',
-    date: '2025-10-06',
-    type: 'food',
-    isRecurring: true,
-    recurringPattern: 'weekly',
-    recurringDays: [1], // Monday
-    isActive: true,
-    createdAt: '2025-01-01T00:00:00Z',
-    updatedAt: '2025-01-01T00:00:00Z'
-  },
-  {
-    id: '2',
-    title: 'Taco Tuesday',
-    description: 'Beef tacos $1.50, chicken/carnitas $2, fish $3',
-    date: '2025-10-07',
-    type: 'food',
-    isRecurring: true,
-    recurringPattern: 'weekly',
-    recurringDays: [2], // Tuesday
-    isActive: true,
-    createdAt: '2025-01-01T00:00:00Z',
-    updatedAt: '2025-01-01T00:00:00Z'
-  },
-  {
-    id: '3',
-    title: 'Whiskey Wednesday',
-    description: '$1 off all whiskey drinks',
-    date: '2025-10-08',
-    type: 'drink',
-    isRecurring: true,
-    recurringPattern: 'weekly',
-    recurringDays: [3], // Wednesday
-    isActive: true,
-    createdAt: '2025-01-01T00:00:00Z',
-    updatedAt: '2025-01-01T00:00:00Z'
-  },
-  {
-    id: '3b',
-    title: 'Southwest Eggrolls Special',
-    description: 'Crispy eggrolls with rice and beans',
-    date: '2025-10-08',
-    type: 'food',
-    isRecurring: true,
-    recurringPattern: 'weekly',
-    recurringDays: [3], // Wednesday
-    isActive: true,
-    createdAt: '2025-01-01T00:00:00Z',
-    updatedAt: '2025-01-01T00:00:00Z'
-  },
-  {
-    id: '4',
-    title: 'Thirsty Thursday - Drink Special',
-    description: '$1 off all tequila drinks',
-    date: '2025-10-09',
-    type: 'drink',
-    isRecurring: true,
-    recurringPattern: 'weekly',
-    recurringDays: [4], // Thursday
-    isActive: true,
-    createdAt: '2025-01-01T00:00:00Z',
-    updatedAt: '2025-01-01T00:00:00Z'
-  },
-  {
-    id: '4b',
-    title: 'Philly Cheesesteak Special',
-    description: 'Classic Philly cheesesteak with peppers and onions',
-    date: '2025-10-09',
-    type: 'food',
-    isRecurring: true,
-    recurringPattern: 'weekly',
-    recurringDays: [4], // Thursday
-    isActive: true,
-    createdAt: '2025-01-01T00:00:00Z',
-    updatedAt: '2025-01-01T00:00:00Z'
-  },
-  {
-    id: '4c',
-    title: 'Music Bingo',
-    description: 'Music Bingo with cash prizes',
-    date: '2025-10-09',
-    startTime: '20:00',
-    type: 'entertainment',
-    isRecurring: true,
-    recurringPattern: 'weekly',
-    recurringDays: [4], // Thursday
-    isActive: true,
-    createdAt: '2025-01-01T00:00:00Z',
-    updatedAt: '2025-01-01T00:00:00Z'
-  },
-  {
-    id: '5',
-    title: 'Broncos vs Raiders',
-    description: 'Game day potluck - we provide taco bar, you bring sides!',
-    date: '2025-09-07',
-    startTime: '13:00',
-    type: 'broncos',
-    isRecurring: false,
-    isActive: true,
-    createdAt: '2025-01-01T00:00:00Z',
-    updatedAt: '2025-01-01T00:00:00Z'
-  },
-  // Broncos Games will be added dynamically from broncos-schedule.ts
-]
 
 // Generate recurring events for the next 30 days
 function generateRecurringEvents(baseEvents: CalendarEvent[]): CalendarEvent[] {
@@ -202,36 +97,95 @@ export async function GET(request: NextRequest) {
     const type = searchParams.get('type')
     const limit = searchParams.get('limit')
 
-    // Generate recurring events
-    const allEvents = generateRecurringEvents(calendarEvents)
-    
+    // Fetch events from database
+    const dbEvents = await prisma.event.findMany({
+      where: {
+        siteId: 'cmgfjti600004meoa7n4vy3o8', // Monaghan's site ID
+        isActive: true,
+        ...(startDate && endDate ? {
+          startDate: {
+            gte: new Date(startDate),
+            lte: new Date(endDate)
+          }
+        } : {})
+      },
+      include: {
+        eventType: true,
+        images: {
+          orderBy: { sortOrder: 'asc' }
+        },
+        ctas: {
+          where: { isActive: true }
+        }
+      },
+      orderBy: { startDate: 'asc' }
+    })
+
+    // Convert database events to calendar format
+    const calendarEvents: CalendarEvent[] = dbEvents.map(event => ({
+      id: event.id,
+      title: event.name,
+      description: event.description || '',
+      date: event.startDate.toISOString().split('T')[0],
+      startTime: event.startTime || undefined,
+      endTime: event.endTime || undefined,
+      type: event.eventType?.name?.toLowerCase().includes('food') ? 'food' :
+            event.eventType?.name?.toLowerCase().includes('drink') ? 'drink' :
+            event.eventType?.name?.toLowerCase().includes('sport') ? 'sports' :
+            event.eventType?.name?.toLowerCase().includes('entertainment') ? 'entertainment' :
+            'special',
+      isRecurring: false, // For now, we'll handle recurring events separately
+      price: event.price || undefined,
+      isActive: event.isActive,
+      createdAt: event.createdAt.toISOString(),
+      updatedAt: event.updatedAt.toISOString(),
+      eventType: event.eventType ? {
+        id: event.eventType.id,
+        name: event.eventType.name,
+        color: event.eventType.color || undefined,
+        icon: event.eventType.icon || undefined
+      } : undefined,
+      images: event.images.map(img => ({
+        id: img.id,
+        url: img.url,
+        alt: img.alt || undefined,
+        caption: img.caption || undefined
+      })),
+      ctas: event.ctas.map(cta => ({
+        id: cta.id,
+        text: cta.text,
+        url: cta.url,
+        type: cta.type
+      }))
+    }))
+
     // Add Broncos games for the requested date range
     if (startDate && endDate) {
       const broncosGames = getBroncosGamesForWeek(startDate, endDate)
       broncosGames.forEach(game => {
-        allEvents.push({
+        calendarEvents.push({
           id: game.id,
           title: `Broncos vs ${game.opponent} Potluck`,
           description: game.description,
           date: game.date,
           startTime: game.time,
-          type: 'broncos',
+          type: 'sports',
           isRecurring: false,
+          price: 'Potluck Event',
           isActive: true,
           createdAt: '2025-01-01T00:00:00Z',
-          updatedAt: '2025-01-01T00:00:00Z'
+          updatedAt: '2025-01-01T00:00:00Z',
+          eventType: {
+            id: 'broncos',
+            name: 'Sports Event',
+            color: '#3498DB',
+            icon: '🏈'
+          }
         })
       })
     }
     
-    let filteredEvents = allEvents.filter(event => event.isActive)
-
-    // Filter by date range
-    if (startDate && endDate) {
-      filteredEvents = filteredEvents.filter(event => 
-        event.date >= startDate && event.date <= endDate
-      )
-    }
+    let filteredEvents = calendarEvents.filter(event => event.isActive)
 
     // Filter by type
     if (type) {

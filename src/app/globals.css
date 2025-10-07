@@ -4,6 +4,141 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Hide scrollbars for date picker */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Smooth scrolling for picker wheels */
+.picker-wheel {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: auto; /* Disable smooth scroll for better control */
+  overscroll-behavior: contain;
+  scroll-snap-type: y mandatory;
+  scroll-snap-align: start;
+}
+
+.picker-item {
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+}
+
+/* Modern Time Picker Styles */
+.proper-time-picker {
+  @apply relative;
+}
+
+.proper-time-picker__button {
+  @apply w-full px-3 py-2 text-left border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white text-gray-900 cursor-pointer hover:border-gray-400;
+}
+
+.proper-time-picker__button:disabled {
+  @apply bg-gray-100 text-gray-400 cursor-not-allowed;
+}
+
+.proper-time-picker__button.error {
+  @apply border-red-300 focus:ring-red-500 focus:border-red-500;
+}
+
+.proper-time-picker__dropdown {
+  @apply absolute z-[9999] w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-xl;
+}
+
+/* Custom scrollbar for time picker */
+.scrollbar-thin {
+  scrollbar-width: thin;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Fix double border issue on regular inputs */
+input:focus, textarea:focus, select:focus {
+  @apply outline-none;
+}
+
+/* Ensure error state takes precedence over focus state */
+.border-red-300:focus {
+  @apply border-red-500 ring-1 ring-red-500 ring-opacity-50;
+}
+
+/* React Day Picker - Use Built-in CSS Variables */
+.rdp {
+  --rdp-cell-size: 40px;
+  --rdp-accent-color: #10b981;
+  --rdp-background-color: #ffffff;
+  --rdp-outline: 2px solid var(--rdp-accent-color);
+  --rdp-outline-selected: 2px solid var(--rdp-accent-color);
+  --rdp-selected-color: #ffffff;
+  --rdp-text-color: #374151;
+  --rdp-text-color-disabled: #9ca3af;
+  --rdp-text-color-outside: #9ca3af;
+  --rdp-text-color-selected: #ffffff;
+  --rdp-text-color-today: #374151;
+  --rdp-background-color-today: transparent;
+  --rdp-background-color-selected: #10b981;
+  --rdp-background-color-hover: #f3f4f6;
+}
+
+/* Fix month/year and day number colors */
+.rdp .rdp-caption_label {
+  color: #111827 !important;
+  font-weight: 600;
+}
+
+.rdp .rdp-head_cell {
+  color: #374151 !important;
+  font-weight: 600;
+}
+
+/* Alternative selectors for weekday headers */
+.rdp thead th {
+  color: #374151 !important;
+  font-weight: 600;
+}
+
+.rdp .rdp-table thead th {
+  color: #374151 !important;
+  font-weight: 600;
+}
+
+.rdp .rdp-day {
+  color: #374151 !important;
+}
+
+.rdp .rdp-day_selected {
+  color: #ffffff !important;
+}
+
+.rdp .rdp-day_today {
+  color: #374151 !important;
+  background-color: transparent !important;
+}
+
+.rdp .rdp-day_outside {
+  color: #9ca3af !important;
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;

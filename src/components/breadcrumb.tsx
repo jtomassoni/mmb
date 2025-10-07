@@ -88,7 +88,7 @@ export const breadcrumbConfigs = {
   ],
   settings: [
     { label: 'Admin Dashboard', href: '/admin' },
-    { label: 'Site Settings', current: true }
+    { label: 'Company Info', current: true }
   ],
   analytics: [
     { label: 'Admin Dashboard', href: '/admin' },
@@ -97,5 +97,12 @@ export const breadcrumbConfigs = {
   backup: [
     { label: 'Admin Dashboard', href: '/admin' },
     { label: 'Backup & Restore', current: true }
+  ],
+  activityLog: [
+    { label: 'Admin Dashboard', href: '/admin' },
+    { label: 'Activity Log', current: true }
+  ],
+  adminDashboard: [
+    { label: 'Admin Dashboard', current: true }
   ]
 }

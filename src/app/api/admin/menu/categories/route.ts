@@ -30,17 +30,34 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { name, description, sortOrder } = body
+    const { name, description } = body
 
     if (!name) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
+    // Get the Monaghan's site
+    const site = await prisma.site.findFirst({
+      where: { slug: 'monaghans-bargrill' }
+    })
+
+    if (!site) {
+      return NextResponse.json({ error: 'Site not found' }, { status: 404 })
+    }
+
+    // Get the next sort order
+    const lastCategory = await prisma.menuCategory.findFirst({
+      where: { siteId: site.id },
+      orderBy: { sortOrder: 'desc' }
+    })
+    const nextSortOrder = (lastCategory?.sortOrder || 0) + 1
+
     const category = await prisma.menuCategory.create({
       data: {
         name,
         description: description || '',
-        sortOrder: sortOrder || 0
+        sortOrder: nextSortOrder,
+        siteId: site.id
       }
     })
 
@@ -50,8 +67,12 @@ export async function POST(request: NextRequest) {
       resource: 'menu_category',
       resourceId: category.id,
       userId: session.user.id,
-      changes: { name, sortOrder },
-      metadata: { description }
+      changes: { 
+        name, 
+        sortOrder: nextSortOrder,
+        description: description || ''
+      },
+      metadata: { siteId: site.id }
     })
 
     return NextResponse.json({ category }, { status: 201 })

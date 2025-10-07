@@ -15,44 +15,44 @@ export interface BroncosGame {
 // 2025 Broncos Schedule - Update this with real schedule
 export const broncosSchedule2025: BroncosGame[] = [
   {
-    id: 'week5-eagles',
-    week: 5,
-    opponent: 'Philadelphia Eagles',
-    date: '2025-10-05', // Sunday - Eagles game happened on the 5th
-    time: '13:00',
-    homeAway: 'away',
-    potluckFood: 'Slider Sunday! Mini burgers with all the toppings',
-    description: 'Week 5 - Broncos vs Eagles. Slider Sunday! We\'re making mini burgers with all the toppings. Bring a side or dessert to share.'
-  },
-  {
     id: 'week6-jets',
     week: 6,
     opponent: 'New York Jets',
-    date: '2025-10-12', // Sunday - Next game is against Jets
-    time: '07:30', // 7:30 AM per schedule
-    homeAway: 'home',
+    date: '2024-10-12', // Sunday - Jets game
+    time: '06:30', // 6:30 AM PDT
+    homeAway: 'away',
     potluckFood: 'Pizza party! Multiple pizza varieties',
-    description: 'Week 6 - Broncos vs Jets. Pizza party! We\'ll have multiple pizza varieties. Bring a side or dessert to complete the feast.'
+    description: 'Week 6 - Broncos @ Jets. Pizza party! We\'ll have multiple pizza varieties. Bring a side or dessert to complete the feast.'
   },
   {
     id: 'week7-giants',
     week: 7,
     opponent: 'New York Giants',
-    date: '2025-10-19', // Sunday
-    time: '14:05', // 2:05 PM per schedule
+    date: '2024-10-19', // Sunday
+    time: '13:05', // 1:05 PM PDT
     homeAway: 'home',
     potluckFood: 'Loaded nachos with all the works',
-    description: 'Week 7 - Broncos vs Giants. Loaded nachos for everyone! We\'re serving up the works. Bring a side or dessert to share.'
+    description: 'Week 7 - Giants @ Broncos. Loaded nachos for everyone! We\'re serving up the works. Bring a side or dessert to share.'
   },
   {
     id: 'week8-cowboys',
     week: 8,
     opponent: 'Dallas Cowboys',
-    date: '2025-10-26', // Sunday
-    time: '14:25', // 2:25 PM per schedule
+    date: '2024-10-26', // Sunday
+    time: '13:25', // 1:25 PM PDT
     homeAway: 'home',
     potluckFood: 'Breakfast bar with eggs, bacon, and more',
-    description: 'Week 8 - Broncos vs Cowboys. Brunch game! We\'re doing a breakfast bar with eggs, bacon, and more. Bring a side or dessert.'
+    description: 'Week 8 - Cowboys @ Broncos. Brunch game! We\'re doing a breakfast bar with eggs, bacon, and more. Bring a side or dessert.'
+  },
+  {
+    id: 'week9-texans',
+    week: 9,
+    opponent: 'Houston Texans',
+    date: '2024-11-02', // Sunday
+    time: '10:00', // 10:00 AM PST
+    homeAway: 'away',
+    potluckFood: 'BBQ feast with pulled pork and brisket',
+    description: 'Week 9 - Broncos @ Texans. BBQ feast! We\'re bringing pulled pork and brisket. Bring a side or dessert to complete the meal.'
   }
 ]
 

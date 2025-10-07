@@ -21,29 +21,30 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const limit = parseInt(searchParams.get('limit') || '10')
     const offset = parseInt(searchParams.get('offset') || '0')
+    const filter = searchParams.get('filter') || 'all'
+
+    // Define resource filters
+    const resourceFilters = {
+      company: ['site_settings', 'business_hours', 'special_day'],
+      menu: ['menu', 'menu_category'],
+      specials: ['specials', 'events'],
+      all: [] // Empty array means no filter
+    }
+
+    // Build where clause based on filter
+    let whereClause: any = {
+      success: true // Only show successful actions
+    }
+
+    if (filter !== 'all' && resourceFilters[filter as keyof typeof resourceFilters]) {
+      whereClause.resource = {
+        in: resourceFilters[filter as keyof typeof resourceFilters]
+      }
+    }
 
     // Get recent audit logs with user and site information
     const auditLogs = await prisma.auditLog.findMany({
-      where: {
-        success: true // Only show successful actions
-      },
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            role: true
-          }
-        },
-        site: {
-          select: {
-            id: true,
-            name: true,
-            timezone: true
-          }
-        }
-      },
+      where: whereClause,
       orderBy: {
         timestamp: 'desc'
       },
@@ -59,18 +60,20 @@ export async function GET(request: NextRequest) {
       resourceId: log.resourceId,
       timestamp: log.timestamp,
       user: {
-        id: log.user.id,
-        name: log.user.name || log.userEmail,
-        email: log.user.email,
-        role: log.user.role
+        id: log.userId,
+        name: log.userName || log.userEmail,
+        email: log.userEmail,
+        role: log.userRole
       },
-      site: log.site ? {
-        id: log.site.id,
-        name: log.site.name,
-        timezone: log.site.timezone
+      site: log.siteId ? {
+        id: log.siteId,
+        name: log.siteName,
+        timezone: 'America/Denver' // Default timezone for now
       } : null,
       changes: log.changes ? JSON.parse(log.changes) : null,
-      metadata: log.metadata ? JSON.parse(log.metadata) : null
+      metadata: log.metadata ? JSON.parse(log.metadata) : null,
+      oldValue: log.oldValue ? JSON.parse(log.oldValue) : null,
+      newValue: log.newValue ? JSON.parse(log.newValue) : null
     }))
 
     return NextResponse.json({ 

@@ -145,8 +145,13 @@ export function hasPermission(
   if (!rolePermission) return false
 
   return rolePermission.permissions.some(permission => {
-    // Check if resource and action match
-    if (permission.resource !== resource || permission.action !== action) {
+    // Check if resource matches
+    if (permission.resource !== resource) {
+      return false
+    }
+    
+    // Check if action matches or if user has MANAGE permission (which includes all actions)
+    if (permission.action !== action && permission.action !== ACTIONS.MANAGE) {
       return false
     }
 

@@ -73,7 +73,9 @@ model Site {
   domains     Domain[]
   hours       Hours[]
   events      Event[]
+  eventTypes  EventType[]
   specials    Special[]
+  specialDays SpecialDay[]
   menuItems   MenuItem[]
   menuCategories MenuCategory[]
   auditLogs   AuditLog[]
@@ -82,6 +84,24 @@ model Site {
   analyticsSummaries AnalyticsSummary[]
 
   @@map("sites")
+}
+
+model SpecialDay {
+  id        String   @id @default(cuid())
+  siteId    String
+  date      DateTime // The specific date for this special day
+  reason    String   // Reason for the special day (e.g., "City water shutoff", "Holiday closure")
+  closed    Boolean  @default(true) // Whether the restaurant is closed on this day
+  openTime  String?  // Opening time if not closed (e.g., "11:00")
+  closeTime String?  // Closing time if not closed (e.g., "21:00")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  site Site @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  @@unique([siteId, date]) // One special day per site per date
+  @@map("special_days")
 }
 
 model Membership {
@@ -190,13 +210,66 @@ model Event {
   location    String?   // "Main Dining Room", "Patio", etc.
   isActive    Boolean   @default(true)
   image       String?   // Image URL
+  eventTypeId String?   // Reference to custom event type
+  price       String?   // Price display (e.g., "$10", "Free", "BOGO")
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
   // Relations
   site Site @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  eventType EventType? @relation(fields: [eventTypeId], references: [id], onDelete: SetNull)
+  images EventImage[]
+  ctas EventCTA[]
 
   @@map("events")
+}
+
+model EventType {
+  id          String   @id @default(cuid())
+  siteId      String
+  name        String   // "Food Special", "Sports Event", "Entertainment", etc.
+  description String?
+  color       String?  // Hex color for display (e.g., "#FF6B35")
+  icon        String?  // Icon name or emoji
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  site Site @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  events Event[]
+
+  @@map("event_types")
+}
+
+model EventImage {
+  id        String   @id @default(cuid())
+  eventId   String
+  url       String   // Image URL
+  alt       String?  // Alt text for accessibility
+  caption   String?  // Image caption
+  sortOrder Int      @default(0) // For ordering multiple images
+  createdAt DateTime @default(now())
+
+  // Relations
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@map("event_images")
+}
+
+model EventCTA {
+  id        String   @id @default(cuid())
+  eventId   String
+  text      String   // Button text (e.g., "Get Tickets", "Learn More")
+  url       String   // Link URL
+  type      String   @default("external") // "external", "facebook", "phone", "email"
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  // Relations
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@map("event_ctas")
 }
 
 model Special {
@@ -261,6 +334,7 @@ model MenuItem {
   allergens   String   @default("[]") // JSON array as string
   calories    Int?
   source      String   @default("manual") // "manual", "ocr", "import"
+  sortOrder   Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 

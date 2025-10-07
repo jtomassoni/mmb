@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { Role } from '@prisma/client'
 import { hasPermission, RESOURCES, ACTIONS } from '@/lib/rbac'
+import { validateEmail, validatePassword, validateText } from '@/lib/input-validation'
 
 // Get all users (superadmin only)
 export async function GET(request: NextRequest) {
@@ -71,6 +72,26 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { email, name, password, role } = body
 
+    // Validate all inputs
+    const emailValidation = validateEmail(email)
+    const passwordValidation = validatePassword(password)
+    const nameValidation = validateText(name || '', { 
+      maxLength: 100, 
+      allowEmojis: false,
+      customValidator: (value) => {
+        if (value.length > 0 && !/^[a-zA-Z\s\-'.]+$/.test(value)) {
+          return 'Name contains invalid characters'
+        }
+        return null
+      }
+    })
+
+    // Check for validation errors
+    const validationErrors: string[] = []
+    if (!emailValidation.isValid) validationErrors.push(`Email: ${emailValidation.errors.join(', ')}`)
+    if (!passwordValidation.isValid) validationErrors.push(`Password: ${passwordValidation.errors.join(', ')}`)
+    if (!nameValidation.isValid) validationErrors.push(`Name: ${nameValidation.errors.join(', ')}`)
+
     if (!email || !password || !role) {
       return NextResponse.json({ 
         error: 'Missing required fields: email, password, role' 
@@ -81,6 +102,13 @@ export async function POST(request: NextRequest) {
     if (!['SUPERADMIN', 'OWNER', 'MANAGER', 'STAFF'].includes(role)) {
       return NextResponse.json({ 
         error: 'Invalid role. Must be SUPERADMIN, OWNER, MANAGER, or STAFF' 
+      }, { status: 400 })
+    }
+
+    if (validationErrors.length > 0) {
+      return NextResponse.json({ 
+        error: 'Validation failed', 
+        details: validationErrors 
       }, { status: 400 })
     }
 
@@ -97,9 +125,9 @@ export async function POST(request: NextRequest) {
 
     const user = await prisma.user.create({
       data: {
-        email,
-        name: name || null,
-        password, // Store plain text for MVP
+        email: emailValidation.sanitizedValue,
+        name: nameValidation.sanitizedValue || null,
+        password: passwordValidation.sanitizedValue, // Store plain text for MVP
         role: role as Role,
         isActive: true
       },

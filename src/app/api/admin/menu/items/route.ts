@@ -12,7 +12,10 @@ export async function GET() {
     }
 
     const items = await prisma.menuItem.findMany({
-      orderBy: { createdAt: 'desc' }
+      orderBy: [
+        { category: 'asc' },
+        { createdAt: 'desc' }
+      ]
     })
 
     return NextResponse.json({ items })
@@ -36,13 +39,28 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
+    // Validate and clean price input
+    const cleanPrice = String(price).replace(/[^0-9.,]/g, '') // Remove all non-numeric chars except commas and decimals
+    const numericPrice = parseFloat(cleanPrice.replace(',', '')) // Remove commas and convert to number
+    
+    if (isNaN(numericPrice) || numericPrice < 0) {
+      return NextResponse.json({ error: 'Invalid price format' }, { status: 400 })
+    }
+
+    // Get the next sort order for this category
+    const lastItem = await prisma.menuItem.findFirst({
+      where: { category: category },
+      orderBy: { createdAt: 'desc' }
+    })
+    const nextSortOrder = 1 // Simple default for now
+
     const item = await prisma.menuItem.create({
       data: {
+        siteId: 'cmgfjti600004meoa7n4vy3o8', // Use actual site ID
         name,
         description: description || '',
-        price: parseFloat(price),
+        price: numericPrice,
         category,
-        image: image || null,
         isAvailable: isAvailable !== false
       }
     })
@@ -53,8 +71,14 @@ export async function POST(request: NextRequest) {
       resource: 'menu',
       resourceId: item.id,
       userId: session.user.id,
-      changes: { name, price, category },
-      metadata: { description, image, isAvailable }
+      changes: { 
+        name, 
+        price: numericPrice, 
+        category,
+        description: description || '',
+        isAvailable: isAvailable !== false
+      },
+      metadata: { image: image || null }
     })
 
     return NextResponse.json({ item }, { status: 201 })

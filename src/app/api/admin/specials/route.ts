@@ -55,8 +55,16 @@ export async function POST(request: NextRequest) {
       resource: 'specials',
       resourceId: special.id,
       userId: session.user.id,
-      changes: { name, startDate, endDate, price },
-      metadata: { description, originalPrice, isActive, image }
+      changes: { 
+        name, 
+        startDate: new Date(startDate),
+        endDate: new Date(endDate),
+        price: price ? parseFloat(price) : null,
+        originalPrice: originalPrice ? parseFloat(originalPrice) : null,
+        description: description || '',
+        isActive: isActive !== false
+      },
+      metadata: { image: image || null }
     })
 
     return NextResponse.json({ special }, { status: 201 })

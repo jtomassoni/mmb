@@ -5,13 +5,72 @@ import { getImageAlt } from '../lib/image-alt';
 import { getRandomReviews } from '../lib/reviews-data';
 import { MenuItemDemo } from '../components/menu-item-demo';
 import { getSiteData } from '../lib/site-data';
+import { prisma } from '../lib/prisma';
 
 export default async function Home() {
   // Get site data from database
   const siteData = await getSiteData()
   
+  // Get upcoming events (next 7 days)
+  const upcomingEvents = await prisma.event.findMany({
+    where: {
+      siteId: siteData?.id,
+      isActive: true,
+      startDate: {
+        gte: new Date(),
+        lte: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // Next 7 days
+      }
+    },
+    orderBy: { startDate: 'asc' },
+    take: 4
+  })
+
+  // Get active specials
+  const activeSpecials = await prisma.special.findMany({
+    where: {
+      siteId: siteData?.id,
+      isActive: true,
+      startDate: { lte: new Date() },
+      endDate: { gte: new Date() }
+    },
+    orderBy: { startDate: 'asc' },
+    take: 3
+  })
+
+  // Get business hours
+  const businessHours = await prisma.hours.findMany({
+    where: {
+      siteId: siteData?.id
+    },
+    orderBy: { dayOfWeek: 'asc' }
+  })
+  
   // Get random reviews for this page load
   const randomReviews = getRandomReviews(2)
+
+  // Helper function to format business hours
+  const formatBusinessHours = (hours: typeof businessHours) => {
+    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+    
+    return hours.map(hour => {
+      const dayName = dayNames[hour.dayOfWeek]
+      if (hour.isClosed) {
+        return `${dayName}: Closed`
+      }
+      if (hour.openTime && hour.closeTime) {
+        // Format time from "09:00" to "9:00 AM"
+        const formatTime = (time: string) => {
+          const [hours, minutes] = time.split(':')
+          const hourNum = parseInt(hours)
+          const ampm = hourNum >= 12 ? 'PM' : 'AM'
+          const displayHour = hourNum === 0 ? 12 : hourNum > 12 ? hourNum - 12 : hourNum
+          return `${displayHour}:${minutes} ${ampm}`
+        }
+        return `${dayName}: ${formatTime(hour.openTime)} - ${formatTime(hour.closeTime)}`
+      }
+      return `${dayName}: Hours not set`
+    })
+  }
   
   // JSON-LD structured data for restaurant
   const jsonLd = {
@@ -31,7 +90,15 @@ export default async function Home() {
     "url": "https://monaghansbargrill.com",
     "servesCuisine": "American",
     "priceRange": "$$",
-    "openingHours": [
+    "openingHours": businessHours.length > 0 ? businessHours.map(hour => {
+      if (hour.isClosed) return null
+      if (hour.openTime && hour.closeTime) {
+        const dayNames = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
+        const dayName = dayNames[hour.dayOfWeek]
+        return `${dayName} ${hour.openTime}-${hour.closeTime}`
+      }
+      return null
+    }).filter(Boolean) : [
       "Mo-Th 11:00-22:00",
       "Fr-Sa 11:00-23:00", 
       "Su 10:00-21:00"
@@ -69,45 +136,31 @@ export default async function Home() {
               <h3 className="text-2xl font-semibold text-gray-900 mb-6">Events</h3>
               <div className="flex-1 flex flex-col">
                 <div className="grid grid-rows-4 gap-6 flex-1">
-                  <div className="bg-gray-50 p-6 rounded-lg hover:bg-gray-100 transition-colors flex flex-col justify-between">
-                    <div>
-                      <div className="flex justify-between items-start mb-2">
-                        <h4 className="text-lg font-semibold text-gray-900">Monday - Poker Night</h4>
-                        <span className="text-sm text-gray-500 bg-red-100 px-2 py-1 rounded">7:00 PM</span>
+                  {upcomingEvents.length > 0 ? (
+                    upcomingEvents.map((event, index) => (
+                      <div key={event.id} className="bg-gray-50 p-6 rounded-lg hover:bg-gray-100 transition-colors flex flex-col justify-between">
+                        <div>
+                          <div className="flex justify-between items-start mb-2">
+                            <h4 className="text-lg font-semibold text-gray-900">{event.name}</h4>
+                            <span className="text-sm text-gray-500 bg-red-100 px-2 py-1 rounded">
+                              {event.startTime || 'All Day'}
+                            </span>
+                          </div>
+                          <p className="text-gray-600">{event.description}</p>
+                          {event.location && (
+                            <p className="text-sm text-gray-500 mt-1">📍 {event.location}</p>
+                          )}
+                        </div>
                       </div>
-                      <p className="text-gray-600">Chimichangas special + Weekly poker tournament</p>
+                    ))
+                  ) : (
+                    <div className="bg-gray-50 p-6 rounded-lg flex items-center justify-center">
+                      <p className="text-gray-500">No upcoming events scheduled</p>
                     </div>
-                  </div>
-                  <div className="bg-gray-50 p-6 rounded-lg hover:bg-gray-100 transition-colors flex flex-col justify-between">
-                    <div>
-                      <div className="flex justify-between items-start mb-2">
-                        <h4 className="text-lg font-semibold text-gray-900">Tuesday - Taco Tuesday</h4>
-                        <span className="text-sm text-gray-500 bg-red-100 px-2 py-1 rounded">All Day</span>
-                      </div>
-                      <p className="text-gray-600">Beef tacos $1.50, chicken/carnitas $2, fish $3 + Mexican beer specials</p>
-                    </div>
-                  </div>
-                  <div className="bg-gray-50 p-6 rounded-lg hover:bg-gray-100 transition-colors flex flex-col justify-between">
-                    <div>
-                      <div className="flex justify-between items-start mb-2">
-                        <h4 className="text-lg font-semibold text-gray-900">Thursday - Thirsty Thursday</h4>
-                        <span className="text-sm text-gray-500 bg-red-100 px-2 py-1 rounded">All Day</span>
-                      </div>
-                      <p className="text-gray-600">$1 off tequila + Philly cheesesteak + Music Bingo with cash prizes</p>
-                    </div>
-                  </div>
-                  <div className="bg-gray-50 p-6 rounded-lg hover:bg-gray-100 transition-colors flex flex-col justify-between">
-                    <div>
-                      <div className="flex justify-between items-start mb-2">
-                        <h4 className="text-lg font-semibold text-gray-900">Weekend Karaoke</h4>
-                        <span className="text-sm text-gray-500 bg-red-100 px-2 py-1 rounded">Fri-Sat</span>
-                      </div>
-                      <p className="text-gray-600">Sing your heart out with our karaoke setup</p>
-                    </div>
-                  </div>
+                  )}
                 </div>
                 <div className="text-center mt-6">
-                  <a href="/whats-happening" className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 hover:shadow-lg transition-all duration-300">
+                  <a href="/events" className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 hover:shadow-lg transition-all duration-300">
                     View All Events & Specials
                   </a>
                 </div>
@@ -119,32 +172,26 @@ export default async function Home() {
               <h3 className="text-2xl font-semibold text-gray-900 mb-6">Food & Drink Specials</h3>
               <div className="flex-1 flex flex-col">
                 <div className="grid grid-rows-3 gap-6 flex-1">
-                  <div className="bg-gray-50 p-6 rounded-lg hover:bg-gray-100 transition-colors flex flex-col justify-between">
-                    <div>
-                      <h4 className="text-lg font-semibold text-gray-900 mb-2">Happy Hour</h4>
-                      <p className="text-gray-600 mb-2">10am-12pm & 3pm-7pm daily</p>
-                      <p className="text-sm text-gray-500">BOGO first round of wine, wells, or drafts</p>
+                  {activeSpecials.length > 0 ? (
+                    activeSpecials.map((special, index) => (
+                      <div key={special.id} className="bg-gray-50 p-6 rounded-lg hover:bg-gray-100 transition-colors flex flex-col justify-between">
+                        <div>
+                          <h4 className="text-lg font-semibold text-gray-900 mb-2">{special.name}</h4>
+                          <p className="text-gray-600 mb-2">{special.description}</p>
+                          {special.price && (
+                            <p className="text-sm text-green-600 font-medium">${special.price}</p>
+                          )}
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="bg-gray-50 p-6 rounded-lg flex items-center justify-center">
+                      <p className="text-gray-500">No active specials at the moment</p>
                     </div>
-                  </div>
-                  <div className="bg-gray-50 p-6 rounded-lg hover:bg-gray-100 transition-colors flex flex-col justify-between">
-                    <div>
-                      <h4 className="text-lg font-semibold text-gray-900 mb-2">Daily Food Specials</h4>
-                      <p className="text-gray-600 mb-2">Monday: Chimichangas</p>
-                      <p className="text-gray-600 mb-2">Tuesday: Taco Tuesday</p>
-                      <p className="text-gray-600 mb-2">Wednesday: Southwest Eggrolls</p>
-                      <p className="text-gray-600">Thursday: Philly Cheesesteak</p>
-                    </div>
-                  </div>
-                  <div className="bg-gray-50 p-6 rounded-lg hover:bg-gray-100 transition-colors flex flex-col justify-between">
-                    <div>
-                      <h4 className="text-lg font-semibold text-gray-900 mb-2">Drink Specials</h4>
-                      <p className="text-gray-600 mb-2">Wednesday: $1 off all whiskey</p>
-                      <p className="text-gray-600">Thursday: $1 off all tequila</p>
-                    </div>
-                  </div>
+                  )}
                 </div>
                 <div className="text-center mt-6">
-                  <a href="/whats-happening" className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 hover:shadow-lg transition-all duration-300">
+                  <a href="/events" className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 hover:shadow-lg transition-all duration-300">
                     View All Events & Specials
                   </a>
                 </div>
@@ -190,93 +237,26 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Gallery Carousel Section */}
-      <section className="py-16 bg-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">See Our Space</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">Take a look at our bar, pool tables, patio, and delicious food</p>
-          </div>
-          
-          {/* Gallery Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <div className="relative h-48 rounded-lg overflow-hidden hover:scale-105 transition-transform duration-300">
-              <Image
-                src="/pics/monaghans-billiards.jpg"
-                alt="Pool tables at Monaghan's Bar & Grill"
-                fill
-                className="object-cover"
-                sizes="(max-width: 768px) 50vw, 25vw"
-              />
-            </div>
-            <div className="relative h-48 rounded-lg overflow-hidden hover:scale-105 transition-transform duration-300">
-              <Image
-                src="/pics/monaghans-billiard-room.jpg"
-                alt="Pool room at Monaghan's Bar & Grill"
-                fill
-                className="object-cover"
-                sizes="(max-width: 768px) 50vw, 25vw"
-              />
-            </div>
-            <div className="relative h-48 rounded-lg overflow-hidden hover:scale-105 transition-transform duration-300">
-              <Image
-                src="/pics/monaghans-breakfast-biscut.jpg"
-                alt="Breakfast biscuit at Monaghan's Bar & Grill"
-                fill
-                className="object-cover"
-                sizes="(max-width: 768px) 50vw, 25vw"
-              />
-            </div>
-            <div className="relative h-48 rounded-lg overflow-hidden hover:scale-105 transition-transform duration-300">
-              <Image
-                src="/pics/monaghans-patio.jpg"
-                alt="Patio seating at Monaghan's Bar & Grill"
-                fill
-                className="object-cover"
-                sizes="(max-width: 768px) 50vw, 25vw"
-              />
-            </div>
-          </div>
-          
-          {/* Gallery Actions */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <a href="/gallery" className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 hover:shadow-lg transition-all duration-300">
-              View Full Gallery
-            </a>
-            <a 
-              href="https://www.facebook.com/people/Monaghans-Bar-and-Grill/100063611261508/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 hover:shadow-lg transition-all duration-300 flex items-center gap-2"
-            >
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-              </svg>
-              Follow Us on Facebook
-            </a>
-          </div>
-        </div>
-      </section>
 
-      {/* Online Ordering Demo Section */}
-      <section className="py-16 bg-gray-50">
+      {/* Online Ordering Demo Section - Less Prominent */}
+      <section className="py-8 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Online Ordering Coming Soon!
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Experience our new online ordering system. Add items to your cart and see how easy it will be to order from Monaghan's.
+          <div className="text-center mb-6">
+            <h3 className="text-lg font-semibold text-gray-700 mb-2">
+              Online Ordering Coming Soon
+            </h3>
+            <p className="text-sm text-gray-500 max-w-xl mx-auto">
+              We're working on bringing you online ordering. For now, call us to place your order.
             </p>
           </div>
           
-          <div className="flex justify-center">
+          <div className="flex justify-center mb-4">
             <MenuItemDemo />
           </div>
           
-          <div className="mt-8 text-center">
-            <p className="text-sm text-gray-500">
-              For now, please call us at <a href="tel:3035550123" className="text-green-600 hover:text-green-700 font-medium">(303) 555-0123</a> to place your order.
+          <div className="text-center">
+            <p className="text-xs text-gray-400">
+              Call us at <a href="tel:3035550123" className="text-green-600 hover:text-green-700 font-medium">(303) 555-0123</a> to order.
             </p>
           </div>
         </div>
@@ -291,6 +271,7 @@ export default async function Home() {
               <div className="space-y-2 text-gray-600">
                 <p>{siteData?.address || "123 Main Street, Denver, CO 80202"}</p>
                 <p>Phone: <a href={`tel:${siteData?.phone?.replace(/\D/g, '') || '3035550123'}`} className="text-green-600 hover:text-green-700">{siteData?.phone || "(303) 555-0123"}</a></p>
+                <p>Email: <a href={`mailto:${siteData?.email || 'info@monaghans.com'}`} className="text-green-600 hover:text-green-700">{siteData?.email || "info@monaghans.com"}</a></p>
                 
                 {/* Get Directions Button */}
                 {siteData?.googleMapsUrl && (
@@ -328,11 +309,22 @@ export default async function Home() {
                 
                 <div className="mt-4">
                   <h3 className="font-semibold mb-2 text-gray-900">Hours:</h3>
-                  <p>Monday - Thursday: 10:00 AM - 2:00 AM</p>
-                  <p>Friday: 10:00 AM - 2:00 AM</p>
-                  <p>Saturday: 8:00 AM - 2:00 AM</p>
-                  <p>Sunday: 8:00 AM - 2:00 AM</p>
-                  <p className="text-sm text-gray-500 mt-2">Call ahead if it's late to confirm we're still open!</p>
+                  {businessHours.length > 0 ? (
+                    <>
+                      {formatBusinessHours(businessHours).map((hourText, index) => (
+                        <p key={index}>{hourText}</p>
+                      ))}
+                      <p className="text-sm text-gray-500 mt-2">Call ahead if it's late to confirm we're still open!</p>
+                    </>
+                  ) : (
+                    <>
+                      <p>Monday - Thursday: 10:00 AM - 2:00 AM</p>
+                      <p>Friday: 10:00 AM - 2:00 AM</p>
+                      <p>Saturday: 8:00 AM - 2:00 AM</p>
+                      <p>Sunday: 8:00 AM - 2:00 AM</p>
+                      <p className="text-sm text-gray-500 mt-2">Call ahead if it's late to confirm we're still open!</p>
+                    </>
+                  )}
                 </div>
               </div>
             </div>

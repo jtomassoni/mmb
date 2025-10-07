@@ -4,11 +4,12 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { Role } from '@prisma/client'
 import { hasPermission, RESOURCES, ACTIONS } from '@/lib/rbac'
+import { validateText } from '@/lib/input-validation'
 
 // Update user (superadmin only)
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -22,9 +23,31 @@ export async function PUT(
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 })
     }
 
-    const userId = params.id
+    const { id: userId } = await params
     const body = await request.json()
     const { name, role, isActive, disabledReason } = body
+
+    // Validate inputs
+    const nameValidation = validateText(name || '', { 
+      maxLength: 100, 
+      allowEmojis: false,
+      customValidator: (value) => {
+        if (value.length > 0 && !/^[a-zA-Z\s\-'.]+$/.test(value)) {
+          return 'Name contains invalid characters'
+        }
+        return null
+      }
+    })
+
+    const disabledReasonValidation = validateText(disabledReason || '', { 
+      maxLength: 200, 
+      allowEmojis: false 
+    })
+
+    // Check for validation errors
+    const validationErrors: string[] = []
+    if (!nameValidation.isValid) validationErrors.push(`Name: ${nameValidation.errors.join(', ')}`)
+    if (!disabledReasonValidation.isValid) validationErrors.push(`Disabled reason: ${disabledReasonValidation.errors.join(', ')}`)
 
     // Get current user data for audit log
     const currentUser = await prisma.user.findUnique({
@@ -52,9 +75,16 @@ export async function PUT(
       }, { status: 400 })
     }
 
+    if (validationErrors.length > 0) {
+      return NextResponse.json({ 
+        error: 'Validation failed', 
+        details: validationErrors 
+      }, { status: 400 })
+    }
+
     // Prepare update data
     const updateData: any = {}
-    if (name !== undefined) updateData.name = name
+    if (name !== undefined) updateData.name = nameValidation.sanitizedValue
     if (role !== undefined) updateData.role = role as Role
     if (isActive !== undefined) {
       updateData.isActive = isActive
@@ -62,7 +92,7 @@ export async function PUT(
         // User is being disabled
         updateData.disabledAt = new Date()
         updateData.disabledBy = session.user.id
-        updateData.disabledReason = disabledReason || 'Disabled by admin'
+        updateData.disabledReason = disabledReasonValidation.sanitizedValue || 'Disabled by admin'
       } else {
         // User is being enabled
         updateData.disabledAt = null
@@ -115,7 +145,7 @@ export async function PUT(
 // Delete user (superadmin only)
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -129,7 +159,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 })
     }
 
-    const userId = params.id
+    const { id: userId } = await params
 
     // Prevent self-deletion
     if (userId === session.user.id) {

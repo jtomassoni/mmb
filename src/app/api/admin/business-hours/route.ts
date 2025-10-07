@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { logAuditEvent } from '@/lib/audit-log'
+import { validateTime } from '@/lib/input-validation'
 
 export async function GET() {
   try {
@@ -68,6 +69,36 @@ export async function PUT(request: NextRequest) {
     const body = await request.json()
     const { monday, tuesday, wednesday, thursday, friday, saturday, sunday } = body
 
+    // Validate all time inputs
+    const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
+    const hoursData = { sunday, monday, tuesday, wednesday, thursday, friday, saturday }
+    const validationErrors: string[] = []
+
+    // Validate each day's hours
+    Object.entries(hoursData).forEach(([dayName, dayHours]) => {
+      if (!dayHours.closed) {
+        if (dayHours.open) {
+          const openValidation = validateTime(dayHours.open)
+          if (!openValidation.isValid) {
+            validationErrors.push(`${dayName} open time: ${openValidation.errors.join(', ')}`)
+          }
+        }
+        if (dayHours.close) {
+          const closeValidation = validateTime(dayHours.close)
+          if (!closeValidation.isValid) {
+            validationErrors.push(`${dayName} close time: ${closeValidation.errors.join(', ')}`)
+          }
+        }
+      }
+    })
+
+    if (validationErrors.length > 0) {
+      return NextResponse.json({ 
+        error: 'Validation failed', 
+        details: validationErrors 
+      }, { status: 400 })
+    }
+
     // Get the Monaghan's site
     const site = await prisma.site.findFirst({
       where: { slug: 'monaghans-bargrill' }
@@ -77,8 +108,36 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Site not found' }, { status: 404 })
     }
 
-    const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
-    const hoursData = { sunday, monday, tuesday, wednesday, thursday, friday, saturday }
+    // Get existing hours BEFORE updating (for audit log)
+    const existingHours = await prisma.hours.findMany({
+      where: { siteId: site.id },
+      orderBy: { dayOfWeek: 'asc' }
+    })
+
+    // Convert existing hours to the same format
+    const existingHoursData = {
+      monday: { open: '11:00', close: '22:00', closed: false },
+      tuesday: { open: '11:00', close: '22:00', closed: false },
+      wednesday: { open: '11:00', close: '22:00', closed: false },
+      thursday: { open: '11:00', close: '22:00', closed: false },
+      friday: { open: '11:00', close: '23:00', closed: false },
+      saturday: { open: '10:00', close: '23:00', closed: false },
+      sunday: { open: '10:00', close: '21:00', closed: false }
+    }
+
+    // Update with actual existing data
+    existingHours.forEach(hour => {
+      const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
+      const dayName = dayNames[hour.dayOfWeek] as keyof typeof existingHoursData
+      
+      if (existingHoursData[dayName]) {
+        existingHoursData[dayName] = {
+          open: hour.openTime || '11:00',
+          close: hour.closeTime || '22:00',
+          closed: hour.isClosed
+        }
+      }
+    })
 
     // Update each day's hours
     for (let dayOfWeek = 0; dayOfWeek < 7; dayOfWeek++) {
@@ -102,13 +161,14 @@ export async function PUT(request: NextRequest) {
       })
     }
 
-    // Log the update
+    // Log the audit event with before/after values
     await logAuditEvent({
       action: 'UPDATE',
       resource: 'business_hours',
       resourceId: site.id,
       userId: session.user.id,
       changes: { businessHours: hoursData },
+      previousValues: { businessHours: existingHoursData },
       metadata: { updatedDays: Object.keys(hoursData) }
     })
 

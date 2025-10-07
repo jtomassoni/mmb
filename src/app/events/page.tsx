@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { broncosSchedule2025, BroncosGame } from '../../lib/broncos-schedule'
+import { broncosSchedule2025 } from '../../lib/broncos-schedule'
 
 interface CalendarEvent {
   id: string
@@ -20,139 +20,279 @@ interface CalendarEvent {
   updatedAt: string
 }
 
-interface Event {
-  id: string
-  title: string
-  description: string | null
-  day: string | null
-  time: string | null
-  startDate: string
-  endDate: string | null
-  isRecurring: boolean
-  dayOfWeek: number | null
-  site: {
-    name: string
-    slug: string
-  }
+interface DayEvent {
+  day: string
+  date: string
+  events: {
+    title: string
+    time: string
+    description: string
+    type: 'food' | 'drink' | 'entertainment' | 'sports'
+    price?: string
+  }[]
 }
 
 export default function EventsPage() {
-  const [events, setEvents] = useState<Event[]>([])
-  const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>([])
+  const [currentWeek, setCurrentWeek] = useState<DayEvent[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [broncosOffset, setBroncosOffset] = useState(0)
 
-  useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        setIsLoading(true)
-        setError(null)
-        
-        // Fetch from calendar API
-        const today = new Date()
-        const nextMonth = new Date()
-        nextMonth.setMonth(today.getMonth() + 1)
-        
-        const startDate = today.toISOString().split('T')[0]
-        const endDate = nextMonth.toISOString().split('T')[0]
-        
-        const response = await fetch(`/api/public/calendar?startDate=${startDate}&endDate=${endDate}`)
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`)
-        }
-        
+  const fetchCalendarEvents = async () => {
+    try {
+      const today = new Date()
+      const startOfWeek = new Date(today)
+      startOfWeek.setDate(today.getDate() - today.getDay()) // Start from Sunday
+      
+      const endOfWeek = new Date(startOfWeek)
+      endOfWeek.setDate(startOfWeek.getDate() + 6) // End on Saturday
+      
+      const startDate = startOfWeek.toISOString().split('T')[0]
+      const endDate = endOfWeek.toISOString().split('T')[0]
+      
+      const response = await fetch(`/api/public/calendar?startDate=${startDate}&endDate=${endDate}`)
+      
+      if (response.ok) {
         const data = await response.json()
         if (data.success) {
-          setCalendarEvents(data.events)
-        } else {
-          throw new Error('Failed to fetch calendar events')
+          return data.events as CalendarEvent[]
         }
-        
-        // Keep the old events API as fallback for now
-        try {
-          const oldResponse = await fetch('/api/public/events')
-          if (oldResponse.ok) {
-            const oldData = await oldResponse.json()
-            setEvents(oldData.events)
-          }
-        } catch (oldError) {
-          console.warn('Old events API failed, using calendar events only')
-        }
-        
-      } catch (error) {
-        console.error('Failed to fetch events:', error)
-        setError(error instanceof Error ? error.message : 'Failed to fetch events')
-      } finally {
-        setIsLoading(false)
       }
+    } catch (error) {
+      console.error('Failed to fetch calendar events:', error)
     }
+    
+    return []
+  }
 
-    fetchEvents()
+  useEffect(() => {
+    const generateWeekEvents = async () => {
+      setIsLoading(true)
+      
+      // Fetch events from calendar API
+      const calendarEvents = await fetchCalendarEvents()
+      
+      const today = new Date()
+      // Start from yesterday (one day in the past)
+      const startOfWeek = new Date(today)
+      startOfWeek.setDate(today.getDate() - 1)
+      
+      const weekEvents: DayEvent[] = []
+      
+      for (let i = 0; i < 7; i++) {
+        const date = new Date(startOfWeek)
+        date.setDate(startOfWeek.getDate() + i)
+        
+        const dayName = date.toLocaleDateString('en-US', { weekday: 'long' })
+        const dayNumber = date.getDate()
+        const dateString = date.toISOString().split('T')[0]
+        
+        let events: DayEvent['events'] = []
+        
+        // Get events from calendar API for this day
+        const dayEvents = calendarEvents.filter(event => event.date === dateString)
+        
+        // Get Broncos games for this day
+        const broncosGames = broncosSchedule2025.filter(game => game.date === dateString)
+        
+        // Combine calendar events and Broncos games
+        const allEvents = [
+          ...dayEvents.map(event => ({
+            title: event.title,
+            time: event.startTime ? 
+              new Date(`2000-01-01T${event.startTime}`).toLocaleTimeString('en-US', {
+                hour: 'numeric',
+                minute: '2-digit',
+                hour12: true
+              }) : 'All Day',
+            description: event.description,
+            type: event.type === 'broncos' ? 'sports' : event.type as 'food' | 'drink' | 'entertainment',
+            price: event.price
+          })),
+          ...broncosGames.map(game => ({
+            title: `Broncos vs ${game.opponent}`,
+            time: new Date(`2000-01-01T${game.time}`).toLocaleTimeString('en-US', {
+              hour: 'numeric',
+              minute: '2-digit',
+              hour12: true
+            }),
+            description: `${game.potluckFood} - ${game.description}`,
+            type: 'sports' as const,
+            price: 'Potluck Event'
+          }))
+        ]
+        
+        // Sort events by type priority: food → drink → entertainment → sports
+        const typePriority = { food: 1, drink: 2, entertainment: 3, sports: 4 }
+        allEvents.sort((a, b) => {
+          const aPriority = typePriority[a.type] || 5
+          const bPriority = typePriority[b.type] || 5
+          return aPriority - bPriority
+        })
+        
+        if (allEvents.length > 0) {
+          events = allEvents
+        } else {
+          // Fallback to hardcoded events if no calendar events
+          // Map days based on position: 0=yesterday, 1=today, 2=tomorrow, etc.
+          const dayOfWeek = date.getDay()
+          switch (dayOfWeek) {
+            case 0: // Sunday
+              events = []
+              break
+            case 1: // Monday
+              events = [
+                {
+                  title: "Chimichanga Special",
+                  time: "All Day",
+                  description: "Crispy chimichangas with rice and beans",
+                  type: "food",
+                  price: "$9.99"
+                },
+                {
+                  title: "Monday Night Poker",
+                  time: "7:00 PM",
+                  description: "Weekly poker tournament with cash prizes",
+                  type: "entertainment"
+                }
+              ]
+              break
+            case 2: // Tuesday
+              events = [
+                {
+                  title: "Taco Tuesday",
+                  time: "All Day",
+                  description: "Beef tacos $1.50, chicken/carnitas $2, fish $3",
+                  type: "food"
+                },
+                {
+                  title: "Mexican Beer Specials",
+                  time: "All Day",
+                  description: "Dos Equis, Modelo, Pacifico, Corona - $4",
+                  type: "drink"
+                }
+              ]
+              break
+            case 3: // Wednesday
+              events = [
+                {
+                  title: "Southwest Eggrolls",
+                  time: "All Day",
+                  description: "Crispy eggrolls with rice and beans",
+                  type: "food",
+                  price: "$8.99"
+                },
+                {
+                  title: "Whiskey Wednesday",
+                  time: "All Day",
+                  description: "$1 off all whiskey drinks",
+                  type: "drink"
+                }
+              ]
+              break
+            case 4: // Thursday
+              events = [
+                {
+                  title: "Philly Cheesesteak",
+                  time: "All Day",
+                  description: "Classic Philly with peppers and onions",
+                  type: "food",
+                  price: "$11.99"
+                },
+                {
+                  title: "Thirsty Thursday",
+                  time: "All Day",
+                  description: "$1 off all tequila drinks",
+                  type: "drink"
+                },
+                {
+                  title: "Music Bingo",
+                  time: "8:00 PM",
+                  description: "Cash prizes and great music",
+                  type: "entertainment"
+                }
+              ]
+              break
+            case 5: // Friday
+              events = [
+                {
+                  title: "Happy Hour",
+                  time: "3:00 PM - 7:00 PM",
+                  description: "BOGO first round of wine, wells, or drafts",
+                  type: "drink"
+                },
+                {
+                  title: "Friday Night Vibes",
+                  time: "All Day",
+                  description: "Weekend starts here! Open until 2 AM",
+                  type: "entertainment"
+                }
+              ]
+              break
+            case 6: // Saturday
+              events = [
+                {
+                  title: "Happy Hour",
+                  time: "3:00 PM - 7:00 PM",
+                  description: "BOGO first round of wine, wells, or drafts",
+                  type: "drink"
+                },
+                {
+                  title: "Saturday Night",
+                  time: "All Day",
+                  description: "Full weekend energy! Open until 2 AM",
+                  type: "entertainment"
+                },
+                {
+                  title: "Karaoke Night",
+                  time: "9:00 PM",
+                  description: "Sing your heart out with our karaoke setup",
+                  type: "entertainment"
+                }
+              ]
+              break
+          }
+        }
+        
+        weekEvents.push({
+          day: dayName,
+          date: `${dayName}, ${dayNumber}`,
+          events
+        })
+      }
+      
+      setCurrentWeek(weekEvents)
+      setIsLoading(false)
+    }
+    
+    generateWeekEvents()
   }, [])
 
-  // JSON-LD structured data for events
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Event",
-    "name": "Restaurant Events",
-    "description": "Weekly events at Monaghan's Bar & Grill including poker, bingo, and Broncos games",
-    "organizer": {
-      "@type": "Organization",
-      "name": "Monaghan's Bar & Grill",
-      "address": {
-        "@type": "PostalAddress",
-        "streetAddress": "1234 Main Street",
-        "addressLocality": "Denver",
-        "addressRegion": "CO",
-        "postalCode": "80202"
-      },
-      "telephone": "(303) 555-0123"
-    },
-    "eventSchedule": events.map(event => ({
-      "@type": "Schedule",
-      "name": event.title,
-      "description": event.description,
-      "recurrenceRule": event.isRecurring ? `FREQ=WEEKLY;BYDAY=${event.day?.toUpperCase().substring(0, 2)}` : undefined,
-      "startTime": event.time
-    }))
+  const getTypeColor = (type: string) => {
+    switch (type) {
+      case 'food': return 'bg-orange-100 text-orange-800'
+      case 'drink': return 'bg-green-100 text-green-800'
+      case 'entertainment': return 'bg-purple-100 text-purple-800'
+      case 'sports': return 'bg-blue-100 text-blue-800'
+      default: return 'bg-gray-100 text-gray-800'
+    }
+  }
+
+  const getTypeIcon = (type: string) => {
+    switch (type) {
+      case 'food': return 'Food'
+      case 'drink': return 'Drink'
+      case 'entertainment': return 'Entertainment'
+      case 'sports': return 'Sports'
+      default: return 'Event'
+    }
   }
 
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-4xl font-bold text-center text-gray-900 mb-12">Events & Entertainment</h1>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[...Array(3)].map((_, i) => (
-              <div key={i} className="bg-white p-8 rounded-lg shadow animate-pulse">
-                <div className="h-6 bg-gray-200 rounded mb-4"></div>
-                <div className="h-4 bg-gray-200 rounded mb-2"></div>
-                <div className="h-4 bg-gray-200 rounded mb-4"></div>
-                <div className="h-4 bg-gray-200 rounded mb-4"></div>
-                <div className="h-6 bg-gray-200 rounded w-24 mx-auto"></div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gray-50 py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-4xl font-bold text-center text-gray-900 mb-12">Events & Entertainment</h1>
-          <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
-            <h2 className="text-lg font-semibold text-red-800 mb-2">Failed to load events</h2>
-            <p className="text-red-600 mb-4">{error}</p>
-            <button
-              onClick={() => window.location.reload()}
-              className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
-            >
-              Retry
-            </button>
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-green-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Loading this week's events...</p>
           </div>
         </div>
       </div>
@@ -160,257 +300,67 @@ export default function EventsPage() {
   }
 
   return (
-    <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-      <div className="min-h-screen bg-gray-50 py-16">
+    <div className="min-h-screen bg-gray-50 py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 className="text-4xl font-bold text-center text-gray-900 mb-12">Events & Entertainment</h1>
-        
-        {/* Calendar Events */}
-        {calendarEvents.length > 0 && (
-          <div className="mb-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Upcoming Events</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {calendarEvents.slice(0, 6).map((event) => (
-                <div key={event.id} className="bg-white rounded-lg shadow-md overflow-hidden">
-                  <div className="p-6">
-                    <div className="flex items-center justify-between mb-3">
-                      <span className={`text-xs px-2 py-1 rounded-full ${
-                        event.type === 'food' ? 'bg-orange-100 text-orange-800' :
-                        event.type === 'drink' ? 'bg-green-100 text-green-800' :
-                        event.type === 'entertainment' ? 'bg-purple-100 text-purple-800' :
-                        event.type === 'broncos' ? 'bg-blue-100 text-blue-800' :
-                        'bg-yellow-100 text-yellow-800'
-                      }`}>
-                        {event.type}
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">What's Happening This Week</h1>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            Every day brings something special at Monaghan's. From daily specials to weekly events, 
+            there's always a reason to stop by!
+          </p>
+        </div>
+
+        {/* Weekly Calendar */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-4 mb-12">
+          {currentWeek.map((day, index) => {
+            const today = new Date()
+            const dayDate = new Date(today)
+            dayDate.setDate(today.getDate() - 1 + index) // Start from yesterday
+            const isToday = dayDate.toDateString() === today.toDateString()
+            const isPastDay = index === 0 // Only the first day (yesterday) is past
+            
+            return (
+              <div 
+                key={index} 
+                className={`bg-white rounded-lg shadow-sm overflow-hidden ${
+                  isToday ? 'ring-2 ring-green-500 ring-opacity-50 shadow-lg' : ''
+                } ${isPastDay ? 'opacity-60' : ''}`}
+              >
+                <div className={`${isToday ? 'bg-green-700' : isPastDay ? 'bg-gray-500' : 'bg-green-600'} text-white p-4 text-center`}>
+                  <h3 className="font-bold text-lg">{day.day}</h3>
+                  <p className="text-green-100 text-sm">{day.date.split(',')[1]}</p>
+                </div>
+              
+              <div className="p-4 space-y-3">
+                {day.events.map((event, eventIndex) => (
+                  <div key={eventIndex} className={`border-l-4 pl-3 ${isPastDay ? 'border-gray-200' : 'border-green-200'}`}>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className={`text-xs px-2 py-1 rounded-full ${isPastDay ? 'bg-gray-100 text-gray-600' : getTypeColor(event.type)}`}>
+                        {getTypeIcon(event.type)}
                       </span>
-                      {event.price && (
-                        <span className="text-sm font-semibold text-green-600">{event.price}</span>
-                      )}
                     </div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{event.title}</h3>
-                    <p className="text-gray-600 text-sm mb-3">{event.description}</p>
-                    <div className="flex items-center text-sm text-gray-500">
-                      <span className="mr-2">📅</span>
-                      <span>{new Date(event.date).toLocaleDateString('en-US', { 
-                        weekday: 'long', 
-                        year: 'numeric', 
-                        month: 'long', 
-                        day: 'numeric' 
-                      })}</span>
-                      {event.startTime && (
-                        <>
-                          <span className="mx-2">•</span>
-                          <span>{new Date(`2000-01-01T${event.startTime}`).toLocaleTimeString('en-US', { 
-                            hour: 'numeric', 
-                            minute: '2-digit',
-                            hour12: true 
-                          })}</span>
-                        </>
-                      )}
-                    </div>
+                    <h4 className={`font-semibold text-sm ${isPastDay ? 'text-gray-500' : 'text-gray-900'}`}>{event.title}</h4>
+                    <p className={`text-xs mb-1 ${isPastDay ? 'text-gray-400' : 'text-gray-600'}`}>{event.time}</p>
+                    <p className={`text-xs ${isPastDay ? 'text-gray-400' : 'text-gray-700'}`}>{event.description}</p>
+                    {event.price && (
+                      <p className={`font-semibold text-xs mt-1 ${isPastDay ? 'text-gray-400' : 'text-green-600'}`}>{event.price}</p>
+                    )}
                   </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {events.length === 0 && calendarEvents.length === 0 ? (
-          <div className="space-y-8">
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
-              <h2 className="text-lg font-semibold text-gray-800 mb-2">Weekly Events at Monaghan's</h2>
-              <p className="text-gray-600 mb-6">Join us for our regular weekly events!</p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="bg-white p-8 rounded-lg shadow">
-                <div className="text-center">
-                  <h3 className="text-2xl font-semibold mb-2 text-red-600">Monday - Chimichangas & Poker</h3>
-                  <p className="text-lg text-gray-600 mb-2">Monday</p>
-                  <p className="text-lg font-medium text-gray-800 mb-4">7:00 PM</p>
-                  <p className="text-gray-600 mb-4">Chimichangas special + Poker night</p>
-                  <span className="inline-block bg-green-100 text-green-800 text-sm px-3 py-1 rounded-full">
-                    Weekly Event
-                  </span>
-                </div>
-              </div>
-              
-              <div className="bg-white p-8 rounded-lg shadow">
-                <div className="text-center">
-                  <h3 className="text-2xl font-semibold mb-2 text-red-600">Tuesday - Taco Tuesday</h3>
-                  <p className="text-lg text-gray-600 mb-2">Tuesday</p>
-                  <p className="text-lg font-medium text-gray-800 mb-4">All Day</p>
-                  <p className="text-gray-600 mb-4">Beef tacos $1.50, chicken/carnitas $2, fish $3. Mexican beer specials!</p>
-                  <span className="inline-block bg-green-100 text-green-800 text-sm px-3 py-1 rounded-full">
-                    Weekly Event
-                  </span>
-                </div>
-              </div>
-              
-              <div className="bg-white p-8 rounded-lg shadow">
-                <div className="text-center">
-                  <h3 className="text-2xl font-semibold mb-2 text-red-600">Thursday - Thirsty Thursday</h3>
-                  <p className="text-lg text-gray-600 mb-2">Thursday</p>
-                  <p className="text-lg font-medium text-gray-800 mb-4">All Day</p>
-                  <p className="text-gray-600 mb-4">$1 off tequila + Philly cheesesteak + Music Bingo with cash prizes</p>
-                  <span className="inline-block bg-green-100 text-green-800 text-sm px-3 py-1 rounded-full">
-                    Weekly Event
-                  </span>
-                </div>
+                ))}
               </div>
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
-              <div className="bg-white p-8 rounded-lg shadow">
-                <div className="text-center">
-                  <h3 className="text-2xl font-semibold mb-2 text-red-600">Wednesday - Whiskey Wednesday</h3>
-                  <p className="text-lg text-gray-600 mb-2">Wednesday</p>
-                  <p className="text-lg font-medium text-gray-800 mb-4">All Day</p>
-                  <p className="text-gray-600 mb-4">$1 off all whiskey + Southwest Eggrolls with rice & beans</p>
-                  <span className="inline-block bg-green-100 text-green-800 text-sm px-3 py-1 rounded-full">
-                    Weekly Event
-                  </span>
-                </div>
-              </div>
-              
-              <div className="bg-white p-8 rounded-lg shadow">
-                <div className="text-center">
-                  <h3 className="text-2xl font-semibold mb-2 text-red-600">NFL Watch Parties</h3>
-                  <p className="text-lg text-gray-600 mb-2">Thursday & Sunday</p>
-                  <p className="text-lg font-medium text-gray-800 mb-4">Game Time</p>
-                  <p className="text-gray-600 mb-4">Thursday Night Football & Sunday games - join us for the action!</p>
-                  <span className="inline-block bg-green-100 text-green-800 text-sm px-3 py-1 rounded-full">
-                    Seasonal Event
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {events.map((event) => (
-              <div key={event.id} className="bg-white p-8 rounded-lg shadow">
-                <div className="text-center">
-                  <h3 className="text-2xl font-semibold mb-2 text-green-600">{event.title}</h3>
-                  {event.day && (
-                    <p className="text-lg text-gray-600 mb-2">{event.day}</p>
-                  )}
-                  {event.time && (
-                    <p className="text-lg font-medium text-gray-800 mb-4">{event.time}</p>
-                  )}
-                  {event.description && (
-                    <p className="text-gray-600 mb-4">{event.description}</p>
-                  )}
-                  {event.isRecurring && (
-                    <span className="inline-block bg-green-100 text-green-800 text-sm px-3 py-1 rounded-full">
-                      Weekly Event
-                    </span>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Broncos Games Section */}
-        <div className="mt-16">
-          <div className="flex justify-between items-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-900">Broncos Game Potlucks</h2>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setBroncosOffset(Math.max(0, broncosOffset - 3))}
-                disabled={broncosOffset === 0}
-                className="px-3 py-1 bg-gray-200 text-gray-700 rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-300 transition-colors"
-              >
-                Previous
-              </button>
-              <button
-                onClick={() => setBroncosOffset(broncosOffset + 3)}
-                disabled={broncosOffset + 3 >= broncosSchedule2025.filter(game => new Date(game.date) >= new Date()).length}
-                className="px-3 py-1 bg-gray-200 text-gray-700 rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-300 transition-colors"
-              >
-                Next
-              </button>
-            </div>
-          </div>
-          <p className="text-center text-gray-600 mb-8 max-w-3xl mx-auto">
-            Join us for every Broncos game! We provide the main dish, you bring a side or dessert. 
-            It's a community potluck that makes every game day special.
-          </p>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {broncosSchedule2025
-              .filter(game => new Date(game.date) >= new Date())
-              .slice(broncosOffset, broncosOffset + 3)
-              .map((game) => (
-              <div key={game.id} className="bg-white p-6 rounded-lg shadow hover:shadow-lg transition-shadow">
-                <div className="text-center">
-                  <h3 className="text-xl font-semibold mb-2 text-green-600">
-                    Broncos vs {game.opponent}
-                  </h3>
-                  <p className="text-lg text-gray-600 mb-2">
-                    {new Date(game.date).toLocaleDateString('en-US', { 
-                      weekday: 'long', 
-                      month: 'long', 
-                      day: 'numeric' 
-                    })}
-                  </p>
-                  <p className="text-lg font-medium text-gray-800 mb-3">
-                    {new Date(`2000-01-01T${game.time}`).toLocaleTimeString('en-US', { 
-                      hour: 'numeric', 
-                      minute: '2-digit',
-                      hour12: true 
-                    })}
-                  </p>
-                  <p className="text-sm text-gray-500 mb-3">
-                    {game.homeAway === 'home' ? 'Home Game' : game.homeAway === 'away' ? 'Away Game' : 'Neutral Site'}
-                  </p>
-                  <div className="bg-green-50 p-3 rounded-lg mb-3">
-                    <p className="text-sm font-medium text-green-800 mb-1">We're providing:</p>
-                    <p className="text-lg font-semibold text-green-700">{game.potluckFood}</p>
-                  </div>
-                  <div className="text-sm text-gray-600 mb-3 whitespace-pre-line">
-                    {game.description}
-                  </div>
-                  <span className="inline-block bg-orange-100 text-orange-800 text-sm px-3 py-1 rounded-full">
-                    Potluck Event
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-          
-          <div className="text-center mt-8">
-            <p className="text-gray-600 mb-4">
-              Showing next 3 upcoming games. Check back for more!
-            </p>
-            <a 
-              href="tel:3035550123" 
-              className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors inline-block"
-            >
-              Call (303) 555-0123 for Full Schedule
-            </a>
-          </div>
+            )
+          })}
         </div>
 
-        <div className="mt-16 text-center">
-          <h2 className="text-2xl font-semibold mb-4">Private Events</h2>
-          <p className="text-gray-600 mb-6">
-            Host your next party, corporate event, or celebration at Monaghan's!
-          </p>
-          <a 
-            href="tel:3035550123" 
-            className="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-colors inline-block"
-          >
-            Call (303) 555-0123 to Book
-          </a>
+        {/* Happy Hour Info */}
+        <div className="bg-green-50 border border-green-200 rounded-lg p-6 text-center mb-12">
+          <h3 className="text-lg font-semibold text-green-800 mb-2">Daily Happy Hour</h3>
+          <p className="text-green-700 mb-1">10:00 AM - 12:00 PM & 3:00 PM - 7:00 PM</p>
+          <p className="text-sm text-green-600">Buy One Get One on first round of wine, wells, or drafts</p>
         </div>
+
       </div>
     </div>
-    </>
-  );
+  )
 }
