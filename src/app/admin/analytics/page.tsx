@@ -4,6 +4,7 @@ import { hasPermission } from '../../../lib/rbac'
 import { prisma } from '../../../lib/prisma'
 import AnalyticsDashboard from '../../../components/analytics-dashboard'
 import { redirect } from 'next/navigation'
+import { AdminSubNav } from '../../../components/admin-sub-nav'
 
 export default async function AnalyticsPage() {
   const session = await getServerSession(authOptions)
@@ -37,8 +38,9 @@ export default async function AnalyticsPage() {
 
   if (!siteId) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen bg-gray-50">
+        <AdminSubNav />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="bg-white border border-gray-200 rounded-lg p-6">
             <h1 className="text-2xl font-bold text-gray-900 mb-4">Analytics</h1>
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
@@ -51,8 +53,9 @@ export default async function AnalyticsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50">
+      <AdminSubNav />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <AnalyticsDashboard siteId={siteId} />
       </div>
     </div>

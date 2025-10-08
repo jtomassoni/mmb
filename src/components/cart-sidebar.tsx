@@ -147,10 +147,11 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
             <div className="space-y-2">
               <button
                 onClick={handleCheckout}
-                disabled={isCheckingOut}
-                className="w-full bg-green-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={true}
+                className="w-full bg-gray-400 text-white py-3 px-4 rounded-lg font-medium cursor-not-allowed opacity-60"
+                title="Online ordering coming soon!"
               >
-                {isCheckingOut ? 'Processing...' : 'Checkout'}
+                Checkout (Coming Soon)
               </button>
               <button
                 onClick={clearCart}

@@ -3,7 +3,7 @@
 import { useSession } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useState, useEffect } from 'react'
-import { Breadcrumb, breadcrumbConfigs } from '@/components/breadcrumb'
+import { AdminSubNav } from '@/components/admin-sub-nav'
 import { formatTimeInTimezone, getRelativeTime, getCompanyTimezone } from '@/lib/timezone'
 import {
   DndContext,
@@ -217,12 +217,64 @@ export default function MenuManagementPage() {
     description: ''
   })
 
+  // Sorting and filtering states
+  const [sortBy, setSortBy] = useState<'name' | 'category' | 'price' | 'createdAt'>('category')
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc')
+  const [filterCategory, setFilterCategory] = useState<string>('all')
+  const [filterStatus, setFilterStatus] = useState<'all' | 'available' | 'unavailable'>('all')
+  const [searchTerm, setSearchTerm] = useState<string>('')
+
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })
   )
+
+  // Process menu items with filtering and sorting
+  const processedMenuItems = menuItems
+    .filter(item => {
+      // Search filter
+      if (searchTerm && !item.name.toLowerCase().includes(searchTerm.toLowerCase()) && 
+          !item.description.toLowerCase().includes(searchTerm.toLowerCase())) {
+        return false
+      }
+      
+      // Category filter
+      if (filterCategory !== 'all' && item.category !== filterCategory) {
+        return false
+      }
+      
+      // Status filter
+      if (filterStatus === 'available' && !item.isAvailable) {
+        return false
+      }
+      if (filterStatus === 'unavailable' && item.isAvailable) {
+        return false
+      }
+      
+      return true
+    })
+    .sort((a, b) => {
+      let comparison = 0
+      
+      switch (sortBy) {
+        case 'name':
+          comparison = a.name.localeCompare(b.name)
+          break
+        case 'category':
+          comparison = a.category.localeCompare(b.category)
+          break
+        case 'price':
+          comparison = a.price - b.price
+          break
+        case 'createdAt':
+          comparison = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+          break
+      }
+      
+      return sortOrder === 'asc' ? comparison : -comparison
+    })
 
   useEffect(() => {
     if (status === 'loading') return
@@ -616,12 +668,8 @@ export default function MenuManagementPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <AdminSubNav />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Breadcrumb */}
-        <div className="mb-6">
-          <Breadcrumb items={breadcrumbConfigs.menu} />
-        </div>
-
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Menu Management</h1>
           <p className="text-gray-600">Manage your menu items, categories, and preview</p>
@@ -898,86 +946,162 @@ export default function MenuManagementPage() {
             {/* Menu Items List */}
             <div className="bg-white rounded-lg shadow overflow-hidden">
               <div className="px-6 py-4 border-b border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-900">All Menu Items</h3>
+                <div className="flex justify-between items-center">
+                  <h3 className="text-lg font-semibold text-gray-900">All Menu Items</h3>
+                  <div className="text-sm text-gray-500">
+                    {processedMenuItems.length} of {menuItems.length} items
+                  </div>
+                </div>
+                
+                {/* Filtering and Sorting Controls */}
+                <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                  {/* Search */}
+                  <div className="lg:col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Search</label>
+                    <input
+                      type="text"
+                      placeholder="Search items..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm text-gray-900 bg-white focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                    />
+                  </div>
+                  
+                  {/* Category Filter */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                    <select
+                      value={filterCategory}
+                      onChange={(e) => setFilterCategory(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm text-gray-900 bg-white focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                    >
+                      <option value="all">All Categories</option>
+                      {categories.map(category => (
+                        <option key={category.id} value={category.name}>{category.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                  
+                  {/* Status Filter */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                    <select
+                      value={filterStatus}
+                      onChange={(e) => setFilterStatus(e.target.value as 'all' | 'available' | 'unavailable')}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm text-gray-900 bg-white focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                    >
+                      <option value="all">All Status</option>
+                      <option value="available">Available</option>
+                      <option value="unavailable">Unavailable</option>
+                    </select>
+                  </div>
+                  
+                  {/* Sort Controls */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Sort</label>
+                    <div className="flex gap-1">
+                      <select
+                        value={sortBy}
+                        onChange={(e) => setSortBy(e.target.value as 'name' | 'category' | 'price' | 'createdAt')}
+                        className="flex-1 px-2 py-2 border border-gray-300 rounded-l-md text-sm text-gray-900 bg-white focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                      >
+                        <option value="name">Name</option>
+                        <option value="category">Category</option>
+                        <option value="price">Price</option>
+                        <option value="createdAt">Created</option>
+                      </select>
+                      <button
+                        onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+                        className="px-2 py-2 border border-gray-300 rounded-r-md text-sm text-gray-900 bg-white hover:bg-gray-50 focus:ring-2 focus:ring-green-500"
+                        title={`Sort ${sortOrder === 'asc' ? 'Descending' : 'Ascending'}`}
+                      >
+                        {sortOrder === 'asc' ? '↑' : '↓'}
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Item
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Category
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Price
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Status
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Actions
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {menuItems.map((item) => (
-                      <tr key={item.id}>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center">
-                            {item.image && (
-                              <img className="h-10 w-10 rounded-lg object-cover mr-3" src={item.image} alt={item.name} />
+              <div className="divide-y divide-gray-200">
+                {processedMenuItems.length === 0 ? (
+                  <div className="px-6 py-8 text-center text-gray-500">
+                    {searchTerm || filterCategory !== 'all' || filterStatus !== 'all' 
+                      ? 'No items match your filters' 
+                      : 'No menu items found'
+                    }
+                  </div>
+                ) : (
+                  processedMenuItems.map((item) => (
+                    <div key={item.id} className="px-6 py-4 hover:bg-gray-50">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-4 flex-1 min-w-0">
+                          {/* Item Image */}
+                          <div className="flex-shrink-0">
+                            {item.image ? (
+                              <img className="h-12 w-12 rounded-lg object-cover" src={item.image} alt={item.name} />
+                            ) : (
+                              <div className="h-12 w-12 rounded-lg bg-gray-200 flex items-center justify-center">
+                                <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                </svg>
+                              </div>
                             )}
-                            <div>
-                              <div className="text-sm font-medium text-gray-900">{item.name}</div>
-                              <div className="text-sm text-gray-500">{item.description}</div>
-                            </div>
                           </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {item.category}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          ${item.price.toFixed(2)}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                            item.isAvailable 
-                              ? 'bg-green-100 text-green-800' 
-                              : 'bg-red-100 text-red-800'
-                          }`}>
-                            {item.isAvailable ? 'Available' : 'Unavailable'}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                          
+                          {/* Item Info */}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center space-x-2">
+                              <h3 className="text-sm font-medium text-gray-900 truncate">{item.name}</h3>
+                              <span className={`inline-flex px-2 py-0.5 text-xs font-semibold rounded-full ${
+                                item.isAvailable 
+                                  ? 'bg-green-100 text-green-800' 
+                                  : 'bg-red-100 text-red-800'
+                              }`}>
+                                {item.isAvailable ? 'Available' : 'Unavailable'}
+                              </span>
+                            </div>
+                            <div className="mt-1 flex items-center space-x-4 text-sm text-gray-500">
+                              <span>{item.category}</span>
+                              <span>•</span>
+                              <span className="font-medium text-gray-900">${item.price.toFixed(2)}</span>
+                            </div>
+                            {item.description && (
+                              <p className="mt-1 text-sm text-gray-600 truncate">{item.description}</p>
+                            )}
+                          </div>
+                        </div>
+                        
+                        {/* Actions */}
+                        <div className="flex items-center space-x-2">
                           <button
                             onClick={() => setEditingItem(item)}
-                            className="text-blue-600 hover:text-blue-900"
+                            className="px-3 py-1 text-xs font-medium text-blue-700 bg-blue-100 hover:bg-blue-200 rounded-md transition-colors"
+                            title="Edit"
                           >
                             Edit
                           </button>
                           <button
                             onClick={() => toggleItemAvailability(item)}
-                            className={`${
+                            className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
                               item.isAvailable 
-                                ? 'text-orange-600 hover:text-orange-900' 
-                                : 'text-green-600 hover:text-green-900'
+                                ? 'text-orange-700 bg-orange-100 hover:bg-orange-200' 
+                                : 'text-green-700 bg-green-100 hover:bg-green-200'
                             }`}
+                            title={item.isAvailable ? 'Disable' : 'Enable'}
                           >
                             {item.isAvailable ? 'Disable' : 'Enable'}
                           </button>
                           <button
                             onClick={() => handleDeleteItem(item.id)}
-                            className="text-red-600 hover:text-red-900"
+                            className="px-3 py-1 text-xs font-medium text-red-700 bg-red-100 hover:bg-red-200 rounded-md transition-colors"
+                            title="Delete"
                           >
                             Delete
                           </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           </div>
@@ -1098,44 +1222,58 @@ export default function MenuManagementPage() {
                 <h3 className="text-lg font-semibold text-gray-900">All Categories</h3>
                 <p className="text-sm text-gray-500 mt-1">Drag and drop to reorder categories</p>
               </div>
-              <div className="overflow-x-auto">
-                <DndContext
-                  sensors={sensors}
-                  collisionDetection={closestCenter}
-                  onDragEnd={handleDragEnd}
-                >
-                  <SortableContext items={categories.map(c => c.id)} strategy={verticalListSortingStrategy}>
-                    <table className="min-w-full divide-y divide-gray-200">
-                      <thead className="bg-gray-50">
-                        <tr>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Name
-                          </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Description
-                          </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Items Count
-                          </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Actions
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody className="bg-white divide-y divide-gray-200">
-                        {categories.map((category) => (
-                          <SortableCategoryItem
-                            key={category.id}
-                            category={category}
-                            itemCount={menuItems.filter(item => item.category === category.name).length}
-                            onEdit={setEditingCategory}
-                            onDelete={handleDeleteCategory}
-                          />
-                        ))}
-                      </tbody>
-                    </table>
-                  </SortableContext>
-                </DndContext>
+              <div className="divide-y divide-gray-200">
+                {categories.length === 0 ? (
+                  <div className="px-6 py-8 text-center text-gray-500">
+                    No categories found
+                  </div>
+                ) : (
+                  categories.map((category) => (
+                    <div key={category.id} className="px-6 py-4 hover:bg-gray-50">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-4 flex-1 min-w-0">
+                          {/* Category Icon */}
+                          <div className="flex-shrink-0">
+                            <div className="w-12 h-12 rounded-lg bg-gray-200 flex items-center justify-center">
+                              <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                              </svg>
+                            </div>
+                          </div>
+                          
+                          {/* Category Info */}
+                          <div className="flex-1 min-w-0">
+                            <h3 className="text-sm font-medium text-gray-900 truncate">{category.name}</h3>
+                            <div className="mt-1 flex items-center space-x-4 text-sm text-gray-500">
+                              <span>{menuItems.filter(item => item.category === category.name).length} items</span>
+                            </div>
+                            {category.description && (
+                              <p className="mt-1 text-sm text-gray-600 truncate">{category.description}</p>
+                            )}
+                          </div>
+                        </div>
+                        
+                        {/* Actions */}
+                        <div className="flex items-center space-x-2">
+                          <button
+                            onClick={() => setEditingCategory(category)}
+                            className="px-3 py-1 text-xs font-medium text-blue-700 bg-blue-100 hover:bg-blue-200 rounded-md transition-colors"
+                            title="Edit"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDeleteCategory(category.id)}
+                            className="px-3 py-1 text-xs font-medium text-red-700 bg-red-100 hover:bg-red-200 rounded-md transition-colors"
+                            title="Delete"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           </div>

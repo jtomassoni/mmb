@@ -3,7 +3,7 @@
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
-import { Breadcrumb, breadcrumbConfigs } from '@/components/breadcrumb'
+import { AdminSubNav } from '@/components/admin-sub-nav'
 import { useToast } from '@/components/toast'
 import { scrollToFirstError } from '@/lib/smooth-scroll'
 import { ProperTimePicker } from '@/components/proper-time-picker'
@@ -479,12 +479,8 @@ export default function SettingsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <AdminSubNav />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Breadcrumb */}
-        <div className="mb-6">
-          <Breadcrumb items={breadcrumbConfigs.settings} />
-        </div>
-
         {/* Header */}
         <div className="mb-10">
           <div>
@@ -493,64 +489,35 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Company Info */}
+        <div className="space-y-8">
+          {/* Company Information - Horizontal Layout */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6 border-b border-gray-200 pb-4">Company Info</h2>
-            <form onSubmit={handleSiteSettingsSave} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Restaurant Name *
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={siteSettings.name}
-                  onChange={(e) => setSiteSettings({ ...siteSettings, name: e.target.value })}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500 ${
-                    siteErrors.name ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300'
-                  }`}
-                />
-                <FieldError fieldName="name" />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Description
-                </label>
-                <textarea
-                  value={siteSettings.description}
-                  onChange={(e) => setSiteSettings({ ...siteSettings, description: e.target.value })}
-                  rows={3}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500 ${
-                    siteErrors.description ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300'
-                  }`}
-                />
-                <FieldError fieldName="description" />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Address
-                </label>
-                <input
-                  type="text"
-                  value={siteSettings.address}
-                  onChange={(e) => setSiteSettings({ ...siteSettings, address: e.target.value })}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500 ${
-                    siteErrors.address ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300'
-                  }`}
-                />
-                <FieldError fieldName="address" />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <h2 className="text-xl font-semibold text-gray-900 mb-6 border-b border-gray-200 pb-4">Company Information</h2>
+            <form onSubmit={handleSiteSettingsSave} className="space-y-6">
+              {/* Basic Info Row */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Phone
+                    Restaurant Name *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={siteSettings.name}
+                    onChange={(e) => setSiteSettings({ ...siteSettings, name: e.target.value })}
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500 ${
+                      siteErrors.name ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300'
+                    }`}
+                  />
+                  <FieldError fieldName="name" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Phone *
                   </label>
                   <input
                     type="tel"
+                    required
                     value={siteSettings.phone}
                     onChange={(e) => setSiteSettings({ ...siteSettings, phone: e.target.value })}
                     className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500 ${
@@ -575,7 +542,40 @@ export default function SettingsPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Address Row */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Address
+                </label>
+                <input
+                  type="text"
+                  value={siteSettings.address}
+                  onChange={(e) => setSiteSettings({ ...siteSettings, address: e.target.value })}
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500 ${
+                    siteErrors.address ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300'
+                  }`}
+                />
+                <FieldError fieldName="address" />
+              </div>
+
+              {/* Description Row */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Description
+                </label>
+                <textarea
+                  value={siteSettings.description}
+                  onChange={(e) => setSiteSettings({ ...siteSettings, description: e.target.value })}
+                  rows={3}
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500 ${
+                    siteErrors.description ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300'
+                  }`}
+                />
+                <FieldError fieldName="description" />
+              </div>
+
+              {/* Location & Maps Row */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Timezone
@@ -591,132 +591,131 @@ export default function SettingsPage() {
                     <option value="America/Los_Angeles">Pacific Time (Los Angeles)</option>
                   </select>
                 </div>
-              </div>
-
-              {/* GPS Coordinates */}
-              <div className="border-t pt-6">
-                <h3 className="text-lg font-medium text-gray-900 mb-4">Location Details</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Latitude
-                    </label>
-                    <input
-                      type="number"
-                      step="any"
-                      value={siteSettings.latitude || ''}
-                      onChange={(e) => setSiteSettings({ ...siteSettings, latitude: e.target.value ? parseFloat(e.target.value) : undefined })}
-                      placeholder="39.7392"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Longitude
-                    </label>
-                    <input
-                      type="number"
-                      step="any"
-                      value={siteSettings.longitude || ''}
-                      onChange={(e) => setSiteSettings({ ...siteSettings, longitude: e.target.value ? parseFloat(e.target.value) : undefined })}
-                      placeholder="-104.9903"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
-                    />
-                  </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Latitude
+                  </label>
+                  <input
+                    type="number"
+                    step="any"
+                    value={siteSettings.latitude || ''}
+                    onChange={(e) => setSiteSettings({ ...siteSettings, latitude: e.target.value ? parseFloat(e.target.value) : undefined })}
+                    placeholder="39.7392"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Longitude
+                  </label>
+                  <input
+                    type="number"
+                    step="any"
+                    value={siteSettings.longitude || ''}
+                    onChange={(e) => setSiteSettings({ ...siteSettings, longitude: e.target.value ? parseFloat(e.target.value) : undefined })}
+                    placeholder="-104.9903"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
+                  />
                 </div>
               </div>
 
               {/* Google Maps Integration */}
-              <div className="border-t pt-6">
-                <h3 className="text-lg font-medium text-gray-900 mb-4">Google Maps Integration</h3>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Google Maps Share URL
-                    </label>
-                    <input
-                      type="url"
-                      value={siteSettings.googleMapsUrl || ''}
-                      onChange={(e) => setSiteSettings({ ...siteSettings, googleMapsUrl: e.target.value })}
-                      placeholder="https://maps.app.goo.gl/LA2AYUTPUreV9KyJ8"
-                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500 ${
-                        siteErrors['google maps url'] ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300'
-                      }`}
-                    />
-                    <FieldError fieldName="google maps url" />
-                    <p className="text-sm text-gray-500 mt-1">
-                      Paste the Google Maps share URL here. This makes it easy for bar owners to provide directions.
-                    </p>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Google Place ID (Optional)
-                    </label>
-                    <input
-                      type="text"
-                      value={siteSettings.googlePlaceId || ''}
-                      onChange={(e) => setSiteSettings({ ...siteSettings, googlePlaceId: e.target.value })}
-                      placeholder="ChIJ..."
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
-                    />
-                    <p className="text-sm text-gray-500 mt-1">
-                      Advanced: Google Places API place ID for enhanced integration.
-                    </p>
-                  </div>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Google Maps Share URL
+                  </label>
+                  <input
+                    type="url"
+                    value={siteSettings.googleMapsUrl || ''}
+                    onChange={(e) => setSiteSettings({ ...siteSettings, googleMapsUrl: e.target.value })}
+                    placeholder="https://maps.app.goo.gl/LA2AYUTPUreV9KyJ8"
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500 ${
+                      siteErrors['google maps url'] ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300'
+                    }`}
+                  />
+                  <FieldError fieldName="google maps url" />
+                  <p className="text-sm text-gray-500 mt-1">
+                    Paste the Google Maps share URL here for easy directions.
+                  </p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Google Place ID (Optional)
+                  </label>
+                  <input
+                    type="text"
+                    value={siteSettings.googlePlaceId || ''}
+                    onChange={(e) => setSiteSettings({ ...siteSettings, googlePlaceId: e.target.value })}
+                    placeholder="ChIJ..."
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
+                  />
+                  <p className="text-sm text-gray-500 mt-1">
+                    Advanced: Google Places API place ID for enhanced integration.
+                  </p>
                 </div>
               </div>
 
-              <button
-                type="submit"
-                disabled={savingSite}
-                className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors font-medium"
-              >
-                {savingSite ? 'Saving...' : 'Save Company Info'}
-              </button>
+              <div className="pt-4 border-t border-gray-200">
+                <button
+                  type="submit"
+                  disabled={savingSite}
+                  className="bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors font-medium"
+                >
+                  {savingSite ? 'Saving...' : 'Save Company Information'}
+                </button>
+              </div>
             </form>
           </div>
 
-          {/* Business Hours */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6 border-b border-gray-200 pb-4">Business Hours</h2>
+          {/* Hours Management Section */}
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-semibold text-gray-900">Hours Management</h2>
+                <p className="text-gray-600 mt-1">Manage your regular business hours and special operating days</p>
+              </div>
+            </div>
 
-            <form onSubmit={handleBusinessHoursSave} className="space-y-4">
-              {Object.entries(businessHours).map(([day, hours]) => (
-                <div key={day} className="flex items-center gap-6 py-4 px-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                  {/* Day Name */}
-                  <div className="w-20 flex-shrink-0">
-                    <span className="font-medium text-gray-900 capitalize">{day}</span>
-                  </div>
-                  
-                  {/* Open/Closed Toggle */}
-                  <div className="flex-shrink-0">
-                    <label className="flex items-center space-x-2 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={!hours.closed}
-                        onChange={(e) => {
-                          const newHours = { ...businessHours }
-                          newHours[day as keyof BusinessHours] = {
-                            ...hours,
-                            closed: !e.target.checked,
-                            open: !e.target.checked ? (hours.open || '11:00') : '',
-                            close: !e.target.checked ? (hours.close || '02:00') : ''
-                          }
-                          setBusinessHours(newHours)
-                        }}
-                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                      />
-                      <span className="text-sm text-gray-700">Open</span>
-                    </label>
-                  </div>
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+              {/* Regular Business Hours */}
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-6 border-b border-gray-200 pb-4">Regular Business Hours</h3>
 
-                  {/* Time Inputs */}
-                  {!hours.closed ? (
-                    <>
-                      <div className="flex-1">
-                        <div className="flex items-start space-x-3">
-                          <div className="flex-1 min-w-0">
-                            <label className="block text-xs font-medium text-gray-600 mb-1">Open From</label>
+                <form onSubmit={handleBusinessHoursSave} className="space-y-2">
+                  {Object.entries(businessHours).map(([day, hours]) => (
+                    <div key={day} className="flex items-center gap-3 py-2 px-3 border border-gray-200 rounded hover:bg-gray-50 transition-colors">
+                      {/* Day Name */}
+                      <div className="w-14 flex-shrink-0">
+                        <span className="font-medium text-gray-900 capitalize text-xs">{day}</span>
+                      </div>
+                      
+                      {/* Open/Closed Toggle */}
+                      <div className="flex-shrink-0">
+                        <label className="flex items-center space-x-1 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={!hours.closed}
+                            onChange={(e) => {
+                              const newHours = { ...businessHours }
+                              newHours[day as keyof BusinessHours] = {
+                                ...hours,
+                                closed: !e.target.checked,
+                                open: !e.target.checked ? (hours.open || '11:00') : '',
+                                close: !e.target.checked ? (hours.close || '02:00') : ''
+                              }
+                              setBusinessHours(newHours)
+                            }}
+                            className="w-3 h-3 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                          />
+                          <span className="text-xs text-gray-700">Open</span>
+                        </label>
+                      </div>
+
+                      {/* Time Inputs */}
+                      {!hours.closed ? (
+                        <div className="flex items-center gap-2 flex-1">
+                          <div className="flex-1">
                             <ProperTimePicker
                               value={hours.open}
                               onChange={(value) => {
@@ -730,8 +729,8 @@ export default function SettingsPage() {
                               error={!!hoursErrors[`${day} open time`]}
                             />
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <label className="block text-xs font-medium text-gray-600 mb-1">Close At</label>
+                          <span className="text-gray-400 text-xs">-</span>
+                          <div className="flex-1">
                             <ProperTimePicker
                               value={hours.close}
                               onChange={(value) => {
@@ -745,11 +744,9 @@ export default function SettingsPage() {
                               error={!!hoursErrors[`${day} close time`]}
                             />
                           </div>
-                        </div>
-                        {/* Duration on new line */}
-                        {hours.open && hours.close && (
-                          <div className="mt-2">
-                            <span className="inline-flex items-center px-2 py-1 rounded-full bg-green-100 text-green-800 text-xs font-medium">
+                          {/* Duration inline */}
+                          {hours.open && hours.close && (
+                            <span className="inline-flex items-center px-1.5 py-0.5 rounded-full bg-green-100 text-green-800 text-xs font-medium ml-2">
                               {(() => {
                                 const [openHour, openMinute] = hours.open.split(':')
                                 const [closeHour, closeMinute] = hours.close.split(':')
@@ -760,7 +757,7 @@ export default function SettingsPage() {
                                 
                                 // Handle 24-hour operation (00:00 to 23:59)
                                 if (hours.open === '00:00' && hours.close === '23:59') {
-                                  return '24h open'
+                                  return '24h'
                                 }
                                 
                                 // Handle overnight hours (e.g., 22:00 to 06:00)
@@ -768,241 +765,241 @@ export default function SettingsPage() {
                                   duration += 24
                                 }
                                 
-                                return `${Math.round(duration)}h open`
+                                return `${Math.round(duration)}h`
                               })()}
                             </span>
-                          </div>
-                        )}
-                      </div>
-                    </>
-                  ) : (
-                    <div className="flex-1 flex items-center">
-                      <span className="text-sm text-gray-500 italic">Closed</span>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="flex-1 flex items-center">
+                          <span className="text-xs text-gray-500 italic">Closed</span>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-              ))}
+                  ))}
 
-              <div className="pt-6 border-t border-gray-200">
-                <button
-                  type="submit"
-                  disabled={savingHours}
-                  className="w-full bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors font-medium"
-                >
-                  {savingHours ? 'Saving...' : 'Save Business Hours'}
-                </button>
+                  <div className="pt-3 border-t border-gray-200">
+                    <button
+                      type="submit"
+                      disabled={savingHours}
+                      className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors font-medium text-sm"
+                    >
+                      {savingHours ? 'Saving...' : 'Save Business Hours'}
+                    </button>
+                  </div>
+                </form>
               </div>
-            </form>
-          </div>
-        </div>
 
-        {/* Special Days Section */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <div className="border-b border-gray-200 pb-4 mb-6">
-            <h2 className="text-lg font-semibold text-gray-900">Special Days</h2>
-            <p className="text-sm text-gray-600 mt-1">
-              Manage special operating hours for holidays, closures, or events
-            </p>
-          </div>
-
-          {/* Add Special Day Button */}
-          <div className="mb-6">
-            <button
-              type="button"
-              onClick={() => setShowAddSpecialDay(!showAddSpecialDay)}
-              className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
-              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
-              Add Special Day
-            </button>
-          </div>
-
-          {/* Add Special Day Form */}
-          {showAddSpecialDay && (
-            <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-              <h3 className="text-sm font-medium text-gray-900 mb-4">Add New Special Day</h3>
-              <form onSubmit={handleAddSpecialDay} className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* Date */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Date *
-                    </label>
-                      <input
-                        type="date"
-                        required
-                        value={newSpecialDay.date}
-                        onChange={(e) => setNewSpecialDay({ ...newSpecialDay, date: e.target.value })}
-                        className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 ${
-                          specialDaysErrors.date ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300'
-                        }`}
-                      />
-                    {specialDaysErrors.date && (
-                      <div className="mt-1">
-                        {specialDaysErrors.date.map((error, index) => (
-                          <p key={index} className="text-sm text-red-600 flex items-center gap-1">
-                            <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                            </svg>
-                            {error}
-                          </p>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Reason */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Reason *
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={newSpecialDay.reason}
-                      onChange={(e) => setNewSpecialDay({ ...newSpecialDay, reason: e.target.value })}
-                      placeholder="e.g., City water shutoff, Holiday closure"
-                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 ${
-                        specialDaysErrors.reason ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300'
-                      }`}
-                    />
-                    {specialDaysErrors.reason && (
-                      <div className="mt-1">
-                        {specialDaysErrors.reason.map((error, index) => (
-                          <p key={index} className="text-sm text-red-600 flex items-center gap-1">
-                            <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                            </svg>
-                            {error}
-                          </p>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+              {/* Special Days */}
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div className="border-b border-gray-200 pb-4 mb-6">
+                  <h3 className="text-lg font-semibold text-gray-900">Special Days</h3>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Override regular hours for holidays, closures, or events
+                  </p>
                 </div>
 
-                {/* Open/Closed Toggle */}
-                <div className="flex items-center space-x-4">
-                  <label className="flex items-center space-x-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={!newSpecialDay.closed}
-                      onChange={(e) => setNewSpecialDay({ 
-                        ...newSpecialDay, 
-                        closed: !e.target.checked,
-                        openTime: !e.target.checked ? '11:00' : newSpecialDay.openTime,
-                        closeTime: !e.target.checked ? '02:00' : newSpecialDay.closeTime
-                      })}
-                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                    />
-                    <span className="text-sm font-medium text-gray-700">Open on this day</span>
-                  </label>
+                {/* Add Special Day Button */}
+                <div className="mb-6">
+                  <button
+                    type="button"
+                    onClick={() => setShowAddSpecialDay(!showAddSpecialDay)}
+                    className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  >
+                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    </svg>
+                    Add Special Day
+                  </button>
                 </div>
 
-                {/* Time Inputs (only show if not closed) */}
-                {!newSpecialDay.closed && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Open From</label>
-                      <ProperTimePicker
-                        value={newSpecialDay.openTime}
-                        onChange={(value) => setNewSpecialDay({ ...newSpecialDay, openTime: value })}
-                        error={!!specialDaysErrors.openTime}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Close At</label>
-                      <ProperTimePicker
-                        value={newSpecialDay.closeTime}
-                        onChange={(value) => setNewSpecialDay({ ...newSpecialDay, closeTime: value })}
-                        error={!!specialDaysErrors.closeTime}
-                      />
-                    </div>
+                {/* Add Special Day Form */}
+                {showAddSpecialDay && (
+                  <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                    <h4 className="text-sm font-medium text-gray-900 mb-4">Add New Special Day</h4>
+                    <form onSubmit={handleAddSpecialDay} className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {/* Date */}
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Date *
+                          </label>
+                            <input
+                              type="date"
+                              required
+                              value={newSpecialDay.date}
+                              onChange={(e) => setNewSpecialDay({ ...newSpecialDay, date: e.target.value })}
+                              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 ${
+                                specialDaysErrors.date ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300'
+                              }`}
+                            />
+                          {specialDaysErrors.date && (
+                            <div className="mt-1">
+                              {specialDaysErrors.date.map((error, index) => (
+                                <p key={index} className="text-sm text-red-600 flex items-center gap-1">
+                                  <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                                  </svg>
+                                  {error}
+                                </p>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Reason */}
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Reason *
+                          </label>
+                          <input
+                            type="text"
+                            required
+                            value={newSpecialDay.reason}
+                            onChange={(e) => setNewSpecialDay({ ...newSpecialDay, reason: e.target.value })}
+                            placeholder="e.g., Holiday closure, City water shutoff"
+                            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 ${
+                              specialDaysErrors.reason ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300'
+                            }`}
+                          />
+                          {specialDaysErrors.reason && (
+                            <div className="mt-1">
+                              {specialDaysErrors.reason.map((error, index) => (
+                                <p key={index} className="text-sm text-red-600 flex items-center gap-1">
+                                  <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                                  </svg>
+                                  {error}
+                                </p>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Open/Closed Toggle */}
+                      <div className="flex items-center space-x-4">
+                        <label className="flex items-center space-x-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={!newSpecialDay.closed}
+                            onChange={(e) => setNewSpecialDay({ 
+                              ...newSpecialDay, 
+                              closed: !e.target.checked,
+                              openTime: !e.target.checked ? '11:00' : newSpecialDay.openTime,
+                              closeTime: !e.target.checked ? '02:00' : newSpecialDay.closeTime
+                            })}
+                            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                          />
+                          <span className="text-sm font-medium text-gray-700">Open on this day</span>
+                        </label>
+                      </div>
+
+                      {/* Time Inputs (only show if not closed) */}
+                      {!newSpecialDay.closed && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Open From</label>
+                            <ProperTimePicker
+                              value={newSpecialDay.openTime}
+                              onChange={(value) => setNewSpecialDay({ ...newSpecialDay, openTime: value })}
+                              error={!!specialDaysErrors.openTime}
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Close At</label>
+                            <ProperTimePicker
+                              value={newSpecialDay.closeTime}
+                              onChange={(value) => setNewSpecialDay({ ...newSpecialDay, closeTime: value })}
+                              error={!!specialDaysErrors.closeTime}
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Form Actions */}
+                      <div className="flex justify-end space-x-3 pt-4">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setShowAddSpecialDay(false)
+                            setNewSpecialDay({
+                              date: '',
+                              reason: '',
+                              closed: true,
+                              openTime: '11:00',
+                              closeTime: '02:00'
+                            })
+                            setSpecialDaysErrors({})
+                          }}
+                          className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="submit"
+                          disabled={savingSpecialDays}
+                          className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {savingSpecialDays ? 'Adding...' : 'Add Special Day'}
+                        </button>
+                      </div>
+                    </form>
                   </div>
                 )}
 
-                {/* Form Actions */}
-                <div className="flex justify-end space-x-3 pt-4">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowAddSpecialDay(false)
-                      setNewSpecialDay({
-                        date: '',
-                        reason: '',
-                        closed: true,
-                        openTime: '11:00',
-                        closeTime: '02:00'
-                      })
-                      setSpecialDaysErrors({})
-                    }}
-                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={savingSpecialDays}
-                    className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {savingSpecialDays ? 'Adding...' : 'Add Special Day'}
-                  </button>
-                </div>
-              </form>
-            </div>
-          )}
-
-          {/* Special Days List */}
-          <div className="space-y-3">
-            {specialDays.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
-                <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                <p className="mt-2 text-sm">No special days configured</p>
-                <p className="text-xs text-gray-400">Add special days for holidays, closures, or events</p>
-              </div>
-            ) : (
-              specialDays.map((day) => (
-                <div key={day.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-4">
-                      <div className="text-sm font-medium text-gray-900">
-                        {new Date(day.date).toLocaleDateString('en-US', { 
-                          weekday: 'long', 
-                          year: 'numeric', 
-                          month: 'long', 
-                          day: 'numeric' 
-                        })}
-                      </div>
-                      <div className="text-sm text-gray-600">{day.reason}</div>
-                      <div className="flex items-center space-x-2">
-                        {day.closed ? (
-                          <span className="inline-flex items-center px-2 py-1 rounded-full bg-red-100 text-red-800 text-xs font-medium">
-                            Closed
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center px-2 py-1 rounded-full bg-green-100 text-green-800 text-xs font-medium">
-                            {day.openTime} - {day.closeTime}
-                          </span>
-                        )}
-                      </div>
+                {/* Special Days List */}
+                <div className="space-y-3">
+                  {specialDays.length === 0 ? (
+                    <div className="text-center py-8 text-gray-500">
+                      <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      <p className="mt-2 text-sm">No special days configured</p>
+                      <p className="text-xs text-gray-400">Add special days for holidays, closures, or events</p>
                     </div>
-                  </div>
-                  <button
-                    onClick={() => handleDeleteSpecialDay(day.id)}
-                    className="ml-4 p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-md transition-colors"
-                    title="Delete special day"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                  </button>
+                  ) : (
+                    specialDays.map((day) => (
+                      <div key={day.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-4">
+                            <div className="text-sm font-medium text-gray-900">
+                              {new Date(day.date).toLocaleDateString('en-US', { 
+                                weekday: 'long', 
+                                year: 'numeric', 
+                                month: 'long', 
+                                day: 'numeric' 
+                              })}
+                            </div>
+                            <div className="text-sm text-gray-600">{day.reason}</div>
+                            <div className="flex items-center space-x-2">
+                              {day.closed ? (
+                                <span className="inline-flex items-center px-2 py-1 rounded-full bg-red-100 text-red-800 text-xs font-medium">
+                                  Closed
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center px-2 py-1 rounded-full bg-green-100 text-green-800 text-xs font-medium">
+                                  {day.openTime} - {day.closeTime}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => handleDeleteSpecialDay(day.id)}
+                          className="ml-4 p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-md transition-colors"
+                          title="Delete special day"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                      </div>
+                    ))
+                  )}
                 </div>
-              ))
-            )}
+              </div>
+            </div>
           </div>
         </div>
 

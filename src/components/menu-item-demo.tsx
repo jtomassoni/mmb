@@ -43,9 +43,11 @@ export function MenuItemDemo() {
           </span>
           <button
             onClick={handleAddToCart}
-            className="bg-orange-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-orange-700 transition-colors"
+            disabled={true}
+            className="bg-gray-400 text-white px-6 py-2 rounded-lg font-medium cursor-not-allowed opacity-60"
+            title="Online ordering coming soon!"
           >
-            Add to Cart
+            Add to Cart (Soon)
           </button>
         </div>
         <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">

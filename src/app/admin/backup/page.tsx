@@ -3,6 +3,7 @@ import { authOptions } from '../../../lib/auth'
 import { hasPermission } from '../../../lib/rbac'
 import { redirect } from 'next/navigation'
 import BackupDashboard from '../../../components/backup-dashboard'
+import { AdminSubNav } from '../../../components/admin-sub-nav'
 
 export default async function BackupPage() {
   const session = await getServerSession(authOptions)
@@ -18,6 +19,7 @@ export default async function BackupPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <AdminSubNav />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <BackupDashboard />
       </div>

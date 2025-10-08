@@ -4,7 +4,7 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { formatTimeInTimezone, getRelativeTime, getCompanyTimezone } from '@/lib/timezone'
-import { Breadcrumb, breadcrumbConfigs } from '@/components/breadcrumb'
+import { AdminSubNav } from '@/components/admin-sub-nav'
 
 interface ActivityLog {
   id: string
@@ -72,12 +72,8 @@ export default function SiteAdminDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <AdminSubNav />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Breadcrumb */}
-        <div className="mb-6">
-          <Breadcrumb items={breadcrumbConfigs.admin} />
-        </div>
-
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">
             {session.user.role === 'SUPERADMIN' ? 'Super Admin Dashboard' : 'Site Admin Dashboard'}

@@ -14,7 +14,26 @@ export function formatTimeInTimezone(
     hour12: true
   }
 ): string {
-  const dateObj = typeof date === 'string' ? new Date(date) : date
+  let dateObj: Date
+  
+  if (typeof date === 'string') {
+    // Handle time-only strings (HH:MM format)
+    if (date.match(/^\d{2}:\d{2}$/)) {
+      const today = new Date()
+      const [hours, minutes] = date.split(':').map(Number)
+      dateObj = new Date(today.getFullYear(), today.getMonth(), today.getDate(), hours, minutes)
+    } else {
+      dateObj = new Date(date)
+    }
+  } else {
+    dateObj = date
+  }
+  
+  // Check if date is valid
+  if (isNaN(dateObj.getTime())) {
+    console.error('Invalid date:', date)
+    return 'Invalid time'
+  }
   
   try {
     return new Intl.DateTimeFormat('en-US', {

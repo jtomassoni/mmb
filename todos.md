@@ -1,10 +1,10 @@
 # Monaghan's Midnight Smash - Todo & Status
 
 ## Current Status
-- **Last Updated**: $(date)
+- **Last Updated**: January 7, 2025
 - **Server Status**: Running in terminal
 - **Database**: Prisma dev.db active with user management features
-- **Git Status**: Multiple modified files, ready for commit
+- **Git Status**: All changes committed (commit c561747)
 
 ## Active Development Tasks
 
@@ -99,13 +99,26 @@
 - All user management operations are logged in audit trail
 - Database schema updated with user status fields
 
-## Next Steps
-1. Test user management functionality
-2. Test role-based access control
-3. Verify user disable/enable works correctly
-4. Test audit logging for user operations
-5. Test cart functionality for anonymous users
-6. Verify header shows correct buttons based on login status
+## Next Steps (Priority Order)
+1. **Backend Recurring Events** (High Priority):
+   - Implement API logic to process recurring event data
+   - Generate multiple event instances based on recurring pattern
+   - Handle edge cases (holidays, month boundaries, etc.)
+   - Add bulk event creation endpoint
+
+2. **Public Calendar Enhancement** (Medium Priority):
+   - Update calendar view to show custom event types
+   - Display event images in calendar
+   - Show CTA buttons for events
+   - Update event cards with enhanced styling
+
+3. **Testing & Polish** (Low Priority):
+   - Test user management functionality
+   - Test role-based access control
+   - Verify user disable/enable works correctly
+   - Test audit logging for user operations
+   - Test cart functionality for anonymous users
+   - Verify header shows correct buttons based on login status
 
 ## ✅ COMPLETED - Replaced Custom Pickers with Professional Libraries
 
@@ -175,16 +188,56 @@ The pickers should now work exactly as expected with smooth, professional scroll
   - [x] **Rename CMS section**: Change "Specials & Events" to "Events" in admin dashboard
   - [x] **Improve calendar preview**: Show exact preview of public-facing calendar page
 
+## ✅ COMPLETED - Dynamic Event Form & Recurring Events System
+
+### **What We Accomplished:**
+
+1. **🎯 Dynamic Event Form**:
+   - [x] Move event type selection to top of form
+   - [x] Create dynamic form fields based on event type
+   - [x] Default to "Custom Event" for flexibility
+   - [x] Auto-fill common values for Poker Night (7pm-11pm) and Broncos Game
+   - [x] Add user guidance with colored info boxes
+
+2. **🔄 Comprehensive Recurring Events**:
+   - [x] Add recurring event checkbox option
+   - [x] Implement multiple recurring patterns:
+     - Daily, weekdays, weekends, weekly, biweekly, monthly
+   - [x] Add interval control (every X days/weeks/months)
+   - [x] Add day of week selection for weekly patterns
+   - [x] Add end date for recurring events
+   - [x] Add live preview of recurring pattern
+   - [x] Collect all recurring parameters (ready for backend implementation)
+
+3. **🎨 UI/UX Improvements**:
+   - [x] Fix date picker colors and styling issues
+   - [x] Fix time picker font colors and replace problematic WheelPicker
+   - [x] Use native HTML selects for reliable time picking
+   - [x] Add proper CSS variables for react-day-picker
+   - [x] Fix weekday header colors in date picker
+
+4. **📊 Event Types System**:
+   - [x] Poker Night: Simplified form (date only, fixed 7pm-11pm times)
+   - [x] Broncos Game: Opponent team, game time, main dish selection
+   - [x] Custom Event: Full form with all options
+   - [x] Filter duplicate event types from database
+
+### **Current Status:**
+- ✅ **Frontend Complete**: All UI components and form logic implemented
+- ⏳ **Backend Pending**: Recurring event creation logic needs API implementation
+- ✅ **Data Collection**: Form collects all necessary recurring parameters
+- ✅ **User Experience**: Clean, intuitive interface with helpful guidance
+
 ## New Event System Requirements
-- [ ] **Custom Event Types System**:
-  - [ ] Create flexible event type system (food, drink, entertainment, sports, special, etc.)
-  - [ ] Allow custom event type creation and management
-  - [ ] Support for football specials and other custom event types
-- [ ] **Enhanced Event Features**:
-  - [ ] Add image upload capability for events
-  - [ ] Add rich text description support
-  - [ ] Add CTA button support (Facebook links, ticket sales, external links, etc.)
-  - [ ] Add event pricing and special offers
+- [x] **Custom Event Types System**:
+  - [x] Create flexible event type system (food, drink, entertainment, sports, special, etc.)
+  - [x] Allow custom event type creation and management
+  - [x] Support for football specials and other custom event types
+- [x] **Enhanced Event Features**:
+  - [x] Add image upload capability for events
+  - [x] Add rich text description support
+  - [x] Add CTA button support (Facebook links, ticket sales, external links, etc.)
+  - [x] Add event pricing and special offers
 - [x] **Database Schema Updates**:
   - [x] Update Event model to support custom types, images, and CTAs
   - [x] Add EventType model for custom event categories
@@ -194,14 +247,19 @@ The pickers should now work exactly as expected with smooth, professional scroll
   - [x] Create event types API endpoints (GET, POST, PUT, DELETE)
   - [x] Update events API to support new features
   - [x] Update public calendar API to fetch from database
-- [ ] **Admin Interface**:
-  - [ ] Create enhanced event creation/editing interface
-  - [ ] Add image upload and management
-  - [ ] Add CTA button configuration
-  - [ ] Add event type management
+- [x] **Admin Interface**:
+  - [x] Create enhanced event creation/editing interface
+  - [x] Add image upload and management
+  - [x] Add CTA button configuration
+  - [x] Add event type management
 - [x] Apply time picker theme to shared file for reuse across app
 - [x] Create consistent date picker theme matching time picker
 - [x] Move all form input themes to shared file (`src/lib/form-input-theme.ts`)
+- [ ] **Backend Recurring Logic** (Next Priority):
+  - [ ] Implement API logic to process recurring event data
+  - [ ] Generate multiple event instances based on recurring pattern
+  - [ ] Handle edge cases (holidays, month boundaries, etc.)
+  - [ ] Add bulk event creation endpoint
 - [ ] **Public Display**:
   - [ ] Update calendar view to show custom event types
   - [ ] Display event images in calendar

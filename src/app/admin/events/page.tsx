@@ -3,7 +3,7 @@
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
-import { Breadcrumb, breadcrumbConfigs } from '@/components/breadcrumb'
+import { AdminSubNav } from '@/components/admin-sub-nav'
 import { Input, Textarea, Select, DateInput, TimeInput, ColorInput, Checkbox } from '@/components/shared-inputs'
 import { CTAManager } from '@/components/cta-manager'
 import { ImageUploadManager } from '@/components/image-upload-manager'
@@ -76,7 +76,7 @@ interface ActivityLog {
 export default function EventsPage() {
   const { data: session } = useSession()
   const router = useRouter()
-  const [activeTab, setActiveTab] = useState<'events' | 'calendar'>('events')
+  const [activeTab, setActiveTab] = useState<'events' | 'event-types' | 'calendar'>('events')
   const [events, setEvents] = useState<Event[]>([])
   const [eventTypes, setEventTypes] = useState<EventType[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -99,206 +99,179 @@ export default function EventsPage() {
   const [eventCTAs, setEventCTAs] = useState<Array<{id?: string, text: string, url: string, type: 'external' | 'facebook' | 'phone' | 'email', isActive: boolean}>>([])
   const [eventImages, setEventImages] = useState<Array<{id?: string, url: string, alt: string, caption: string, sortOrder: number}>>([])
   const [selectedEventType, setSelectedEventType] = useState<string>('custom')
-  const [isRecurring, setIsRecurring] = useState<boolean>(false)
-  const [recurringFrequency, setRecurringFrequency] = useState<'daily' | 'weekly' | 'biweekly' | 'monthly' | 'weekdays' | 'weekends'>('weekly')
+  const [isRecurring, setIsRecurring] = useState(false)
+  const [recurringFrequency, setRecurringFrequency] = useState<'daily' | 'weekly' | 'monthly'>('weekly')
   const [recurringEndDate, setRecurringEndDate] = useState<string>('')
-  const [recurringDays, setRecurringDays] = useState<string[]>([])
-  const [recurringInterval, setRecurringInterval] = useState<number>(1)
 
-  // Redirect if not authenticated
   useEffect(() => {
-    if (session === null) {
+    if (!session) {
       router.push('/login')
+      return
     }
+    
+    fetchEvents()
+    fetchEventTypes()
+    fetchActivityLogs()
   }, [session, router])
 
-  useEffect(() => {
-    if (session) {
-      fetchData()
-    }
-  }, [session])
-
-  const fetchData = async () => {
+  const fetchEvents = async () => {
     try {
-      setIsLoading(true)
-      
-      // Fetch events
-      const eventsResponse = await fetch('/api/admin/events')
-      if (eventsResponse.ok) {
-        const eventsData = await eventsResponse.json()
-        setEvents(eventsData.events || [])
-      }
-
-      // Fetch event types
-      const eventTypesResponse = await fetch('/api/admin/event-types?siteId=cmgfjti600004meoa7n4vy3o8')
-      if (eventTypesResponse.ok) {
-        const eventTypesData = await eventTypesResponse.json()
-        setEventTypes(eventTypesData.eventTypes || [])
-      }
-
-      // Fetch activity logs
-      const activityResponse = await fetch('/api/admin/activity?resource=events&limit=10')
-      if (activityResponse.ok) {
-        const activityData = await activityResponse.json()
-        setActivityLogs(activityData.logs || [])
+      const response = await fetch('/api/admin/events')
+      if (response.ok) {
+        const data = await response.json()
+        setEvents(data.events || [])
       }
     } catch (error) {
-      console.error('Failed to fetch data:', error)
+      console.error('Error fetching events:', error)
+    }
+  }
+
+  const fetchEventTypes = async () => {
+    try {
+      const response = await fetch('/api/admin/event-types')
+      if (response.ok) {
+        const data = await response.json()
+        setEventTypes(data.eventTypes || [])
+      }
+    } catch (error) {
+      console.error('Error fetching event types:', error)
+    }
+  }
+
+  const fetchActivityLogs = async () => {
+    try {
+      const response = await fetch('/api/audit/recent')
+      if (response.ok) {
+        const data = await response.json()
+        setActivityLogs(data.logs || [])
+      }
+    } catch (error) {
+      console.error('Error fetching activity logs:', error)
     } finally {
       setIsLoading(false)
     }
   }
 
-  const handleDeleteEvent = async (eventId: string) => {
-    if (!confirm('Are you sure you want to delete this event?')) {
-      return
-    }
+  const sortEventTypes = (types: EventType[]) => {
+    return [...types].sort((a, b) => {
+      const aValue = eventTypeSortBy === 'name' ? a.name : a.createdAt
+      const bValue = eventTypeSortBy === 'name' ? b.name : b.createdAt
+      
+      if (eventTypeSortOrder === 'asc') {
+        return aValue.localeCompare(bValue)
+      } else {
+        return bValue.localeCompare(aValue)
+      }
+    })
+  }
 
+  const sortEvents = (eventsList: Event[]) => {
+    return [...eventsList].sort((a, b) => {
+      let aValue: string
+      let bValue: string
+      
+      switch (eventSortBy) {
+        case 'name':
+          aValue = a.name
+          bValue = b.name
+          break
+        case 'startDate':
+          aValue = a.startDate
+          bValue = b.startDate
+          break
+        case 'createdAt':
+          aValue = a.createdAt
+          bValue = b.createdAt
+          break
+        default:
+          aValue = a.name
+          bValue = b.name
+      }
+      
+      if (eventSortOrder === 'asc') {
+        return aValue.localeCompare(bValue)
+      } else {
+        return bValue.localeCompare(aValue)
+      }
+    })
+  }
+
+  const handleDeleteEvent = async (eventId: string) => {
+    if (!confirm('Are you sure you want to delete this event?')) return
+    
     try {
       const response = await fetch(`/api/admin/events/${eventId}`, {
         method: 'DELETE'
       })
-
-      if (!response.ok) {
-        throw new Error('Failed to delete event')
+      
+      if (response.ok) {
+        setEvents(events.filter(event => event.id !== eventId))
+      } else {
+        alert('Failed to delete event')
       }
-
-      setEvents(events.filter(event => event.id !== eventId))
-      await fetchData() // Refresh data
     } catch (error) {
-      console.error('Failed to delete event:', error)
-      alert('Failed to delete event')
+      console.error('Error deleting event:', error)
+      alert('Error deleting event')
     }
   }
 
   const handleDeleteEventType = async (eventTypeId: string) => {
-    if (!confirm('Are you sure you want to delete this event type?')) {
-      return
-    }
-
+    if (!confirm('Are you sure you want to delete this event type?')) return
+    
     try {
       const response = await fetch(`/api/admin/event-types/${eventTypeId}`, {
         method: 'DELETE'
       })
-
-      if (!response.ok) {
-        throw new Error('Failed to delete event type')
+      
+      if (response.ok) {
+        setEventTypes(eventTypes.filter(type => type.id !== eventTypeId))
+      } else {
+        alert('Failed to delete event type')
       }
-
-      setEventTypes(eventTypes.filter(type => type.id !== eventTypeId))
-      await fetchData() // Refresh data
     } catch (error) {
-      console.error('Failed to delete event type:', error)
-      alert('Failed to delete event type')
+      console.error('Error deleting event type:', error)
+      alert('Error deleting event type')
     }
   }
 
-  const getTypeColor = (type: string) => {
-    switch (type) {
-      case 'food': return 'bg-orange-100 text-orange-800'
-      case 'drink': return 'bg-green-100 text-green-800'
-      case 'entertainment': return 'bg-purple-100 text-purple-800'
-      case 'sports': return 'bg-blue-100 text-blue-800'
-      default: return 'bg-gray-100 text-gray-800'
-    }
-  }
-
-  // Sorting functions
-  const sortEventTypes = (types: EventType[]) => {
-    return [...types].sort((a, b) => {
-      let aValue: string | number
-      let bValue: string | number
+  const handleToggleEventStatus = async (event: Event) => {
+    try {
+      const response = await fetch(`/api/admin/events/${event.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          isActive: !event.isActive
+        })
+      })
       
-      if (eventTypeSortBy === 'name') {
-        aValue = a.name.toLowerCase()
-        bValue = b.name.toLowerCase()
+      if (response.ok) {
+        setEvents(events.map(e => 
+          e.id === event.id ? { ...e, isActive: !e.isActive } : e
+        ))
       } else {
-        aValue = new Date(a.createdAt).getTime()
-        bValue = new Date(b.createdAt).getTime()
+        alert('Failed to update event status')
       }
-      
-      if (eventTypeSortOrder === 'asc') {
-        return aValue < bValue ? -1 : aValue > bValue ? 1 : 0
-      } else {
-        return aValue > bValue ? -1 : aValue < bValue ? 1 : 0
-      }
-    })
-  }
-
-  const sortEvents = (events: Event[]) => {
-    return [...events].sort((a, b) => {
-      let aValue: string | number
-      let bValue: string | number
-      
-      if (eventSortBy === 'name') {
-        aValue = a.name.toLowerCase()
-        bValue = b.name.toLowerCase()
-      } else if (eventSortBy === 'startDate') {
-        aValue = new Date(a.startDate).getTime()
-        bValue = new Date(b.startDate).getTime()
-      } else {
-        aValue = new Date(a.createdAt).getTime()
-        bValue = new Date(b.createdAt).getTime()
-      }
-      
-      if (eventSortOrder === 'asc') {
-        return aValue < bValue ? -1 : aValue > bValue ? 1 : 0
-      } else {
-        return aValue > bValue ? -1 : aValue < bValue ? 1 : 0
-      }
-    })
-  }
-
-  // Event type filtering functions
-  const toggleEventTypeFilter = (eventTypeId: string) => {
-    const newSelected = new Set(selectedEventTypes)
-    if (newSelected.has(eventTypeId)) {
-      newSelected.delete(eventTypeId)
-    } else {
-      newSelected.add(eventTypeId)
-    }
-    setSelectedEventTypes(newSelected)
-  }
-
-  const clearAllFilters = () => {
-    setSelectedEventTypes(new Set())
-  }
-
-  const selectAllFilters = () => {
-    setSelectedEventTypes(new Set(eventTypes.map(type => type.id)))
-  }
-
-  const filterAndSortEvents = (events: Event[]) => {
-    let filteredEvents = events
-
-    // Filter by event types if any are selected
-    if (selectedEventTypes.size > 0) {
-      filteredEvents = events.filter(event => 
-        event.eventTypeId && selectedEventTypes.has(event.eventTypeId)
-      )
-    }
-
-    // Sort the filtered events
-    return sortEvents(filteredEvents)
-  }
-
-  const getTypeIcon = (type: string) => {
-    switch (type) {
-      case 'food': return '🍽️'
-      case 'drink': return '🍺'
-      case 'entertainment': return '🎵'
-      case 'sports': return '🏈'
-      default: return '📅'
+    } catch (error) {
+      console.error('Error updating event status:', error)
+      alert('Error updating event status')
     }
   }
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-green-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Loading events...</p>
+      <div className="min-h-screen bg-gray-50">
+        <AdminSubNav />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-200 rounded w-1/4 mb-4"></div>
+            <div className="h-4 bg-gray-200 rounded w-1/2 mb-8"></div>
+            <div className="space-y-4">
+              <div className="h-32 bg-gray-200 rounded"></div>
+              <div className="h-32 bg-gray-200 rounded"></div>
+              <div className="h-32 bg-gray-200 rounded"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -306,10 +279,9 @@ export default function EventsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <Breadcrumb items={breadcrumbConfigs.events} />
-        
+    <div className="min-h-screen bg-gray-50">
+      <AdminSubNav />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Events Management</h1>
           <p className="mt-2 text-gray-600">Manage your restaurant events and specials</p>
@@ -326,7 +298,17 @@ export default function EventsPage() {
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
               }`}
             >
-              Events & Types
+              Events
+            </button>
+            <button
+              onClick={() => setActiveTab('event-types')}
+              className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'event-types'
+                  ? 'border-green-500 text-green-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              Event Types
             </button>
             <button
               onClick={() => setActiveTab('calendar')}
@@ -343,280 +325,315 @@ export default function EventsPage() {
 
         {/* Events Tab */}
         {activeTab === 'events' && (
-          <div className="space-y-8">
-            {/* Event Types Section */}
+          <div className="space-y-6">
+            {/* Events Section */}
             <div className="bg-white rounded-lg shadow">
               <div className="px-6 py-4 border-b border-gray-200">
                 <div className="flex justify-between items-center">
-                  <h2 className="text-lg font-semibold text-gray-900">Event Types</h2>
-                  <button
-                    onClick={() => setShowEventTypeForm(true)}
-                    className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
-                  >
-                    Add Event Type
-                  </button>
+                  <h3 className="text-lg font-semibold text-gray-900">All Events</h3>
+                  <div className="text-sm text-gray-500">
+                    {events.length} events
+                  </div>
                 </div>
                 
-                {/* Event Types Sorting Toolbar */}
-                <div className="mt-4 flex items-center gap-4">
-                  <div className="flex items-center gap-2">
-                    <label className="text-sm text-gray-600">Sort by:</label>
+                {/* Filtering and Sorting Controls */}
+                <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {/* Event Type Filter */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Event Type</label>
                     <select
-                      value={eventTypeSortBy}
-                      onChange={(e) => setEventTypeSortBy(e.target.value as 'name' | 'createdAt')}
-                      className="px-3 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                      value={selectedEventTypes.size === 0 ? 'all' : Array.from(selectedEventTypes)[0]}
+                      onChange={(e) => {
+                        if (e.target.value === 'all') {
+                          setSelectedEventTypes(new Set())
+                        } else {
+                          setSelectedEventTypes(new Set([e.target.value]))
+                        }
+                      }}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm text-gray-900 bg-white focus:ring-2 focus:ring-green-500 focus:border-green-500"
                     >
-                      <option value="name">Name</option>
-                      <option value="createdAt">Created Date</option>
+                      <option value="all">All Types</option>
+                      {eventTypes.map(type => (
+                        <option key={type.id} value={type.id}>{type.name}</option>
+                      ))}
                     </select>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <label className="text-sm text-gray-600">Order:</label>
-                    <button
-                      onClick={() => setEventTypeSortOrder(eventTypeSortOrder === 'asc' ? 'desc' : 'asc')}
-                      className="flex items-center gap-1 px-3 py-1 border border-gray-300 rounded text-sm hover:bg-gray-50 focus:ring-2 focus:ring-green-500"
+                  
+                  {/* Status Filter */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                    <select
+                      value="all"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm text-gray-900 bg-white focus:ring-2 focus:ring-green-500 focus:border-green-500"
                     >
-                      {eventTypeSortOrder === 'asc' ? '↑' : '↓'} {eventTypeSortOrder === 'asc' ? 'Ascending' : 'Descending'}
+                      <option value="all">All Status</option>
+                      <option value="active">Active</option>
+                      <option value="inactive">Inactive</option>
+                    </select>
+                  </div>
+                  
+                  {/* Sort Controls */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Sort</label>
+                    <div className="flex gap-1">
+                      <select
+                        value={eventSortBy}
+                        onChange={(e) => setEventSortBy(e.target.value as 'name' | 'startDate' | 'createdAt')}
+                        className="flex-1 px-2 py-2 border border-gray-300 rounded-l-md text-sm text-gray-900 bg-white focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                      >
+                        <option value="name">Name</option>
+                        <option value="startDate">Start Date</option>
+                        <option value="createdAt">Created</option>
+                      </select>
+                      <button
+                        onClick={() => setEventSortOrder(eventSortOrder === 'asc' ? 'desc' : 'asc')}
+                        className="px-2 py-2 border border-gray-300 rounded-r-md text-sm text-gray-900 bg-white hover:bg-gray-50 focus:ring-2 focus:ring-green-500"
+                        title={`Sort ${eventSortOrder === 'asc' ? 'Descending' : 'Ascending'}`}
+                      >
+                        {eventSortOrder === 'asc' ? '↑' : '↓'}
+                      </button>
+                    </div>
+                  </div>
+                  
+                  {/* Add Event Button */}
+                  <div className="flex items-end">
+                    <button
+                      onClick={() => setShowCreateForm(true)}
+                      className="w-full bg-green-600 text-white px-4 py-2 rounded-md text-sm hover:bg-green-700 transition-colors"
+                    >
+                      Add Event
                     </button>
                   </div>
                 </div>
               </div>
-              <div className="p-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {sortEventTypes(eventTypes).map((type) => (
-                    <div key={type.id} className="border rounded-lg p-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-semibold text-gray-900">{type.name}</h3>
+              <div className="divide-y divide-gray-200">
+                {events.length === 0 ? (
+                  <div className="px-6 py-8 text-center text-gray-500">
+                    No events found
+                  </div>
+                ) : (
+                  events.map((event) => (
+                    <div key={event.id} className="px-6 py-4 hover:bg-gray-50">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-4 flex-1 min-w-0">
+                          {/* Event Image */}
+                          <div className="flex-shrink-0">
+                            {event.image ? (
+                              <img className="h-12 w-12 rounded-lg object-cover" src={event.image} alt={event.name} />
+                            ) : (
+                              <div className="h-12 w-12 rounded-lg bg-gray-200 flex items-center justify-center">
+                                <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                              </div>
+                            )}
+                          </div>
+                          
+                          {/* Event Info */}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center space-x-2">
+                              <h3 className="text-sm font-medium text-gray-900 truncate">{event.name}</h3>
+                              <span className={`inline-flex px-2 py-0.5 text-xs font-semibold rounded-full ${
+                                event.isActive 
+                                  ? 'bg-green-100 text-green-800' 
+                                  : 'bg-red-100 text-red-800'
+                              }`}>
+                                {event.isActive ? 'Active' : 'Inactive'}
+                              </span>
+                            </div>
+                            <div className="mt-1 flex items-center space-x-4 text-sm text-gray-500">
+                              <span>{event.eventType?.name || 'Custom'}</span>
+                              <span>•</span>
+                              <span>{new Date(event.startDate).toLocaleDateString()}</span>
+                              {event.startTime && (
+                                <>
+                                  <span>•</span>
+                                  <span>
+                                    {formatTimeInTimezone(event.startTime, 'America/Denver', { hour: '2-digit', minute: '2-digit', hour12: true })}
+                                    {event.endTime && ` - ${formatTimeInTimezone(event.endTime, 'America/Denver', { hour: '2-digit', minute: '2-digit', hour12: true })}`}
+                                  </span>
+                                </>
+                              )}
+                              {event.location && (
+                                <>
+                                  <span>•</span>
+                                  <span className="truncate">{event.location}</span>
+                                </>
+                              )}
+                            </div>
+                            {event.description && (
+                              <p className="mt-1 text-sm text-gray-600 truncate max-w-xs">{event.description}</p>
+                            )}
+                          </div>
                         </div>
-                        <div className="flex gap-2">
+                        
+                        {/* Actions */}
+                        <div className="flex items-center space-x-2">
+                          <button
+                            onClick={() => {
+                              setEditingEvent(event)
+                              setShowCreateForm(true)
+                            }}
+                            className="px-3 py-1 text-xs font-medium text-blue-700 bg-blue-100 hover:bg-blue-200 rounded-md transition-colors"
+                            title="Edit"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleToggleEventStatus(event)}
+                            className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
+                              event.isActive 
+                                ? 'text-orange-700 bg-orange-100 hover:bg-orange-200' 
+                                : 'text-green-700 bg-green-100 hover:bg-green-200'
+                            }`}
+                            title={event.isActive ? 'Disable' : 'Enable'}
+                          >
+                            {event.isActive ? 'Disable' : 'Enable'}
+                          </button>
+                          <button
+                            onClick={() => handleDeleteEvent(event.id)}
+                            className="px-3 py-1 text-xs font-medium text-red-700 bg-red-100 hover:bg-red-200 rounded-md transition-colors"
+                            title="Delete"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Event Types Tab */}
+        {activeTab === 'event-types' && (
+          <div className="space-y-6">
+            {/* Event Types Section */}
+            <div className="bg-white rounded-lg shadow">
+              <div className="px-6 py-4 border-b border-gray-200">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-lg font-semibold text-gray-900">All Event Types</h3>
+                  <div className="text-sm text-gray-500">
+                    {eventTypes.length} types
+                  </div>
+                </div>
+                
+                {/* Filtering and Sorting Controls */}
+                <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {/* Sort Controls */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Sort</label>
+                    <div className="flex gap-1">
+                      <select
+                        value={eventTypeSortBy}
+                        onChange={(e) => setEventTypeSortBy(e.target.value as 'name' | 'createdAt')}
+                        className="flex-1 px-2 py-2 border border-gray-300 rounded-l-md text-sm text-gray-900 bg-white focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                      >
+                        <option value="name">Name</option>
+                        <option value="createdAt">Created</option>
+                      </select>
+                      <button
+                        onClick={() => setEventTypeSortOrder(eventTypeSortOrder === 'asc' ? 'desc' : 'asc')}
+                        className="px-2 py-2 border border-gray-300 rounded-r-md text-sm text-gray-900 bg-white hover:bg-gray-50 focus:ring-2 focus:ring-green-500"
+                        title={`Sort ${eventTypeSortOrder === 'asc' ? 'Descending' : 'Ascending'}`}
+                      >
+                        {eventTypeSortOrder === 'asc' ? '↑' : '↓'}
+                      </button>
+                    </div>
+                  </div>
+                  
+                  {/* Add Event Type Button */}
+                  <div className="flex items-end">
+                    <button
+                      onClick={() => setShowEventTypeForm(true)}
+                      className="w-full bg-green-600 text-white px-4 py-2 rounded-md text-sm hover:bg-green-700 transition-colors"
+                    >
+                      Add Event Type
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div className="divide-y divide-gray-200">
+                {eventTypes.length === 0 ? (
+                  <div className="px-6 py-8 text-center text-gray-500">
+                    No event types found
+                  </div>
+                ) : (
+                  sortEventTypes(eventTypes).map((type) => (
+                    <div key={type.id} className="px-6 py-4 hover:bg-gray-50">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-4 flex-1 min-w-0">
+                          {/* Color Indicator */}
+                          <div className="flex-shrink-0">
+                            {type.color ? (
+                              <div 
+                                className="w-12 h-12 rounded-lg border-2 border-gray-200 flex items-center justify-center"
+                                style={{ backgroundColor: type.color }}
+                              >
+                                {type.icon ? (
+                                  <span className="text-white text-lg">{type.icon}</span>
+                                ) : (
+                                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                                  </svg>
+                                )}
+                              </div>
+                            ) : (
+                              <div className="w-12 h-12 rounded-lg bg-gray-200 flex items-center justify-center">
+                                <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                                </svg>
+                              </div>
+                            )}
+                          </div>
+                          
+                          {/* Event Type Info */}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center space-x-2">
+                              <h3 className="text-sm font-medium text-gray-900 truncate">{type.name}</h3>
+                              <span className={`inline-flex px-2 py-0.5 text-xs font-semibold rounded-full ${
+                                type.isActive 
+                                  ? 'bg-green-100 text-green-800' 
+                                  : 'bg-red-100 text-red-800'
+                              }`}>
+                                {type.isActive ? 'Active' : 'Inactive'}
+                              </span>
+                            </div>
+                            {type.description && (
+                              <p className="mt-1 text-sm text-gray-600 truncate">{type.description}</p>
+                            )}
+                            {type.color && (
+                              <p className="mt-1 text-xs text-gray-500">{type.color}</p>
+                            )}
+                          </div>
+                        </div>
+                        
+                        {/* Actions */}
+                        <div className="flex items-center space-x-2">
                           <button
                             onClick={() => {
                               setEditingEventType(type)
                               setShowEventTypeForm(true)
                             }}
-                            className="text-blue-600 hover:text-blue-800 text-sm"
+                            className="px-3 py-1 text-xs font-medium text-blue-700 bg-blue-100 hover:bg-blue-200 rounded-md transition-colors"
+                            title="Edit"
                           >
                             Edit
                           </button>
                           <button
                             onClick={() => handleDeleteEventType(type.id)}
-                            className="text-red-600 hover:text-red-800 text-sm"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </div>
-                      {type.description && (
-                        <p className="text-sm text-gray-600 mb-2">{type.description}</p>
-                      )}
-                      {type.color && (
-                        <div className="flex items-center gap-2">
-                          <div 
-                            className="w-4 h-4 rounded-full border"
-                            style={{ backgroundColor: type.color }}
-                          ></div>
-                          <span className="text-xs text-gray-500">{type.color}</span>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Events Section */}
-            <div className="bg-white rounded-lg shadow">
-              <div className="px-6 py-4 border-b border-gray-200">
-                <div className="flex justify-between items-center">
-                  <h2 className="text-lg font-semibold text-gray-900">Events</h2>
-                  <button
-                    onClick={() => {
-                      const today = new Date()
-                      const todayString = today.toISOString().split('T')[0]
-                      setEditingEvent({
-                        id: '',
-                        name: '',
-                        description: '',
-                        startDate: todayString,
-                        endDate: todayString,
-                        startTime: '16:00', // 4:00 PM
-                        endTime: '23:00',   // 11:00 PM
-                        location: '',
-                        isActive: true,
-                        eventTypeId: '',
-                        price: '',
-                        createdAt: '',
-                        updatedAt: ''
-                      })
-                      setEventCTAs([])
-                      setEventImages([])
-                      setSelectedEventType('custom')
-                      setIsRecurring(false)
-                      setRecurringFrequency('weekly')
-                      setRecurringEndDate('')
-                      setShowCreateForm(true)
-                    }}
-                    className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
-                  >
-                    Add Event
-                  </button>
-                </div>
-                
-                {/* Events Sorting Toolbar */}
-                <div className="mt-4 flex items-center gap-4">
-                  <div className="flex items-center gap-2">
-                    <label className="text-sm text-gray-600">Sort by:</label>
-                    <select
-                      value={eventSortBy}
-                      onChange={(e) => setEventSortBy(e.target.value as 'name' | 'startDate' | 'createdAt')}
-                      className="px-3 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                    >
-                      <option value="name">Name</option>
-                      <option value="startDate">Start Date</option>
-                      <option value="createdAt">Created Date</option>
-                    </select>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <label className="text-sm text-gray-600">Order:</label>
-                    <button
-                      onClick={() => setEventSortOrder(eventSortOrder === 'asc' ? 'desc' : 'asc')}
-                      className="flex items-center gap-1 px-3 py-1 border border-gray-300 rounded text-sm hover:bg-gray-50 focus:ring-2 focus:ring-green-500"
-                    >
-                      {eventSortOrder === 'asc' ? '↑' : '↓'} {eventSortOrder === 'asc' ? 'Ascending' : 'Descending'}
-                    </button>
-                  </div>
-                </div>
-                
-                {/* Event Type Filter */}
-                <div className="mt-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <label className="text-sm font-medium text-gray-700">Filter by Event Type:</label>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={selectAllFilters}
-                        className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors"
-                      >
-                        Select All
-                      </button>
-                      <button
-                        onClick={clearAllFilters}
-                        className="text-xs px-2 py-1 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors"
-                      >
-                        Clear All
-                      </button>
-                    </div>
-                  </div>
-                  <div className="flex flex-wrap gap-3">
-                    {eventTypes.map((type) => (
-                      <label key={type.id} className="flex items-center gap-2 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={selectedEventTypes.has(type.id)}
-                          onChange={() => toggleEventTypeFilter(type.id)}
-                          className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
-                        />
-                        <span className="text-sm text-gray-700">{type.name}</span>
-                        <span 
-                          className="w-3 h-3 rounded-full" 
-                          style={{ backgroundColor: type.color || '#FF6B35' }}
-                        ></span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              </div>
-              <div className="p-6">
-                <div className="mb-4 text-sm text-gray-600">
-                  Showing {filterAndSortEvents(events).length} of {events.length} events
-                  {selectedEventTypes.size > 0 && (
-                    <span className="ml-2 text-green-600">
-                      (filtered by {selectedEventTypes.size} event type{selectedEventTypes.size > 1 ? 's' : ''})
-                    </span>
-                  )}
-                </div>
-                <div className="space-y-4">
-                  {filterAndSortEvents(events).map((event) => (
-                    <div key={event.id} className="border rounded-lg p-4">
-                      <div className="flex justify-between items-start">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            <h3 className="font-semibold text-gray-900">{event.name}</h3>
-                            {event.eventType && (
-                              <span className={`text-xs px-2 py-1 rounded-full ${getTypeColor(event.eventType.name.toLowerCase())}`}>
-                                {event.eventType.name}
-                              </span>
-                            )}
-                            {event.price && (
-                              <span className="text-sm font-semibold text-green-600">{event.price}</span>
-                            )}
-                          </div>
-                          {event.description && (
-                            <p className="text-sm text-gray-600 mb-2">{event.description}</p>
-                          )}
-                          <div className="flex items-center gap-4 text-sm text-gray-500">
-                            <span>📅 {new Date(event.startDate).toLocaleDateString()}</span>
-                            {event.startTime && (
-                              <span>🕐 {new Date(`2000-01-01T${event.startTime}`).toLocaleTimeString('en-US', { 
-                                hour: 'numeric', 
-                                minute: '2-digit',
-                                hour12: true 
-                              })}</span>
-                            )}
-                            {event.location && (
-                              <span>📍 {event.location}</span>
-                            )}
-                          </div>
-                        </div>
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => {
-                              setEditingEvent(event)
-                              setEventCTAs(event.ctas || [])
-                              setEventImages(event.images || [])
-                              setShowCreateForm(true)
-                            }}
-                            className="text-blue-600 hover:text-blue-800 text-sm"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => handleDeleteEvent(event.id)}
-                            className="text-red-600 hover:text-red-800 text-sm"
+                            className="px-3 py-1 text-xs font-medium text-red-700 bg-red-100 hover:bg-red-200 rounded-md transition-colors"
+                            title="Delete"
                           >
                             Delete
                           </button>
                         </div>
                       </div>
                     </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Activity Logs */}
-            <div className="bg-white rounded-lg shadow">
-              <div className="px-6 py-4 border-b border-gray-200">
-                <h2 className="text-lg font-semibold text-gray-900">Recent Activity</h2>
-              </div>
-              <div className="p-6">
-                <div className="space-y-3">
-                  {activityLogs.map((log) => (
-                    <div key={log.id} className="flex items-center gap-3 text-sm">
-                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                      <span className="text-gray-600">
-                        <strong>{log.user.name || log.user.email}</strong> {
-                          log.action.toLowerCase() === 'create' && log.resource === 'events' 
-                            ? 'created an event'
-                            : `${log.action.toLowerCase()}d ${log.resource}`
-                        }
-                      </span>
-                      <span className="text-gray-400">
-                        {getRelativeTime(log.timestamp)}
-                      </span>
-                    </div>
-                  ))}
-                </div>
+                  ))
+                )}
               </div>
             </div>
           </div>
@@ -647,15 +664,15 @@ export default function EventsPage() {
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
               {editingEventType ? 'Edit Event Type' : 'Add Event Type'}
             </h3>
-              <form onSubmit={async (e) => {
+            <form onSubmit={async (e) => {
               e.preventDefault()
               const formData = new FormData(e.currentTarget)
-              const eventTypeData = {
-                siteId: 'cmgfjti600004meoa7n4vy3o8',
+              const data = {
                 name: formData.get('name') as string,
                 description: formData.get('description') as string,
                 color: formData.get('color') as string,
-                isActive: true
+                icon: formData.get('icon') as string,
+                isActive: formData.get('isActive') === 'on'
               }
 
               try {
@@ -667,39 +684,48 @@ export default function EventsPage() {
                 const response = await fetch(url, {
                   method,
                   headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify(eventTypeData)
+                  body: JSON.stringify(data)
                 })
 
-                if (!response.ok) {
-                  throw new Error('Failed to save event type')
+                if (response.ok) {
+                  await fetchEventTypes()
+                  setShowEventTypeForm(false)
+                  setEditingEventType(null)
+                } else {
+                  alert('Failed to save event type')
                 }
-
-                setShowEventTypeForm(false)
-                setEditingEventType(null)
-                await fetchData()
               } catch (error) {
-                console.error('Failed to save event type:', error)
-                alert('Failed to save event type')
+                console.error('Error saving event type:', error)
+                alert('Error saving event type')
               }
             }}>
               <div className="space-y-4">
                 <Input
                   name="name"
-                  label="Name"
-                  required
-                  placeholder="e.g., Food Special, Sports Event"
+                  label="Event Type Name"
                   defaultValue={editingEventType?.name || ''}
+                  required
                 />
                 <Textarea
                   name="description"
                   label="Description"
-                  placeholder="Describe this event type..."
                   defaultValue={editingEventType?.description || ''}
                 />
                 <ColorInput
                   name="color"
                   label="Color"
-                  defaultValue={editingEventType?.color || '#FF6B35'}
+                  defaultValue={editingEventType?.color || '#6B7280'}
+                />
+                <Input
+                  name="icon"
+                  label="Icon (emoji)"
+                  defaultValue={editingEventType?.icon || ''}
+                  placeholder="🎉"
+                />
+                <Checkbox
+                  name="isActive"
+                  label="Active"
+                  defaultChecked={editingEventType?.isActive ?? true}
                 />
               </div>
               <div className="flex justify-end space-x-3 mt-6">
@@ -709,13 +735,13 @@ export default function EventsPage() {
                     setShowEventTypeForm(false)
                     setEditingEventType(null)
                   }}
-                  className="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors"
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                  className="px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700"
                 >
                   {editingEventType ? 'Update' : 'Create'} Event Type
                 </button>
@@ -732,10 +758,10 @@ export default function EventsPage() {
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
               {editingEvent ? 'Edit Event' : 'Add Event'}
             </h3>
-              <form onSubmit={async (e) => {
+            <form onSubmit={async (e) => {
               e.preventDefault()
               const formData = new FormData(e.currentTarget)
-              const eventData = {
+              const data = {
                 name: formData.get('name') as string,
                 description: formData.get('description') as string,
                 startDate: formData.get('startDate') as string,
@@ -743,16 +769,11 @@ export default function EventsPage() {
                 startTime: formData.get('startTime') as string,
                 endTime: formData.get('endTime') as string,
                 location: formData.get('location') as string,
-                eventTypeId: formData.get('eventTypeId') as string,
                 price: formData.get('price') as string,
+                eventTypeId: formData.get('eventTypeId') as string,
                 isActive: formData.get('isActive') === 'on',
-                images: eventImages,
                 ctas: eventCTAs,
-                isRecurring,
-                recurringFrequency,
-                recurringEndDate,
-                recurringDays,
-                recurringInterval
+                images: eventImages
               }
 
               try {
@@ -764,360 +785,105 @@ export default function EventsPage() {
                 const response = await fetch(url, {
                   method,
                   headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify(eventData)
+                  body: JSON.stringify(data)
                 })
 
-                if (!response.ok) {
-                  throw new Error('Failed to save event')
+                if (response.ok) {
+                  await fetchEvents()
+                  setShowCreateForm(false)
+                  setEditingEvent(null)
+                  setEventCTAs([])
+                  setEventImages([])
+                } else {
+                  alert('Failed to save event')
                 }
-
-                setShowCreateForm(false)
-                setEditingEvent(null)
-                setEventCTAs([])
-                setEventImages([])
-                await fetchData()
               } catch (error) {
-                console.error('Failed to save event:', error)
-                alert('Failed to save event')
+                console.error('Error saving event:', error)
+                alert('Error saving event')
               }
             }}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Event Type Selection - Always at the top */}
+                <Input
+                  name="name"
+                  label="Event Name"
+                  defaultValue={editingEvent?.name || ''}
+                  required
+                />
                 <Select
                   name="eventTypeId"
                   label="Event Type"
                   defaultValue={editingEvent?.eventTypeId || selectedEventType}
-                  onChange={(value) => {
-                    setSelectedEventType(value)
-                    // Auto-fill based on event type
-                    if (value === 'poker-night') {
-                      setEditingEvent(prev => prev ? {
-                        ...prev,
-                        name: 'Poker Night',
-                        startTime: '19:00', // 7:00 PM
-                        endTime: '23:00',   // 11:00 PM
-                        location: 'Main Dining Room',
-                        eventTypeId: value
-                      } : null)
-                    } else if (value === 'broncos-game') {
-                      setEditingEvent(prev => prev ? {
-                        ...prev,
-                        name: 'Broncos Game',
-                        location: 'Main Dining Room',
-                        eventTypeId: value
-                      } : null)
-                    } else {
-                      setEditingEvent(prev => prev ? {
-                        ...prev,
-                        eventTypeId: value
-                      } : null)
-                    }
-                  }}
-                  className="md:col-span-2"
-                >
-                  <option value="">Select Event Type</option>
-                  <option value="poker-night">Poker Night</option>
-                  <option value="broncos-game">Broncos Game</option>
-                  <option value="custom">Custom Event</option>
-                  {eventTypes.filter(type => 
-                    !['Poker Night', 'Broncos Game', 'Custom Event'].includes(type.name)
-                  ).map((type) => (
-                    <option key={type.id} value={type.id}>
-                      {type.name}
-                    </option>
-                  ))}
-                </Select>
-
-                {/* Recurring Event Options */}
-                <div className="md:col-span-2">
-                  <Checkbox
-                    name="isRecurring"
-                    label="Make this a recurring event"
-                    checked={isRecurring}
-                    onChange={(checked) => setIsRecurring(checked)}
-                  />
-                </div>
-
-                {isRecurring && (
-                  <>
-                    <div className="md:col-span-2 p-3 bg-green-50 border border-green-200 rounded-lg">
-                      <p className="text-sm text-green-800 font-medium mb-2">Recurring Event Settings</p>
-                    </div>
-                    
-                    <Select
-                      name="recurringFrequency"
-                      label="Recurring Pattern"
-                      value={recurringFrequency}
-                      onChange={(value) => setRecurringFrequency(value as any)}
-                    >
-                      <option value="daily">Every Day</option>
-                      <option value="weekdays">Weekdays Only (Mon-Fri)</option>
-                      <option value="weekends">Weekends Only (Sat-Sun)</option>
-                      <option value="weekly">Every Week</option>
-                      <option value="biweekly">Every Other Week</option>
-                      <option value="monthly">Every Month</option>
-                    </Select>
-                    
-                    <Input
-                      name="recurringInterval"
-                      label="Every X (interval)"
-                      type="number"
-                      min="1"
-                      max="12"
-                      value={recurringInterval}
-                      onChange={(value) => setRecurringInterval(parseInt(value) || 1)}
-                    />
-
-                    {(recurringFrequency === 'weekly' || recurringFrequency === 'biweekly') && (
-                      <div className="md:col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Days of Week</label>
-                        <div className="grid grid-cols-7 gap-2">
-                          {['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].map((day, index) => (
-                            <label key={day} className="flex items-center">
-                              <input
-                                type="checkbox"
-                                checked={recurringDays.includes(day)}
-                                onChange={(e) => {
-                                  if (e.target.checked) {
-                                    setRecurringDays([...recurringDays, day])
-                                  } else {
-                                    setRecurringDays(recurringDays.filter(d => d !== day))
-                                  }
-                                }}
-                                className="mr-1"
-                              />
-                              <span className="text-xs">{day.slice(0, 3)}</span>
-                            </label>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    <DateInput
-                      name="recurringEndDate"
-                      label="End Recurring On"
-                      value={recurringEndDate}
-                      onChange={setRecurringEndDate}
-                    />
-                    
-                    <div className="md:col-span-2">
-                      <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg">
-                        <p className="text-sm text-gray-600">
-                          <strong>Preview:</strong> {
-                            recurringFrequency === 'daily' ? `Every ${recurringInterval} day(s)` :
-                            recurringFrequency === 'weekdays' ? `Every ${recurringInterval} weekday(s)` :
-                            recurringFrequency === 'weekends' ? `Every ${recurringInterval} weekend(s)` :
-                            recurringFrequency === 'weekly' ? `Every ${recurringInterval} week(s) on ${recurringDays.length > 0 ? recurringDays.join(', ') : 'selected days'}` :
-                            recurringFrequency === 'biweekly' ? `Every ${recurringInterval * 2} week(s) on ${recurringDays.length > 0 ? recurringDays.join(', ') : 'selected days'}` :
-                            `Every ${recurringInterval} month(s)`
-                          } {recurringEndDate ? `until ${recurringEndDate}` : ''}
-                        </p>
-                      </div>
-                    </div>
-                  </>
-                )}
-
-                {/* Dynamic Fields Based on Event Type */}
-                {selectedEventType === 'poker-night' && (
-                  <>
-                    <div className="md:col-span-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                      <p className="text-sm text-blue-800">
-                        <strong>Poker Night:</strong> This will create a weekly poker event at 7pm-11pm. 
-                        Perfect for setting up recurring poker nights for the year!
-                      </p>
-                    </div>
-                    <Input
-                      name="name"
-                      label="Event Name"
-                      required
-                      defaultValue="Poker Night"
-                      className="md:col-span-2"
-                    />
-                    <DateInput
-                      name="startDate"
-                      label="Date"
-                      required
-                      value={editingEvent?.startDate ? editingEvent.startDate.split('T')[0] : ''}
-                      onChange={(value) => setEditingEvent(prev => prev ? { ...prev, startDate: value, endDate: value } : null)}
-                    />
-                    <Input
-                      name="location"
-                      label="Location"
-                      defaultValue="Main Dining Room"
-                    />
-                    <Input
-                      name="startTime"
-                      label="Start Time"
-                      defaultValue="19:00"
-                      readOnly
-                    />
-                    <Input
-                      name="endTime"
-                      label="End Time"
-                      defaultValue="23:00"
-                      readOnly
-                    />
-                    <Checkbox
-                      name="isActive"
-                      label="Active"
-                      checked={editingEvent?.isActive !== false}
-                      className="md:col-span-2"
-                    />
-                  </>
-                )}
-
-                {selectedEventType === 'broncos-game' && (
-                  <>
-                    <div className="md:col-span-2 p-3 bg-orange-50 border border-orange-200 rounded-lg">
-                      <p className="text-sm text-orange-800">
-                        <strong>Broncos Game:</strong> Enter the game details and we'll automatically set up 
-                        the watch party times (1 hour before and after game time).
-                      </p>
-                    </div>
-                    <Input
-                      name="name"
-                      label="Event Name"
-                      required
-                      defaultValue="Broncos Game"
-                      className="md:col-span-2"
-                    />
-                    <DateInput
-                      name="startDate"
-                      label="Game Date"
-                      required
-                      value={editingEvent?.startDate ? editingEvent.startDate.split('T')[0] : ''}
-                      onChange={(value) => setEditingEvent(prev => prev ? { ...prev, startDate: value, endDate: value } : null)}
-                    />
-                    <Input
-                      name="opponent"
-                      label="Opponent Team"
-                      required
-                      placeholder="e.g., Kansas City Chiefs"
-                    />
-                    <TimeInput
-                      name="gameTime"
-                      label="Game Start Time"
-                      required
-                      value={editingEvent?.startTime || ''}
-                      onChange={(value) => {
-                        // Auto-calculate start and end times (1 hour before and after)
-                        const gameTime = new Date(`2000-01-01T${value}`)
-                        const startTime = new Date(gameTime.getTime() - 60 * 60 * 1000) // 1 hour before
-                        const endTime = new Date(gameTime.getTime() + 60 * 60 * 1000)   // 1 hour after
-                        
-                        setEditingEvent(prev => prev ? {
-                          ...prev,
-                          startTime: startTime.toTimeString().slice(0, 5),
-                          endTime: endTime.toTimeString().slice(0, 5)
-                        } : null)
-                      }}
-                    />
-                    <Select
-                      name="mainDish"
-                      label="Main Dish"
-                      required
-                    >
-                      <option value="">Select Main Dish</option>
-                      <option value="Taco Bar">Taco Bar</option>
-                      <option value="Pulled Pork">Pulled Pork</option>
-                      <option value="Pasta Bar">Pasta Bar</option>
-                      <option value="BBQ Ribs">BBQ Ribs</option>
-                      <option value="Chili Bar">Chili Bar</option>
-                      <option value="Wing Bar">Wing Bar</option>
-                      <option value="Burger Bar">Burger Bar</option>
-                    </Select>
-                    <Input
-                      name="location"
-                      label="Location"
-                      defaultValue="Main Dining Room"
-                    />
-                    <Checkbox
-                      name="isActive"
-                      label="Active"
-                      checked={editingEvent?.isActive !== false}
-                      className="md:col-span-2"
-                    />
-                  </>
-                )}
-
-                {(selectedEventType === 'custom' || (!selectedEventType && editingEvent?.eventTypeId)) && (
-                  <>
-                    <Input
-                      name="name"
-                      label="Event Name"
-                      required
-                      placeholder="e.g., Taco Tuesday, Special Event"
-                      defaultValue={editingEvent?.name || ''}
-                      className="md:col-span-2"
-                    />
-                    <Textarea
-                      name="description"
-                      label="Description"
-                      placeholder="Describe the event..."
-                      defaultValue={editingEvent?.description || ''}
-                      className="md:col-span-2"
-                    />
-                    <DateInput
-                      name="startDate"
-                      label="Start Date"
-                      required
-                      value={editingEvent?.startDate ? editingEvent.startDate.split('T')[0] : ''}
-                      onChange={(value) => setEditingEvent(prev => prev ? { ...prev, startDate: value } : null)}
-                    />
-                    <DateInput
-                      name="endDate"
-                      label="End Date"
-                      value={editingEvent?.endDate ? editingEvent.endDate.split('T')[0] : ''}
-                      onChange={(value) => setEditingEvent(prev => prev ? { ...prev, endDate: value } : null)}
-                    />
-                    <TimeInput
-                      name="startTime"
-                      label="Start Time"
-                      value={editingEvent?.startTime || ''}
-                      onChange={(value) => setEditingEvent(prev => prev ? { ...prev, startTime: value } : null)}
-                    />
-                    <TimeInput
-                      name="endTime"
-                      label="End Time"
-                      value={editingEvent?.endTime || ''}
-                      onChange={(value) => setEditingEvent(prev => prev ? { ...prev, endTime: value } : null)}
-                    />
-                    <Input
-                      name="location"
-                      label="Location"
-                      placeholder="e.g., Main Dining Room, Patio"
-                      defaultValue={editingEvent?.location || ''}
-                    />
-                    <Input
-                      name="price"
-                      label="Price"
-                      placeholder="e.g., $9.99, Free, BOGO"
-                      defaultValue={editingEvent?.price || ''}
-                    />
-                    <Checkbox
-                      name="isActive"
-                      label="Active"
-                      checked={editingEvent?.isActive !== false}
-                      className="md:col-span-2"
-                    />
-                    
-                    {/* CTAs and Images for Custom Events */}
-                    <div className="md:col-span-2">
-                      <CTAManager
-                        ctas={eventCTAs}
-                        onChange={setEventCTAs}
-                      />
-                    </div>
-                    
-                    <div className="md:col-span-2">
-                      <ImageUploadManager
-                        images={eventImages}
-                        onChange={setEventImages}
-                      />
-                    </div>
-                  </>
-                )}
+                  options={[
+                    { value: 'custom', label: 'Custom' },
+                    ...eventTypes.map(type => ({ value: type.id, label: type.name }))
+                  ]}
+                />
+                <DateInput
+                  name="startDate"
+                  label="Start Date"
+                  defaultValue={editingEvent?.startDate || ''}
+                  required
+                />
+                <DateInput
+                  name="endDate"
+                  label="End Date"
+                  defaultValue={editingEvent?.endDate || ''}
+                  required
+                />
+                <TimeInput
+                  name="startTime"
+                  label="Start Time"
+                  defaultValue={editingEvent?.startTime || ''}
+                />
+                <TimeInput
+                  name="endTime"
+                  label="End Time"
+                  defaultValue={editingEvent?.endTime || ''}
+                />
+                <Input
+                  name="location"
+                  label="Location"
+                  defaultValue={editingEvent?.location || ''}
+                />
+                <Input
+                  name="price"
+                  label="Price"
+                  defaultValue={editingEvent?.price || ''}
+                  placeholder="Free or $10"
+                />
               </div>
+              
+              <div className="mt-4">
+                <Textarea
+                  name="description"
+                  label="Description"
+                  defaultValue={editingEvent?.description || ''}
+                  rows={3}
+                />
+              </div>
+
+              <div className="mt-4">
+                <Checkbox
+                  name="isActive"
+                  label="Active"
+                  defaultChecked={editingEvent?.isActive ?? true}
+                />
+              </div>
+
+              <div className="mt-6">
+                <CTAManager
+                  ctas={eventCTAs}
+                  onChange={setEventCTAs}
+                />
+              </div>
+
+              <div className="mt-6">
+                <ImageUploadManager
+                  images={eventImages}
+                  onChange={setEventImages}
+                />
+              </div>
+
               <div className="flex justify-end space-x-3 mt-6">
                 <button
                   type="button"
@@ -1127,13 +893,13 @@ export default function EventsPage() {
                     setEventCTAs([])
                     setEventImages([])
                   }}
-                  className="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors"
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                  className="px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700"
                 >
                   {editingEvent ? 'Update' : 'Create'} Event
                 </button>

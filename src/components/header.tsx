@@ -66,7 +66,12 @@ export function HeaderClient({ siteName }: { siteName?: string }) {
                 <div className="absolute inset-0 bg-gradient-to-r from-green-50 to-green-100 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 <div className="absolute bottom-0 left-0 w-full h-0.5 bg-green-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
               </Link>
-              <Link href="/menu" className="relative bg-orange-600 text-white px-3 py-2 text-sm font-medium transition-all duration-300 rounded-lg hover:bg-orange-700 hover:shadow-lg hover:shadow-orange-500/25 hover:scale-105 group overflow-hidden">
+              <Link href="/#contact" className="relative text-gray-600 hover:text-green-600 px-3 py-2 text-sm font-medium transition-all duration-300 rounded-lg group overflow-hidden">
+                <span className="relative z-10">Contact</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-green-50 to-green-100 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="absolute bottom-0 left-0 w-full h-0.5 bg-green-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+              </Link>
+              <Link href="/menu" className="relative bg-orange-600 text-white px-2 py-1.5 text-xs font-medium transition-all duration-300 rounded hover:bg-orange-700 hover:shadow-lg hover:shadow-orange-500/25 hover:scale-105 group overflow-hidden">
                 <span className="relative z-10">Order Online</span>
                 <div className="absolute inset-0 bg-gradient-to-r from-orange-500 to-orange-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </Link>
@@ -99,7 +104,7 @@ export function HeaderClient({ siteName }: { siteName?: string }) {
                       <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-indigo-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     </a>
                     <button
-                      onClick={() => signOut({ callbackUrl: '/' })}
+                      onClick={() => signOut({ callbackUrl: window.location.origin + '/' })}
                       className="relative text-xs sm:text-sm text-gray-500 hover:text-gray-700 px-2 py-1 sm:px-3 sm:py-2 rounded-lg hover:bg-gray-100 transition-all duration-300 hover:shadow-md group overflow-hidden"
                     >
                       <span className="relative z-10">Sign Out</span>
@@ -109,34 +114,36 @@ export function HeaderClient({ siteName }: { siteName?: string }) {
                 </div>
               ) : (
                 /* Anonymous User Actions - Future Online Ordering */
-                <div className="flex items-center space-x-2 sm:space-x-3">
-                  {/* Cart Button - Future Online Ordering */}
+                <div className="flex items-center space-x-1 sm:space-x-2">
+                  {/* Cart Button - Disabled until online ordering is implemented */}
                   <button 
-                    className="relative bg-orange-600 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-300 hover:bg-orange-700 hover:shadow-lg hover:shadow-orange-500/25 hover:scale-105 group overflow-hidden"
-                    onClick={() => setIsOpen(true)}
+                    className="relative bg-gray-400 text-white px-2 py-1 rounded text-xs font-medium cursor-not-allowed opacity-60"
+                    disabled
+                    title="Online ordering coming soon!"
                   >
-                    <span className="relative z-10 flex items-center space-x-1 sm:space-x-2">
-                      <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <span className="relative z-10 flex items-center space-x-1">
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01" />
                       </svg>
                       <span className="hidden sm:inline">Cart</span>
-                      {totalItems > 0 && (
-                        <span className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 bg-red-500 text-white text-xs rounded-full h-4 w-4 sm:h-5 sm:w-5 flex items-center justify-center">
-                          {totalItems}
-                        </span>
-                      )}
+                      <span className="text-xs">(Soon)</span>
                     </span>
-                    <div className="absolute inset-0 bg-gradient-to-r from-orange-500 to-orange-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   </button>
 
-                  {/* Login Button */}
-                  <Link
-                    href="/login"
-                    className="relative bg-green-600 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-300 hover:bg-green-700 hover:shadow-lg hover:shadow-green-500/25 hover:scale-105 group overflow-hidden"
+                  {/* Login Button - Disabled until online ordering is implemented */}
+                  <button
+                    className="relative bg-gray-400 text-white px-2 py-1 rounded text-xs font-medium cursor-not-allowed opacity-60"
+                    disabled
+                    title="Online ordering login coming soon!"
                   >
-                    <span className="relative z-10">Login</span>
-                    <div className="absolute inset-0 bg-gradient-to-r from-green-500 to-green-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  </Link>
+                    <span className="relative z-10 flex items-center space-x-1">
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                      </svg>
+                      <span className="hidden sm:inline">Login</span>
+                      <span className="text-xs">(Soon)</span>
+                    </span>
+                  </button>
                 </div>
               )}
             </div>
