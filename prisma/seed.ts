@@ -42,7 +42,7 @@ async function main() {
         email: userData.email,
         name: userData.name,
         role: userData.role,
-        password: userData.password // Store plain text for MVP testing
+        ...(userData.password && { password: userData.password }) // Store plain text for MVP testing
       }
     })
     
