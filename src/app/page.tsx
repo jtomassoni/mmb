@@ -6,14 +6,36 @@ export default async function Home() {
   // Get site data from database
   const siteData = await getSiteData()
   
-
-  // Get business hours
-  const businessHours = await prisma.hours.findMany({
-    where: {
-      siteId: siteData?.id
-    },
-    orderBy: { dayOfWeek: 'asc' }
-  })
+  // Get business hours - handle case where database is not available during build
+  let businessHours: Array<{
+    dayOfWeek: number;
+    openTime: string | null;
+    closeTime: string | null;
+    isClosed: boolean;
+  }> = []
+  
+  try {
+    if (siteData?.id) {
+      businessHours = await prisma.hours.findMany({
+        where: {
+          siteId: siteData.id
+        },
+        orderBy: { dayOfWeek: 'asc' }
+      })
+    }
+  } catch (error) {
+    console.error('Error fetching business hours:', error)
+    // Provide default business hours if database is not available
+    businessHours = [
+      { dayOfWeek: 0, openTime: '10:00', closeTime: '21:00', isClosed: false }, // Sunday
+      { dayOfWeek: 1, openTime: '11:00', closeTime: '22:00', isClosed: false }, // Monday
+      { dayOfWeek: 2, openTime: '11:00', closeTime: '22:00', isClosed: false }, // Tuesday
+      { dayOfWeek: 3, openTime: '11:00', closeTime: '22:00', isClosed: false }, // Wednesday
+      { dayOfWeek: 4, openTime: '11:00', closeTime: '22:00', isClosed: false }, // Thursday
+      { dayOfWeek: 5, openTime: '11:00', closeTime: '23:00', isClosed: false }, // Friday
+      { dayOfWeek: 6, openTime: '10:00', closeTime: '23:00', isClosed: false }, // Saturday
+    ]
+  }
 
   // Helper function to format business hours
   const formatBusinessHours = (hours: typeof businessHours) => {

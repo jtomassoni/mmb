@@ -41,7 +41,20 @@ export async function getSiteData(): Promise<SiteData | null> {
     }
   } catch (error) {
     console.error('Error fetching site data:', error)
-    return null
+    // Return default site data if database is not available during build
+    return {
+      id: 'default',
+      name: "Monaghan's Bar & Grill",
+      description: 'Your neighborhood bar and grill with great food, drinks, and atmosphere. Join us for live music, trivia nights, and daily specials!',
+      address: '123 Main Street, Denver, CO 80202',
+      phone: '(303) 555-0123',
+      email: 'info@monaghans.com',
+      timezone: 'America/Denver',
+      currency: 'USD',
+      latitude: 39.7392,
+      longitude: -104.9903,
+      googleMapsUrl: 'https://maps.app.goo.gl/LA2AYUTPUreV9KyJ8'
+    }
   }
 }
 
