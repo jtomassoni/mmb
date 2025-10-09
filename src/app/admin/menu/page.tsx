@@ -2,7 +2,7 @@
 
 import { useSession } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { AdminSubNav } from '@/components/admin-sub-nav'
 import { formatTimeInTimezone, getRelativeTime, getCompanyTimezone } from '@/lib/timezone'
 import {
@@ -183,7 +183,7 @@ function SortableMenuItem({ item, category }: { item: MenuItem, category: string
   )
 }
 
-export default function MenuManagementPage() {
+function MenuManagementContent() {
   const { data: session, status } = useSession()
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -1574,5 +1574,13 @@ export default function MenuManagementPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function MenuManagementPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <MenuManagementContent />
+    </Suspense>
   )
 }

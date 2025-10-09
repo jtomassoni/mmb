@@ -108,13 +108,8 @@ export function NewDatePicker({
               
               <DateScrollPicker
                 onDateChange={handleDateChange}
-                selectedDate={selectedDate}
                 itemHeight={40}
                 visibleRows={5}
-                minDate={new Date(2020, 0, 1)}
-                maxDate={new Date(2040, 11, 31)}
-                wheelMode="normal"
-                wheelType="3d"
               />
               
               <div className="flex gap-2 mt-4">

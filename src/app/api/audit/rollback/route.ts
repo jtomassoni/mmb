@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '../../../../lib/prisma'
-import { hasPermission } from '../../../../lib/rbac'
+import { hasPermission, UserRole } from '../../../../lib/rbac'
 import { RollbackOptions } from '../../../../lib/audit-log'
 
 export async function POST(request: NextRequest) {
@@ -43,13 +43,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    if (!originalEntry.rollbackData) {
-      return NextResponse.json(
-        { error: 'No rollback data available' },
-        { status: 400 }
-      )
-    }
-
     // Check if rollback is within 20-minute window
     const now = new Date()
     const entryTime = new Date(originalEntry.timestamp)
@@ -69,6 +62,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Parse rollback data
+    if (!originalEntry.rollbackData) {
+      return NextResponse.json(
+        { error: 'No rollback data available' },
+        { status: 400 }
+      )
+    }
     const rollbackData = JSON.parse(originalEntry.rollbackData)
 
     // Perform rollback based on resource type
@@ -167,13 +166,13 @@ async function rollbackEvent(eventId: string, rollbackData: any) {
     await prisma.event.update({
       where: { id: eventId },
       data: {
-        title: rollbackData.title,
+        name: rollbackData.title,
         description: rollbackData.description,
         startDate: rollbackData.startDate ? new Date(rollbackData.startDate) : undefined,
         endDate: rollbackData.endDate ? new Date(rollbackData.endDate) : undefined,
-        isRecurring: rollbackData.isRecurring,
-        dayOfWeek: rollbackData.dayOfWeek,
-        time: rollbackData.time
+        startTime: rollbackData.startTime,
+        endTime: rollbackData.endTime,
+        location: rollbackData.location
       }
     })
     return { success: true }
@@ -187,7 +186,7 @@ async function rollbackSpecial(specialId: string, rollbackData: any) {
     await prisma.special.update({
       where: { id: specialId },
       data: {
-        title: rollbackData.title,
+        name: rollbackData.name,
         description: rollbackData.description,
         price: rollbackData.price,
         isActive: rollbackData.isActive
@@ -201,13 +200,13 @@ async function rollbackSpecial(specialId: string, rollbackData: any) {
 
 async function rollbackMenuItem(itemId: string, rollbackData: any) {
   try {
-    await prisma.special.update({
+    await prisma.menuItem.update({
       where: { id: itemId },
       data: {
-        title: rollbackData.title,
+        name: rollbackData.name,
         description: rollbackData.description,
         price: rollbackData.price,
-        isActive: rollbackData.isActive
+        isAvailable: rollbackData.isAvailable
       }
     })
     return { success: true }

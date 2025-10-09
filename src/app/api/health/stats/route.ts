@@ -34,12 +34,11 @@ export async function GET() {
               lt: endOfWeek
             }
           },
-          // Recurring events that happen this week
+          // Events that happen this week
           {
-            isRecurring: true,
-            dayOfWeek: {
-              gte: startOfWeek.getDay(),
-              lte: endOfWeek.getDay()
+            startDate: {
+              gte: startOfWeek,
+              lte: endOfWeek
             }
           }
         ]

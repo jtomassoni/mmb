@@ -75,12 +75,12 @@ export async function POST(request: NextRequest) {
             siteId: siteId,
             name: item.name,
             description: item.description || null,
-            price: item.price,
+            price: parseFloat(item.price) || 0,
             category: section.name,
             isAvailable: item.isAvailable,
             allergens: Array.isArray(item.allergens) ? item.allergens.join(', ') : (item.allergens || ''),
             calories: item.calories || null,
-            imageUrl: item.imageUrl || null,
+            image: item.imageUrl || null,
             source: 'ocr'
           }
         })

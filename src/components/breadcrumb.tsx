@@ -9,6 +9,8 @@ interface BreadcrumbItem {
   current?: boolean
 }
 
+export type { BreadcrumbItem }
+
 interface BreadcrumbProps {
   items: BreadcrumbItem[]
   className?: string

@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json()
-    const { siteId, title, description, price, isActive } = body
+    const { siteId, name, description, price, isActive } = body
 
     // Check permissions
     if (!hasPermission((session.user as any).role, 'specials', 'create')) {
@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate required fields
-    if (!title) {
+    if (!name) {
       return NextResponse.json({ error: 'Title is required' }, { status: 400 })
     }
 
@@ -141,10 +141,14 @@ export async function POST(request: NextRequest) {
     const special = await prisma.special.create({
       data: {
         siteId: site.id,
-        title,
+        name,
         description,
         price,
-        isActive: isActive !== false // Default to true
+        originalPrice: null,
+        startDate: new Date(),
+        endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+        isActive: isActive !== false, // Default to true
+        image: null
       },
       include: {
         site: {
@@ -169,7 +173,7 @@ export async function POST(request: NextRequest) {
         siteId: site.id,
         siteName: site.name,
         newValue: JSON.stringify({
-          title: special.title,
+          name: special.name,
           description: special.description,
           price: special.price,
           isActive: special.isActive
@@ -201,7 +205,7 @@ export async function PUT(request: NextRequest) {
 
   try {
     const body = await request.json()
-    const { id, title, description, price, isActive } = body
+    const { id, name, description, price, isActive } = body
 
     if (!id) {
       return NextResponse.json({ error: 'Special ID is required' }, { status: 400 })
@@ -240,7 +244,7 @@ export async function PUT(request: NextRequest) {
     const special = await prisma.special.update({
       where: { id },
       data: {
-        title,
+        name,
         description,
         price,
         isActive
@@ -268,13 +272,13 @@ export async function PUT(request: NextRequest) {
         siteId: existingSpecial.siteId,
         siteName: existingSpecial.site.name,
         oldValue: JSON.stringify({
-          title: existingSpecial.title,
+          name: existingSpecial.name,
           description: existingSpecial.description,
           price: existingSpecial.price,
           isActive: existingSpecial.isActive
         }),
         newValue: JSON.stringify({
-          title: special.title,
+          name: special.name,
           description: special.description,
           price: special.price,
           isActive: special.isActive
@@ -358,7 +362,7 @@ export async function DELETE(request: NextRequest) {
         siteId: existingSpecial.siteId,
         siteName: existingSpecial.site.name,
         oldValue: JSON.stringify({
-          title: existingSpecial.title,
+          name: existingSpecial.name,
           description: existingSpecial.description,
           price: existingSpecial.price,
           isActive: existingSpecial.isActive

@@ -5,6 +5,7 @@
  * with rollback capabilities and compliance reporting.
  */
 
+import React from 'react'
 import { UserRole } from './rbac'
 
 export interface AuditLogEntry {
@@ -511,9 +512,6 @@ export function useAuditLog() {
     exportLogs
   }
 }
-
-// React import for the hook
-import React from 'react'
 
 /**
  * Simple audit logging function for API routes

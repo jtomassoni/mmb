@@ -335,7 +335,7 @@ export function validateFormData<T extends Record<string, any>>(
   validators: Partial<Record<keyof T, (value: any) => ValidationResult>>
 ): { isValid: boolean; sanitizedData: T; errors: Record<string, string[]> } {
   const errors: Record<string, string[]> = {}
-  const sanitizedData = { ...data }
+  const sanitizedData = { ...data } as T
   let isValid = true
   
   Object.entries(validators).forEach(([key, validator]) => {
@@ -345,7 +345,7 @@ export function validateFormData<T extends Record<string, any>>(
         errors[key] = result.errors
         isValid = false
       }
-      sanitizedData[key] = result.sanitizedValue
+      ;(sanitizedData as any)[key] = result.sanitizedValue
     }
   })
   

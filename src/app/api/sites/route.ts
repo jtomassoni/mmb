@@ -126,25 +126,31 @@ function generateSampleEvents(siteId: string, businessType: BusinessType, siteDa
       if (siteData.live_music) {
         events.push({
           siteId,
-          title: 'Live Music Night',
+          name: 'Live Music Night',
           description: 'Local bands and musicians every Friday night',
           startDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // Next Friday
           endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000 + 4 * 60 * 60 * 1000), // 4 hours later
-          isRecurring: true,
-          dayOfWeek: 5, // Friday
-          time: '20:00'
+          startTime: '20:00',
+          endTime: '00:00',
+          location: 'Main Stage',
+          isActive: true,
+          image: null,
+          price: null
         })
       }
       if (siteData.pool_tables) {
         events.push({
           siteId,
-          title: 'Pool Tournament',
+          name: 'Pool Tournament',
           description: 'Weekly pool tournament with prizes',
           startDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // Next Wednesday
           endDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000 + 3 * 60 * 60 * 1000), // 3 hours later
-          isRecurring: true,
-          dayOfWeek: 3, // Wednesday
-          time: '19:00'
+          startTime: '19:00',
+          endTime: '22:00',
+          location: 'Pool Room',
+          isActive: true,
+          image: null,
+          price: '$5 entry'
         })
       }
       break
@@ -152,39 +158,48 @@ function generateSampleEvents(siteId: string, businessType: BusinessType, siteDa
     case 'sports_bar':
       events.push({
         siteId,
-        title: 'Game Day Specials',
+        name: 'Game Day Specials',
         description: 'Special deals during major sporting events',
         startDate: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // Tomorrow
         endDate: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000 + 6 * 60 * 60 * 1000), // 6 hours later
-        isRecurring: true,
-        dayOfWeek: 1, // Monday (example)
-        time: '18:00'
+        startTime: '18:00',
+        endTime: '00:00',
+        location: 'Main Bar',
+        isActive: true,
+        image: null,
+        price: 'See menu'
       })
       break
 
     case 'cafe':
       events.push({
         siteId,
-        title: 'Coffee Tasting',
+        name: 'Coffee Tasting',
         description: 'Weekly coffee tasting with our barista',
         startDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), // Day after tomorrow
         endDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000 + 2 * 60 * 60 * 1000), // 2 hours later
-        isRecurring: true,
-        dayOfWeek: 2, // Tuesday
-        time: '10:00'
+        startTime: '10:00',
+        endTime: '12:00',
+        location: 'Coffee Bar',
+        isActive: true,
+        image: null,
+        price: '$15'
       })
       break
 
     case 'fine_dining':
       events.push({
         siteId,
-        title: 'Wine Tasting Evening',
+        name: 'Wine Tasting Evening',
         description: 'Monthly wine tasting with sommelier',
         startDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // Next week
         endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000 + 3 * 60 * 60 * 1000), // 3 hours later
-        isRecurring: false,
-        dayOfWeek: null,
-        time: null
+        startTime: '19:00',
+        endTime: '22:00',
+        location: 'Private Dining Room',
+        isActive: true,
+        image: null,
+        price: '$75 per person'
       })
       break
   }
@@ -200,19 +215,27 @@ function generateSampleSpecials(siteId: string, businessType: BusinessType, site
       if (siteData.happy_hour) {
         specials.push({
           siteId,
-          title: 'Happy Hour',
+          name: 'Happy Hour',
           description: siteData.happy_hour_times || 'Monday-Friday 4-6 PM',
-          price: '$2 off all drinks',
-          isActive: true
+          price: null, // Happy hour doesn't have a specific price
+          originalPrice: null,
+          startDate: new Date(),
+          endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+          isActive: true,
+          image: null
         })
       }
       if (siteData.signature_drink) {
         specials.push({
           siteId,
-          title: 'Signature Drink',
+          name: 'Signature Drink',
           description: siteData.signature_drink,
-          price: '$8',
-          isActive: true
+          price: 8.00,
+          originalPrice: 10.00,
+          startDate: new Date(),
+          endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+          isActive: true,
+          image: null
         })
       }
       break
@@ -220,18 +243,26 @@ function generateSampleSpecials(siteId: string, businessType: BusinessType, site
     case 'cafe':
       specials.push({
         siteId,
-        title: 'Daily Special',
+        name: 'Daily Special',
         description: 'Fresh pastries and coffee combo',
-        price: '$6.99',
-        isActive: true
+        price: 6.99,
+        originalPrice: 8.99,
+        startDate: new Date(),
+        endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+        isActive: true,
+        image: null
       })
       if (siteData.signature_drink) {
         specials.push({
           siteId,
-          title: 'Signature Coffee',
+          name: 'Signature Coffee',
           description: siteData.signature_drink,
-          price: '$4.99',
-          isActive: true
+          price: 4.99,
+          originalPrice: 5.99,
+          startDate: new Date(),
+          endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+          isActive: true,
+          image: null
         })
       }
       break
@@ -240,10 +271,14 @@ function generateSampleSpecials(siteId: string, businessType: BusinessType, site
       if (siteData.signature_dish) {
         specials.push({
           siteId,
-          title: 'Chef\'s Special',
+          name: 'Chef\'s Special',
           description: siteData.signature_dish,
-          price: 'Market Price',
-          isActive: true
+          price: null, // Market price - no specific numeric value
+          originalPrice: null,
+          startDate: new Date(),
+          endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+          isActive: true,
+          image: null
         })
       }
       break
@@ -252,10 +287,14 @@ function generateSampleSpecials(siteId: string, businessType: BusinessType, site
       if (siteData.game_specials) {
         specials.push({
           siteId,
-          title: 'Game Day Special',
+          name: 'Game Day Special',
           description: siteData.game_specials_details || 'Special deals during games',
-          price: 'Varies',
-          isActive: true
+          price: null, // Varies - no specific numeric value
+          originalPrice: null,
+          startDate: new Date(),
+          endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+          isActive: true,
+          image: null
         })
       }
       break

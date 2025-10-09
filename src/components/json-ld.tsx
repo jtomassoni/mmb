@@ -58,7 +58,7 @@ export default function JsonLd({ hostname }: JsonLdProps) {
       if (site.events && site.events.length > 0) {
         structuredData.event = site.events.slice(0, 5).map(event => ({
           '@type': 'Event',
-          name: event.title,
+          name: event.name,
           description: event.description,
           startDate: event.startDate.toISOString(),
           endDate: event.endDate?.toISOString(),
@@ -82,7 +82,7 @@ export default function JsonLd({ hostname }: JsonLdProps) {
               name: 'Specials',
               hasMenuItem: site.specials.slice(0, 10).map(special => ({
                 '@type': 'MenuItem',
-                name: special.title,
+                name: special.name,
                 description: special.description,
                 offers: {
                   '@type': 'Offer',

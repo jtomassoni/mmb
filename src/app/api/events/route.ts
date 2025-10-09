@@ -49,9 +49,8 @@ export async function GET(request: NextRequest) {
     const events = await prisma.event.findMany({
       where,
       orderBy: [
-        { dayOfWeek: 'asc' },
-        { time: 'asc' },
-        { startDate: 'asc' }
+        { startDate: 'asc' },
+        { startTime: 'asc' }
       ],
       include: {
         site: {
@@ -66,14 +65,18 @@ export async function GET(request: NextRequest) {
     // Transform events for frontend
     const transformedEvents = events.map(event => ({
       id: event.id,
-      title: event.title,
+      title: event.name,
       description: event.description,
-      day: event.dayOfWeek !== null ? getDayName(event.dayOfWeek) : null,
-      time: event.time ? formatTime(event.time) : null,
+      day: null, // We'll calculate this from startDate if needed
+      time: event.startTime ? formatTime(event.startTime) : null,
       startDate: event.startDate,
       endDate: event.endDate,
-      isRecurring: event.isRecurring,
-      dayOfWeek: event.dayOfWeek,
+      startTime: event.startTime,
+      endTime: event.endTime,
+      location: event.location,
+      isActive: event.isActive,
+      image: event.image,
+      price: event.price,
       site: event.site
     }))
 
@@ -153,13 +156,16 @@ export async function POST(request: NextRequest) {
     const event = await prisma.event.create({
       data: {
         siteId: site.id,
-        title,
+        name: title,
         description,
-        isRecurring: isRecurring || false,
-        dayOfWeek: isRecurring ? dayOfWeek : null,
-        time: isRecurring ? time : null,
         startDate: startDate ? new Date(startDate) : new Date(),
-        endDate: endDate ? new Date(endDate) : null
+        endDate: endDate ? new Date(endDate) : new Date(),
+        startTime: time || null,
+        endTime: null,
+        location: null,
+        isActive: true,
+        image: null,
+        price: null
       },
       include: {
         site: {
@@ -184,13 +190,16 @@ export async function POST(request: NextRequest) {
         siteId: site.id,
         siteName: site.name,
         newValue: JSON.stringify({
-          title: event.title,
+          name: event.name,
           description: event.description,
-          isRecurring: event.isRecurring,
-          dayOfWeek: event.dayOfWeek,
-          time: event.time,
           startDate: event.startDate,
-          endDate: event.endDate
+          endDate: event.endDate,
+          startTime: event.startTime,
+          endTime: event.endTime,
+          location: event.location,
+          isActive: event.isActive,
+          image: event.image,
+          price: event.price
         }),
         success: true,
         ipAddress: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || null,
@@ -201,14 +210,16 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       event: {
         id: event.id,
-        title: event.title,
+        title: event.name,
         description: event.description,
-        day: event.dayOfWeek !== null ? getDayName(event.dayOfWeek) : null,
-        time: event.time ? formatTime(event.time) : null,
         startDate: event.startDate,
         endDate: event.endDate,
-        isRecurring: event.isRecurring,
-        dayOfWeek: event.dayOfWeek,
+        startTime: event.startTime,
+        endTime: event.endTime,
+        location: event.location,
+        isActive: event.isActive,
+        image: event.image,
+        price: event.price,
         site: event.site
       }
     }, { status: 201 })
@@ -269,13 +280,16 @@ export async function PUT(request: NextRequest) {
     const event = await prisma.event.update({
       where: { id },
       data: {
-        title,
+        name: title,
         description,
-        isRecurring: isRecurring || false,
-        dayOfWeek: isRecurring ? dayOfWeek : null,
-        time: isRecurring ? time : null,
         startDate: startDate ? new Date(startDate) : undefined,
-        endDate: endDate ? new Date(endDate) : null
+        endDate: endDate ? new Date(endDate) : new Date(),
+        startTime: time || null,
+        endTime: null,
+        location: null,
+        isActive: true,
+        image: null,
+        price: null
       },
       include: {
         site: {
@@ -300,22 +314,28 @@ export async function PUT(request: NextRequest) {
         siteId: existingEvent.siteId,
         siteName: existingEvent.site.name,
         oldValue: JSON.stringify({
-          title: existingEvent.title,
+          name: existingEvent.name,
           description: existingEvent.description,
-          isRecurring: existingEvent.isRecurring,
-          dayOfWeek: existingEvent.dayOfWeek,
-          time: existingEvent.time,
           startDate: existingEvent.startDate,
-          endDate: existingEvent.endDate
+          endDate: existingEvent.endDate,
+          startTime: existingEvent.startTime,
+          endTime: existingEvent.endTime,
+          location: existingEvent.location,
+          isActive: existingEvent.isActive,
+          image: existingEvent.image,
+          price: existingEvent.price
         }),
         newValue: JSON.stringify({
-          title: event.title,
+          name: event.name,
           description: event.description,
-          isRecurring: event.isRecurring,
-          dayOfWeek: event.dayOfWeek,
-          time: event.time,
           startDate: event.startDate,
-          endDate: event.endDate
+          endDate: event.endDate,
+          startTime: event.startTime,
+          endTime: event.endTime,
+          location: event.location,
+          isActive: event.isActive,
+          image: event.image,
+          price: event.price
         }),
         success: true,
         ipAddress: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || null,
@@ -326,14 +346,16 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json({
       event: {
         id: event.id,
-        title: event.title,
+        title: event.name,
         description: event.description,
-        day: event.dayOfWeek !== null ? getDayName(event.dayOfWeek) : null,
-        time: event.time ? formatTime(event.time) : null,
         startDate: event.startDate,
         endDate: event.endDate,
-        isRecurring: event.isRecurring,
-        dayOfWeek: event.dayOfWeek,
+        startTime: event.startTime,
+        endTime: event.endTime,
+        location: event.location,
+        isActive: event.isActive,
+        image: event.image,
+        price: event.price,
         site: event.site
       }
     })
@@ -407,13 +429,16 @@ export async function DELETE(request: NextRequest) {
         siteId: existingEvent.siteId,
         siteName: existingEvent.site.name,
         oldValue: JSON.stringify({
-          title: existingEvent.title,
+          name: existingEvent.name,
           description: existingEvent.description,
-          isRecurring: existingEvent.isRecurring,
-          dayOfWeek: existingEvent.dayOfWeek,
-          time: existingEvent.time,
           startDate: existingEvent.startDate,
-          endDate: existingEvent.endDate
+          endDate: existingEvent.endDate,
+          startTime: existingEvent.startTime,
+          endTime: existingEvent.endTime,
+          location: existingEvent.location,
+          isActive: existingEvent.isActive,
+          image: existingEvent.image,
+          price: existingEvent.price
         }),
         success: true,
         ipAddress: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || null,

@@ -725,7 +725,7 @@ export default function EventsPage() {
                 <Checkbox
                   name="isActive"
                   label="Active"
-                  defaultChecked={editingEventType?.isActive ?? true}
+                  checked={editingEventType?.isActive ?? true}
                 />
               </div>
               <div className="flex justify-end space-x-3 mt-6">
@@ -813,32 +813,33 @@ export default function EventsPage() {
                   name="eventTypeId"
                   label="Event Type"
                   defaultValue={editingEvent?.eventTypeId || selectedEventType}
-                  options={[
-                    { value: 'custom', label: 'Custom' },
-                    ...eventTypes.map(type => ({ value: type.id, label: type.name }))
-                  ]}
-                />
+                >
+                  <option value="custom">Custom</option>
+                  {eventTypes.map(type => (
+                    <option key={type.id} value={type.id}>{type.name}</option>
+                  ))}
+                </Select>
                 <DateInput
                   name="startDate"
                   label="Start Date"
-                  defaultValue={editingEvent?.startDate || ''}
+                  value={editingEvent?.startDate || ''}
                   required
                 />
                 <DateInput
                   name="endDate"
                   label="End Date"
-                  defaultValue={editingEvent?.endDate || ''}
+                  value={editingEvent?.endDate || ''}
                   required
                 />
                 <TimeInput
                   name="startTime"
                   label="Start Time"
-                  defaultValue={editingEvent?.startTime || ''}
+                  value={editingEvent?.startTime || ''}
                 />
                 <TimeInput
                   name="endTime"
                   label="End Time"
-                  defaultValue={editingEvent?.endTime || ''}
+                  value={editingEvent?.endTime || ''}
                 />
                 <Input
                   name="location"
@@ -866,7 +867,7 @@ export default function EventsPage() {
                 <Checkbox
                   name="isActive"
                   label="Active"
-                  defaultChecked={editingEvent?.isActive ?? true}
+                  checked={editingEvent?.isActive ?? true}
                 />
               </div>
 

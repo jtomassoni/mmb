@@ -82,9 +82,9 @@ export function DatePicker({ name, label, required, defaultValue = '', className
       isInitializing.current = true
       // Small delay to ensure DOM is ready
       setTimeout(() => {
-        scrollToItem(monthRef, currentMonth)
-        scrollToItem(dayRef, currentDay - 1)
-        scrollToItem(yearRef, currentYear - 2020)
+        if (monthRef.current) scrollToItem(monthRef, currentMonth)
+        if (dayRef.current) scrollToItem(dayRef, currentDay - 1)
+        if (yearRef.current) scrollToItem(yearRef, currentYear - 2020)
         // Re-enable scroll handling after initialization
         setTimeout(() => {
           isInitializing.current = false
@@ -107,7 +107,7 @@ export function DatePicker({ name, label, required, defaultValue = '', className
     setDate(isoString)
   }
 
-  const scrollToItem = (ref: React.RefObject<HTMLDivElement>, index: number) => {
+  const scrollToItem = (ref: React.RefObject<HTMLDivElement | null>, index: number) => {
     if (ref.current) {
       const itemHeight = 40
       const paddingItems = 2 // Half of visible items (5/2 = 2.5, rounded down to 2)
@@ -161,7 +161,7 @@ export function DatePicker({ name, label, required, defaultValue = '', className
     type: 'month' | 'day' | 'year',
     items: (string | number)[],
     currentValue: number,
-    ref: React.RefObject<HTMLDivElement>
+    ref: React.RefObject<HTMLDivElement | null>
   ) => {
     const itemHeight = 40
     const visibleItems = 5
@@ -230,7 +230,7 @@ export function DatePicker({ name, label, required, defaultValue = '', className
                     } else if (type === 'year') {
                       setCurrentYear(actualIndex + 2020)
                     }
-                    scrollToItem(ref, actualIndex)
+                    if (ref.current) scrollToItem(ref, actualIndex)
                   }}
                 >
                   {item}

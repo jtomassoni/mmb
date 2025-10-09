@@ -29,13 +29,10 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     // Log the audit event
     await logAuditEvent({
       userId: session.user.id,
-      userRole: session.user.role,
-      userEmail: session.user.email,
-      userName: session.user.name,
       action: 'update',
       resource: 'event_types',
       resourceId: eventType.id,
-      details: { name, description, color, icon, isActive }
+      changes: { name, description, color, icon, isActive }
     })
 
     return NextResponse.json({ success: true, eventType })
@@ -63,13 +60,10 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
     // Log the audit event
     await logAuditEvent({
       userId: session.user.id,
-      userRole: session.user.role,
-      userEmail: session.user.email,
-      userName: session.user.name,
       action: 'delete',
       resource: 'event_types',
       resourceId: eventType.id,
-      details: { name: eventType.name }
+      changes: { name: eventType.name }
     })
 
     return NextResponse.json({ success: true })

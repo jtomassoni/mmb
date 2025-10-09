@@ -104,7 +104,9 @@ export default function EventsPage() {
                 hour12: true
               }) : 'All Day',
             description: event.description,
-            type: event.type === 'broncos' ? 'sports' : event.type as 'food' | 'drink' | 'entertainment',
+            type: event.type === 'broncos' ? 'sports' as const : 
+                  event.type === 'special' ? 'entertainment' as const :
+                  (event.type === 'food' || event.type === 'drink' || event.type === 'entertainment') ? event.type as 'food' | 'drink' | 'entertainment' : 'entertainment' as const,
             price: event.price
           })),
           ...broncosGames.map(game => ({
@@ -121,7 +123,7 @@ export default function EventsPage() {
         ]
         
         // Sort events by type priority: food → drink → entertainment → sports
-        const typePriority = { food: 1, drink: 2, entertainment: 3, sports: 4 }
+        const typePriority: Record<string, number> = { food: 1, drink: 2, entertainment: 3, sports: 4 }
         allEvents.sort((a, b) => {
           const aPriority = typePriority[a.type] || 5
           const bPriority = typePriority[b.type] || 5

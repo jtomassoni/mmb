@@ -74,13 +74,10 @@ export async function POST(request: NextRequest) {
     // Log the audit event
     await logAuditEvent({
       userId: session.user.id,
-      userRole: session.user.role,
-      userEmail: session.user.email,
-      userName: session.user.name,
       action: 'create',
       resource: 'event_types',
       resourceId: eventType.id,
-      details: { name, description, color, icon }
+      changes: { name, description, color, icon }
     })
 
     return NextResponse.json({ success: true, eventType })

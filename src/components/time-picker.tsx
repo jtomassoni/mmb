@@ -75,7 +75,7 @@ export function TimePicker({ name, label, required, defaultValue = '', className
     }
   }, [showPicker, hours, minutes, period])
 
-  const scrollToItem = (ref: React.RefObject<HTMLDivElement>, index: number) => {
+  const scrollToItem = (ref: React.RefObject<HTMLDivElement | null>, index: number) => {
     if (ref.current) {
       const itemHeight = 40
       const paddingItems = 2 // Half of visible items (5/2 = 2.5, rounded down to 2)
@@ -127,7 +127,7 @@ export function TimePicker({ name, label, required, defaultValue = '', className
     type: 'hours' | 'minutes' | 'period',
     items: (string | number)[],
     currentValue: number | string,
-    ref: React.RefObject<HTMLDivElement>
+    ref: React.RefObject<HTMLDivElement | null>
   ) => {
     const itemHeight = 40
     const visibleItems = 5
