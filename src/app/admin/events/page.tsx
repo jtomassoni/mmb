@@ -8,7 +8,6 @@ import { Input, Textarea, Select, DateInput, TimeInput, ColorInput, Checkbox } f
 import { CTAManager } from '@/components/cta-manager'
 import { ImageUploadManager } from '@/components/image-upload-manager'
 import { formatTimeInTimezone, getRelativeTime, getCompanyTimezone } from '@/lib/timezone'
-import { BroncosCacheMonitor } from '@/components/broncos-cache-monitor'
 
 interface Event {
   id: string
@@ -87,7 +86,7 @@ interface SpecialDay {
 export default function EventsPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
-  const [activeTab, setActiveTab] = useState<'events' | 'event-types' | 'sports-teams' | 'calendar'>('events')
+  const [activeTab, setActiveTab] = useState<'events' | 'event-types' | 'calendar'>('events')
   const [events, setEvents] = useState<Event[]>([])
   const [eventTypes, setEventTypes] = useState<EventType[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -375,16 +374,6 @@ export default function EventsPage() {
               }`}
             >
               Event Types
-            </button>
-            <button
-              onClick={() => setActiveTab('sports-teams')}
-              className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                activeTab === 'sports-teams'
-                  ? 'border-green-500 text-green-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
-            >
-              Sports Teams
             </button>
             <button
               onClick={() => setActiveTab('calendar')}
@@ -745,111 +734,6 @@ export default function EventsPage() {
                     </div>
                   ))
                 )}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Sports Teams Tab */}
-        {activeTab === 'sports-teams' && (
-          <div className="space-y-6">
-            {/* Broncos Data Cache Monitor */}
-            <BroncosCacheMonitor />
-            
-            {/* Sports Teams Management */}
-            <div className="bg-white rounded-lg shadow">
-              <div className="px-6 py-4 border-b border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-900">Sports Teams Management</h3>
-                <p className="text-sm text-gray-600 mt-1">Manage your sports team game syncing and watch parties</p>
-              </div>
-              
-              <div className="p-6 space-y-6">
-                {/* Denver Broncos */}
-                <div className="border border-gray-200 rounded-lg p-6">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 bg-gradient-to-br from-orange-600 to-blue-900 rounded-lg flex items-center justify-center">
-                        <span className="text-2xl">🏈</span>
-                      </div>
-                      <div>
-                        <h4 className="text-lg font-semibold text-gray-900">Denver Broncos</h4>
-                        <p className="text-sm text-gray-600">NFL Football</p>
-                      </div>
-                    </div>
-                    <button
-                      onClick={handleSyncBroncosGames}
-                      disabled={syncingGames}
-                      className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                    >
-                      {syncingGames ? (
-                        <>
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                          Syncing...
-                        </>
-                      ) : (
-                        <>
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                          </svg>
-                          Sync Games to Calendar
-                        </>
-                      )}
-                    </button>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                    <div className="bg-blue-50 p-4 rounded-lg">
-                      <p className="text-xs text-blue-900 font-medium mb-1">Data Source</p>
-                      <p className="text-sm text-blue-800">ESPN API with fallback schedule</p>
-                    </div>
-                    <div className="bg-green-50 p-4 rounded-lg">
-                      <p className="text-xs text-green-900 font-medium mb-1">Auto Refresh</p>
-                      <p className="text-sm text-green-800">Every 30 minutes via cron</p>
-                    </div>
-                    <div className="bg-orange-50 p-4 rounded-lg">
-                      <p className="text-xs text-orange-900 font-medium mb-1">Default Event Type</p>
-                      <p className="text-sm text-orange-800">Sports Event 🏈</p>
-                    </div>
-                  </div>
-                  
-                  <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                    <div className="flex items-start gap-2">
-                      <svg className="w-5 h-5 text-yellow-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                      </svg>
-                      <div>
-                        <p className="text-sm font-medium text-yellow-900">⚠️ Review Required After Sync</p>
-                        <p className="text-xs text-yellow-800 mt-1">
-                          Synced games are created with default values. Please review each game to:
-                          <br />• Verify game times are correct for Denver timezone
-                          <br />• Add any special menus or food/drink promotions
-                          <br />• Update event descriptions and details as needed
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Placeholder for Future Teams */}
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-                  <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
-                    <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                    </svg>
-                  </div>
-                  <h4 className="text-base font-medium text-gray-900 mb-2">Add More Sports Teams</h4>
-                  <p className="text-sm text-gray-600 mb-4">
-                    Expand your sports coverage by adding more teams
-                    <br />
-                    <span className="text-xs text-gray-500">(Denver Nuggets, Colorado Avalanche, Colorado Rockies, etc.)</span>
-                  </p>
-                  <button
-                    disabled
-                    className="inline-flex items-center px-4 py-2 bg-gray-200 text-gray-500 rounded-md text-sm cursor-not-allowed"
-                  >
-                    Coming Soon
-                  </button>
-                </div>
               </div>
             </div>
           </div>
