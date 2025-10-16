@@ -150,7 +150,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         success: true,
         message: 'Broncos cache refreshed',
-        lastUpdated: broncosCache.lastUpdated?.toISOString()
+        lastUpdated: (broncosCache.lastUpdated as Date | null)?.toISOString()
       })
     }
 
