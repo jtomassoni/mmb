@@ -67,10 +67,10 @@ export async function POST(request: NextRequest) {
       const existingEvent = await prisma.event.findFirst({
         where: {
           siteId: site.id,
-          title: {
+          name: {
             contains: game.opponent
           },
-          date: {
+          startDate: {
             gte: new Date(game.date + 'T00:00:00'),
             lt: new Date(game.date + 'T23:59:59')
           }
