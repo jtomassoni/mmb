@@ -149,7 +149,7 @@ async function addNFLWatchParties() {
       addedCount++
     } catch (error) {
       // Skip if event already exists (duplicate key error)
-      if (!error.message.includes('Unique constraint')) {
+      if (error instanceof Error && !error.message.includes('Unique constraint')) {
         console.error('Error adding event:', error)
       }
     }
