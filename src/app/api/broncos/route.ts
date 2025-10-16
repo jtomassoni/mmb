@@ -3,7 +3,7 @@ import { espnService } from '@/lib/espn-api'
 import { broncosSchedule2025 } from '@/lib/broncos-schedule'
 
 // In-memory cache (in production, you'd want Redis or similar)
-let broncosCache = {
+const broncosCache = {
   games: null as any[] | null,
   stats: null as any | null,
   liveGame: null as any | null,
