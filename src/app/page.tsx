@@ -14,6 +14,16 @@ export default async function Home() {
     isClosed: boolean;
   }> = []
   
+  // Get special days
+  let specialDays: Array<{
+    id: string;
+    date: Date;
+    reason: string;
+    closed: boolean;
+    openTime: string | null;
+    closeTime: string | null;
+  }> = []
+  
   try {
     if (siteData?.id) {
       businessHours = await prisma.hours.findMany({
@@ -22,9 +32,23 @@ export default async function Home() {
         },
         orderBy: { dayOfWeek: 'asc' }
       })
+      
+      // Get upcoming special days (today and future)
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+      
+      specialDays = await prisma.specialDay.findMany({
+        where: {
+          siteId: siteData.id,
+          date: {
+            gte: today
+          }
+        },
+        orderBy: { date: 'asc' }
+      })
     }
   } catch (error) {
-    console.error('Error fetching business hours:', error)
+    console.error('Error fetching business hours and special days:', error)
     // Provide default business hours if database is not available
     businessHours = [
       { dayOfWeek: 0, openTime: '10:00', closeTime: '21:00', isClosed: false }, // Sunday
@@ -111,7 +135,37 @@ export default async function Home() {
       <link rel="preload" as="image" href="/pics/monaghans-billiards.jpg" />
       <link rel="preload" as="image" href="/pics/monaghans-fish-n-chips.jpg" />
       <div className="min-h-screen bg-gray-50">
-      {/* Dynamic Hero Section */}
+      {/* Special Hours Banner - Only show if today has special hours (not closed) */}
+      {specialDays.length > 0 && (() => {
+        const today = new Date()
+        today.setHours(0, 0, 0, 0)
+        const todayStr = today.toISOString().split('T')[0]
+        
+        const todaySpecialDay = specialDays.find(day => {
+          const [year, month, dayNum] = day.date.toISOString().split('T')[0].split('-').map(Number)
+          const dayDate = new Date(year, month - 1, dayNum)
+          return dayDate.toISOString().split('T')[0] === todayStr
+        })
+        
+        // Only show banner for special hours (not closures)
+        if (todaySpecialDay && !todaySpecialDay.closed) {
+          return (
+            <div className="bg-amber-600 text-white py-3 px-4">
+              <div className="max-w-7xl mx-auto text-center">
+                <p className="text-sm md:text-base font-medium">
+                  <svg className="inline w-5 h-5 mr-2 -mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <strong>Special Hours Today:</strong> {todaySpecialDay.reason} - Open {todaySpecialDay.openTime} to {todaySpecialDay.closeTime}
+                </p>
+              </div>
+            </div>
+          )
+        }
+        
+        return null
+      })()}
+      
       <DynamicHero siteDescription={siteData?.description} siteName={siteData?.name} />
 
       {/* Order Online Section - Hidden for now */}
@@ -391,9 +445,9 @@ export default async function Home() {
               <div className="mt-6">
                 <a 
                   href={`tel:${siteData?.phone?.replace(/\D/g, '') || '3035550123'}`}
-                  className="w-full bg-green-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-green-700 transition-colors text-center block text-sm"
+                  className="w-full bg-green-600 text-white px-4 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors text-center block"
                 >
-                  📞 Call Now
+                  📞 Call Now: {siteData?.phone || "(303) 555-0123"}
                 </a>
               </div>
             </div>
@@ -401,6 +455,69 @@ export default async function Home() {
             {/* Hours */}
             <div className="bg-white p-6 rounded-lg shadow-lg">
               <h3 className="text-xl font-semibold text-gray-900 mb-4">Hours</h3>
+              
+              {/* Special Days Alert (show upcoming special days within 7 days) */}
+              {specialDays.length > 0 && (() => {
+                const now = new Date()
+                const sevenDaysFromNow = new Date(now)
+                sevenDaysFromNow.setDate(now.getDate() + 7)
+                
+                const upcomingSpecialDays = specialDays.filter(day => {
+                  const dayDate = new Date(day.date)
+                  return dayDate <= sevenDaysFromNow
+                })
+                
+                if (upcomingSpecialDays.length > 0) {
+                  return (
+                    <div className="mb-4 space-y-2">
+                      {upcomingSpecialDays.map(day => {
+                        // Parse date as local to avoid timezone issues
+                        const dateStr = day.date.toISOString().split('T')[0]
+                        const [year, month, dayNum] = dateStr.split('-').map(Number)
+                        const localDate = new Date(year, month - 1, dayNum)
+                        const formattedDate = localDate.toLocaleDateString('en-US', { 
+                          weekday: 'short', 
+                          month: 'short', 
+                          day: 'numeric' 
+                        })
+                        
+                        return (
+                          <div 
+                            key={day.id}
+                            className={`p-3 rounded-lg ${
+                              day.closed 
+                                ? 'bg-red-50 border border-red-200' 
+                                : 'bg-amber-50 border border-amber-200'
+                            }`}
+                          >
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <p className={`font-semibold text-sm ${day.closed ? 'text-red-900' : 'text-amber-900'}`}>
+                                  {formattedDate}
+                                </p>
+                                <p className={`text-xs mt-1 ${day.closed ? 'text-red-700' : 'text-amber-700'}`}>
+                                  {day.reason}
+                                </p>
+                              </div>
+                              {day.closed ? (
+                                <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-red-100 text-red-800 border border-red-300">
+                                  CLOSED
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-amber-100 text-amber-800 border border-amber-300 whitespace-nowrap">
+                                  {day.openTime} - {day.closeTime}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  )
+                }
+                return null
+              })()}
+              
               <div className="space-y-2">
                 {businessHours.length > 0 ? (
                   <>

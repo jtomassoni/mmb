@@ -74,8 +74,18 @@ interface ActivityLog {
   previousValues?: any
 }
 
+interface SpecialDay {
+  id: string
+  date: string // YYYY-MM-DD or ISO format
+  reason: string
+  closed: boolean
+  openTime?: string
+  closeTime?: string
+  createdAt: string
+}
+
 export default function EventsPage() {
-  const { data: session } = useSession()
+  const { data: session, status } = useSession()
   const router = useRouter()
   const [activeTab, setActiveTab] = useState<'events' | 'event-types' | 'sports-teams' | 'calendar'>('events')
   const [events, setEvents] = useState<Event[]>([])
@@ -96,6 +106,7 @@ export default function EventsPage() {
   
   // Event type filtering states
   const [selectedEventTypes, setSelectedEventTypes] = useState<Set<string>>(new Set())
+  const [eventStatusFilter, setEventStatusFilter] = useState<'all' | 'active' | 'inactive'>('all')
   
   // Event form states for CTAs and images
   const [eventCTAs, setEventCTAs] = useState<Array<{id?: string, text: string, url: string, type: 'external' | 'facebook' | 'phone' | 'email', isActive: boolean}>>([])
@@ -105,16 +116,40 @@ export default function EventsPage() {
   const [recurringFrequency, setRecurringFrequency] = useState<'daily' | 'weekly' | 'monthly'>('weekly')
   const [recurringEndDate, setRecurringEndDate] = useState<string>('')
 
+  // Special days state
+  const [specialDays, setSpecialDays] = useState<SpecialDay[]>([])
+  const [showAddSpecialDay, setShowAddSpecialDay] = useState(false)
+  const [editingSpecialDay, setEditingSpecialDay] = useState<SpecialDay | null>(null)
+  const [newSpecialDay, setNewSpecialDay] = useState({
+    date: new Date().toISOString().split('T')[0], // Default to today
+    reason: '',
+    closed: true,
+    openTime: '11:00',
+    closeTime: '02:00'
+  })
+  const [savingSpecialDays, setSavingSpecialDays] = useState(false)
+  const [specialDaysErrors, setSpecialDaysErrors] = useState<Record<string, string[]>>({})
+
   useEffect(() => {
+    // Wait for session to load
+    if (status === 'loading') {
+      return
+    }
+    
     if (!session) {
       router.push('/login')
+      return
+    }
+    
+    if (session.user.mustResetPassword) {
+      router.push('/reset-password')
       return
     }
     
     fetchEvents()
     fetchEventTypes()
     fetchActivityLogs()
-  }, [session, router])
+  }, [session, status, router])
 
   const fetchEvents = async () => {
     try {
@@ -289,7 +324,8 @@ export default function EventsPage() {
     }
   }
 
-  if (isLoading) {
+  // Show loading while session is loading
+  if (status === 'loading' || isLoading) {
     return (
       <div className="min-h-screen bg-gray-50">
         <AdminSubNav />
@@ -403,7 +439,8 @@ export default function EventsPage() {
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
                     <select
-                      value="all"
+                      value={eventStatusFilter}
+                      onChange={(e) => setEventStatusFilter(e.target.value as 'all' | 'active' | 'inactive')}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm text-gray-900 bg-white focus:ring-2 focus:ring-green-500 focus:border-green-500"
                     >
                       <option value="all">All Status</option>
@@ -447,12 +484,46 @@ export default function EventsPage() {
                 </div>
               </div>
               <div className="divide-y divide-gray-200">
-                {events.length === 0 ? (
-                  <div className="px-6 py-8 text-center text-gray-500">
-                    No events found
-                  </div>
-                ) : (
-                  events.map((event) => (
+                {(() => {
+                  // Apply filters and sorting
+                  let filteredEvents = [...events]
+                  
+                  // Filter by status
+                  if (eventStatusFilter === 'active') {
+                    filteredEvents = filteredEvents.filter(e => e.isActive)
+                  } else if (eventStatusFilter === 'inactive') {
+                    filteredEvents = filteredEvents.filter(e => !e.isActive)
+                  }
+                  
+                  // Filter by event type
+                  if (selectedEventTypes.size > 0) {
+                    filteredEvents = filteredEvents.filter(e => 
+                      e.eventTypeId && selectedEventTypes.has(e.eventTypeId)
+                    )
+                  }
+                  
+                  // Sort events
+                  filteredEvents.sort((a, b) => {
+                    let comparison = 0
+                    if (eventSortBy === 'name') {
+                      comparison = a.name.localeCompare(b.name)
+                    } else if (eventSortBy === 'startDate') {
+                      comparison = new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
+                    } else if (eventSortBy === 'createdAt') {
+                      comparison = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+                    }
+                    return eventSortOrder === 'asc' ? comparison : -comparison
+                  })
+                  
+                  if (filteredEvents.length === 0) {
+                    return (
+                      <div className="px-6 py-8 text-center text-gray-500">
+                        No events found matching the filters
+                      </div>
+                    )
+                  }
+                  
+                  return filteredEvents.map((event) => (
                     <div key={event.id} className="px-6 py-4 hover:bg-gray-50">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-4 flex-1 min-w-0">
@@ -541,7 +612,7 @@ export default function EventsPage() {
                       </div>
                     </div>
                   ))
-                )}
+                })()}
               </div>
             </div>
           </div>
@@ -918,7 +989,10 @@ export default function EventsPage() {
                 eventTypeId: formData.get('eventTypeId') as string,
                 isActive: formData.get('isActive') === 'on',
                 ctas: eventCTAs,
-                images: eventImages
+                images: eventImages,
+                isRecurring,
+                recurringPattern: isRecurring ? recurringFrequency : null,
+                recurringEndDate: isRecurring && recurringEndDate ? recurringEndDate : null
               }
 
               try {
@@ -1014,6 +1088,59 @@ export default function EventsPage() {
                   label="Active"
                   checked={editingEvent?.isActive ?? true}
                 />
+              </div>
+
+              {/* Recurring Event Options */}
+              <div className="mt-6 border-t pt-6">
+                <div className="flex items-center mb-4">
+                  <input
+                    type="checkbox"
+                    id="isRecurring"
+                    checked={isRecurring}
+                    onChange={(e) => setIsRecurring(e.target.checked)}
+                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                  />
+                  <label htmlFor="isRecurring" className="ml-2 text-sm font-medium text-gray-900">
+                    Make this a recurring event
+                  </label>
+                </div>
+
+                {isRecurring && (
+                  <div className="ml-6 space-y-4 bg-blue-50 p-4 rounded-lg border border-blue-200">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Repeat Pattern
+                        </label>
+                        <select
+                          value={recurringFrequency}
+                          onChange={(e) => setRecurringFrequency(e.target.value as 'daily' | 'weekly' | 'monthly')}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        >
+                          <option value="weekly">Weekly</option>
+                          <option value="daily">Daily</option>
+                          <option value="monthly">Monthly</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          End Date (Optional)
+                        </label>
+                        <input
+                          type="date"
+                          value={recurringEndDate}
+                          onChange={(e) => setRecurringEndDate(e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        />
+                      </div>
+                    </div>
+                    <div className="bg-blue-100 border border-blue-300 rounded p-3">
+                      <p className="text-sm text-blue-900">
+                        <strong>Note:</strong> This will create a template. Individual occurrences will be generated automatically and can be edited independently.
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="mt-6">

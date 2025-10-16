@@ -9,16 +9,19 @@ declare module "next-auth" {
       name?: string | null
       image?: string | null
       role: Role
+      mustResetPassword?: boolean
     }
   }
 
   interface User {
     role: Role
+    mustResetPassword?: boolean
   }
 }
 
 declare module "next-auth/jwt" {
   interface JWT {
     role: Role
+    mustResetPassword?: boolean
   }
 }

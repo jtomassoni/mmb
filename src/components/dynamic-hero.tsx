@@ -22,11 +22,15 @@ interface DailySnapshot {
   events: Event[]
   isSpecialDay: boolean
   specialDayInfo?: string
+  isClosed?: boolean
+  closureReason?: string
 }
 
 export function DynamicHero({ siteDescription, siteName }: { siteDescription?: string; siteName?: string }) {
   const [dailySnapshot, setDailySnapshot] = useState<DailySnapshot | null>(null)
   const [currentTime, setCurrentTime] = useState(new Date())
+  const [isClosedToday, setIsClosedToday] = useState(false)
+  const [closureReason, setClosureReason] = useState('')
 
   const getTodaysStructuredEvents = (): Event[] => {
     const today = new Date()
@@ -198,6 +202,33 @@ export function DynamicHero({ siteDescription, siteName }: { siteDescription?: s
   const initialSnapshot = calculateDailySnapshot()
 
   useEffect(() => {
+    // Fetch special days to check if closed today
+    const fetchSpecialDays = async () => {
+      try {
+        const response = await fetch('/api/public/special-days')
+        if (response.ok) {
+          const data = await response.json()
+          const today = new Date()
+          const todayStr = today.toISOString().split('T')[0]
+          
+          const todaySpecialDay = data.specialDays?.find((day: any) => {
+            const [year, month, dayNum] = day.date.split('T')[0].split('-').map(Number)
+            const dayDate = new Date(year, month - 1, dayNum)
+            return dayDate.toISOString().split('T')[0] === todayStr
+          })
+          
+          if (todaySpecialDay?.closed) {
+            setIsClosedToday(true)
+            setClosureReason(todaySpecialDay.reason)
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching special days:', error)
+      }
+    }
+    
+    fetchSpecialDays()
+    
     // Update time every minute
     const timer = setInterval(() => {
       setCurrentTime(new Date())
@@ -283,70 +314,95 @@ export function DynamicHero({ siteDescription, siteName }: { siteDescription?: s
             <div className="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10 hover:bg-white/10 hover:border-white/20 hover:shadow-lg hover:shadow-white/5 transition-all duration-300">
               
               <div className="space-y-4">
-                {/* Today's Specials */}
-                <div>
-                  <h3 className="text-base font-semibold text-white mb-3 flex items-center">
-                    <span className="text-green-400 mr-2">Today's Specials</span>
-                  </h3>
-                  <div className="space-y-2">
-                    <div className="bg-white/10 rounded-lg p-2.5">
-                      <h4 className="text-xs font-medium text-white/90 mb-0.5">Food Special</h4>
-                      <p className="text-white text-xs">{snapshot.foodSpecial}</p>
-                    </div>
-                    <div className="bg-white/10 rounded-lg p-2.5">
-                      <h4 className="text-xs font-medium text-white/90 mb-0.5">Drink Special</h4>
-                      <p className="text-white text-xs">{snapshot.drinkSpecial}</p>
-                    </div>
-                    <div className="bg-white/10 rounded-lg p-2.5">
-                      <h4 className="text-xs font-medium text-white/90 mb-0.5">Happy Hour</h4>
-                      <p className="text-white text-xs">10am-12pm & 3pm-7pm daily</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Events Today */}
-                {snapshot.events.length > 0 && (
+                {/* Closure Message or Today's Content */}
+                {isClosedToday ? (
                   <div>
-                    <h3 className="text-base font-semibold text-white mb-3 flex items-center">
-                      <span className="text-purple-400 mr-2">Events Today</span>
-                    </h3>
-                    <div className="space-y-2">
-                      {snapshot.events.map((event, index) => (
-                        <div key={index} className="bg-white/15 rounded-lg p-3 hover:bg-white/20 transition-colors border border-white/10">
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <div className="flex items-center mb-1.5">
-                                <span className={`text-xs px-2 py-0.5 rounded-full mr-2 ${getTypeColor(event.type)} bg-white/20 font-medium`}>
-                                  {getTypeIcon(event.type)}
-                                </span>
-                                {event.time && (
-                                  <span className="text-xs text-gray-300 bg-white/10 px-2 py-0.5 rounded font-medium">
-                                    {event.time}
-                                  </span>
-                                )}
-                              </div>
-                              <h4 className="text-white font-semibold text-xs mb-0.5">{event.title}</h4>
-                              <p className="text-gray-200 text-xs leading-relaxed">{event.description}</p>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
+                    <div className="bg-red-900/30 border-2 border-red-500/50 rounded-lg p-4 text-center">
+                      <svg className="w-12 h-12 text-red-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                      </svg>
+                      <h3 className="text-lg font-bold text-white mb-2">Closed Today</h3>
+                      <p className="text-sm text-white/90 mb-4">{closureReason}</p>
+                      <p className="text-xs text-white/70 mb-4">We'll be back to serve you soon!</p>
+                      <a 
+                        href="/events" 
+                        className="inline-flex items-center text-sm bg-red-600 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors font-medium"
+                      >
+                        View Upcoming Events
+                        <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                      </a>
                     </div>
                   </div>
-                )}
+                ) : (
+                  <>
+                    {/* Today's Specials */}
+                    <div>
+                      <h3 className="text-base font-semibold text-white mb-3 flex items-center">
+                        <span className="text-green-400 mr-2">Today's Specials</span>
+                      </h3>
+                      <div className="space-y-2">
+                        <div className="bg-white/10 rounded-lg p-2.5">
+                          <h4 className="text-xs font-medium text-white/90 mb-0.5">Food Special</h4>
+                          <p className="text-white text-xs">{snapshot.foodSpecial}</p>
+                        </div>
+                        <div className="bg-white/10 rounded-lg p-2.5">
+                          <h4 className="text-xs font-medium text-white/90 mb-0.5">Drink Special</h4>
+                          <p className="text-white text-xs">{snapshot.drinkSpecial}</p>
+                        </div>
+                        <div className="bg-white/10 rounded-lg p-2.5">
+                          <h4 className="text-xs font-medium text-white/90 mb-0.5">Happy Hour</h4>
+                          <p className="text-white text-xs">10am-12pm & 3pm-7pm daily</p>
+                        </div>
+                      </div>
+                    </div>
 
-                {/* Quick Actions */}
-                <div className="pt-2">
-                  <a 
-                    href="/events" 
-                    className="inline-flex items-center text-sm text-green-400 hover:text-green-300 transition-colors"
-                  >
-                    View All Events
-                    <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </a>
-                </div>
+                    {/* Events Today */}
+                    {snapshot.events.length > 0 && (
+                      <div>
+                        <h3 className="text-base font-semibold text-white mb-3 flex items-center">
+                          <span className="text-purple-400 mr-2">Events Today</span>
+                        </h3>
+                        <div className="space-y-2">
+                          {snapshot.events.map((event, index) => (
+                            <div key={index} className="bg-white/15 rounded-lg p-3 hover:bg-white/20 transition-colors border border-white/10">
+                              <div className="flex items-start justify-between">
+                                <div className="flex-1">
+                                  <div className="flex items-center mb-1.5">
+                                    <span className={`text-xs px-2 py-0.5 rounded-full mr-2 ${getTypeColor(event.type)} bg-white/20 font-medium`}>
+                                      {getTypeIcon(event.type)}
+                                    </span>
+                                    {event.time && (
+                                      <span className="text-xs text-gray-300 bg-white/10 px-2 py-0.5 rounded font-medium">
+                                        {event.time}
+                                      </span>
+                                    )}
+                                  </div>
+                                  <h4 className="text-white font-semibold text-xs mb-0.5">{event.title}</h4>
+                                  <p className="text-gray-200 text-xs leading-relaxed">{event.description}</p>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Quick Actions */}
+                    <div className="pt-2">
+                      <a 
+                        href="/events" 
+                        className="inline-flex items-center text-sm text-green-400 hover:text-green-300 transition-colors"
+                      >
+                        View All Events
+                        <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </a>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </div>

@@ -151,8 +151,7 @@ async function main() {
     { name: 'Entrees', description: 'Our main course specialties', sortOrder: 2 },
     { name: 'Sides', description: 'Perfect accompaniments to your meal', sortOrder: 3 },
     { name: 'Desserts', description: 'Sweet endings to your dining experience', sortOrder: 4 },
-    { name: 'Beverages', description: 'Refreshing drinks and specialty beverages', sortOrder: 5 },
-    { name: 'Specials', description: 'Chef\'s daily specials and seasonal offerings', sortOrder: 6 }
+    { name: 'Beverages', description: 'Refreshing drinks and specialty beverages', sortOrder: 5 }
   ]
 
   for (const categoryData of menuCategories) {
@@ -340,6 +339,20 @@ async function main() {
       description: 'Pool and billiards tournaments',
       color: '#00695C',
       icon: '🎱',
+      isActive: true
+    },
+    {
+      name: 'Closure',
+      description: 'Temporary closures for holidays, buyouts, or maintenance',
+      color: '#DC2626',
+      icon: '🚫',
+      isActive: true
+    },
+    {
+      name: 'Special Hours',
+      description: 'Modified operating hours for events or holidays',
+      color: '#F59E0B',
+      icon: '🕐',
       isActive: true
     }
   ]

@@ -32,8 +32,30 @@ interface DayEvent {
   }[]
 }
 
+interface SpecialDay {
+  id: string
+  date: string
+  reason: string
+  closed: boolean
+  openTime?: string
+  closeTime?: string
+}
+
+interface ClosureEvent {
+  id: string
+  name: string
+  description: string | null
+  startDate: string
+  endDate: string
+  startTime: string | null
+  endTime: string | null
+  eventType: { name: string; color: string | null } | null
+}
+
 export default function EventsPage() {
   const [currentWeek, setCurrentWeek] = useState<DayEvent[]>([])
+  const [specialDays, setSpecialDays] = useState<SpecialDay[]>([])
+  const [closureEvents, setClosureEvents] = useState<ClosureEvent[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   const fetchCalendarEvents = async () => {
@@ -63,9 +85,24 @@ export default function EventsPage() {
     return []
   }
 
+  const fetchSpecialDays = async () => {
+    try {
+      const response = await fetch('/api/public/special-days')
+      if (response.ok) {
+        const data = await response.json()
+        setSpecialDays(data.specialDays || [])
+      }
+    } catch (error) {
+      console.error('Failed to fetch special days:', error)
+    }
+  }
+
   useEffect(() => {
     const generateWeekEvents = async () => {
       setIsLoading(true)
+      
+      // Fetch special days
+      await fetchSpecialDays()
       
       // Fetch events from calendar API
       const calendarEvents = await fetchCalendarEvents()
@@ -298,20 +335,60 @@ export default function EventsPage() {
             const isToday = dayDate.toDateString() === today.toDateString()
             const isPastDay = index === 0 // Only the first day (yesterday) is past
             
+            // Check if this day is a special day - use local date string for comparison
+            const year = dayDate.getFullYear()
+            const month = String(dayDate.getMonth() + 1).padStart(2, '0')
+            const dayNum = String(dayDate.getDate()).padStart(2, '0')
+            const dateString = `${year}-${month}-${dayNum}`
+            
+            const specialDay = specialDays.find(sd => {
+              const sdDateString = sd.date.split('T')[0]
+              return sdDateString === dateString
+            })
+            const isClosed = specialDay?.closed || false
+            const hasSpecialHours = specialDay && !specialDay.closed
+            
             return (
               <div 
                 key={index} 
                 className={`bg-white rounded-lg shadow-sm overflow-hidden ${
                   isToday ? 'ring-2 ring-green-500 ring-opacity-50 shadow-lg' : ''
-                } ${isPastDay ? 'opacity-60' : ''}`}
+                } ${isPastDay ? 'opacity-60' : ''} ${isClosed ? 'ring-2 ring-red-500' : ''} ${hasSpecialHours ? 'ring-2 ring-amber-500' : ''}`}
               >
-                <div className={`${isToday ? 'bg-green-700' : isPastDay ? 'bg-gray-500' : 'bg-green-600'} text-white p-4 text-center`}>
+                {/* Special Hours Banner */}
+                {hasSpecialHours && (
+                  <div className="bg-amber-500 text-white px-3 py-2 text-center">
+                    <p className="text-xs font-semibold uppercase tracking-wide">Special Hours</p>
+                    <p className="text-sm font-medium">{specialDay.openTime} - {specialDay.closeTime}</p>
+                  </div>
+                )}
+                
+                <div className={`${
+                  isClosed ? 'bg-red-600' :
+                  isToday ? 'bg-green-700' : 
+                  isPastDay ? 'bg-gray-500' : 
+                  'bg-green-600'
+                } text-white p-4 text-center`}>
                   <h3 className="font-bold text-lg">{day.day}</h3>
-                  <p className="text-green-100 text-sm">{day.date.split(',')[1]}</p>
+                  <p className={`${isClosed ? 'text-red-100' : 'text-green-100'} text-sm`}>{day.date.split(',')[1]}</p>
+                  {hasSpecialHours && (
+                    <p className="text-xs text-green-100 mt-1">{specialDay.reason}</p>
+                  )}
                 </div>
               
               <div className="p-4 space-y-3">
-                {day.events.map((event, eventIndex) => (
+                {isClosed ? (
+                  <div className="text-center py-8">
+                    <svg className="w-12 h-12 text-red-500 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                    </svg>
+                    <p className="font-bold text-red-900 text-lg mb-2">CLOSED</p>
+                    <p className="text-sm text-red-700">{specialDay?.reason}</p>
+                  </div>
+                ) : day.events.length === 0 ? (
+                  <p className="text-gray-400 text-sm text-center py-4">No events scheduled</p>
+                ) : (
+                  day.events.map((event, eventIndex) => (
                   <div key={eventIndex} className={`border-l-4 pl-3 ${isPastDay ? 'border-gray-200' : 'border-green-200'}`}>
                     <div className="flex items-center gap-2 mb-1">
                       <span className={`text-xs px-2 py-1 rounded-full ${isPastDay ? 'bg-gray-100 text-gray-600' : getTypeColor(event.type)}`}>
@@ -325,7 +402,8 @@ export default function EventsPage() {
                       <p className={`font-semibold text-xs mt-1 ${isPastDay ? 'text-gray-400' : 'text-green-600'}`}>{event.price}</p>
                     )}
                   </div>
-                ))}
+                  ))
+                )}
               </div>
             </div>
             )

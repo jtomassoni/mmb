@@ -88,11 +88,15 @@ export async function POST(request: NextRequest) {
     if (!date) {
       validationErrors.push('Date is required')
     } else {
-      const dateObj = new Date(date)
+      const [year, month, day] = date.split('-').map(Number)
+      const dateObj = new Date(year, month - 1, day)
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+      
       if (isNaN(dateObj.getTime())) {
-        validationErrors.push('Invalid date format')
-      } else if (dateObj < new Date()) {
-        validationErrors.push('Date cannot be in the past')
+        validationErrors.push('date: Invalid date format')
+      } else if (dateObj < today) {
+        validationErrors.push('date: Date cannot be in the past')
       }
     }
 
@@ -103,17 +107,31 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
-    // Check if special day already exists for this date
-    const existingSpecialDay = await prisma.specialDay.findFirst({
+    // Parse date as local date to avoid timezone issues
+    const [year, month, day] = date.split('-').map(Number)
+    const localDate = new Date(year, month - 1, day, 12, 0, 0) // Set to noon local time to avoid timezone shifts
+    
+    console.log('Creating special day for date:', date, 'Parsed as:', localDate)
+    
+    // Check if special day already exists - get all special days and check in memory
+    const allSpecialDays = await prisma.specialDay.findMany({
       where: { 
-        siteId: site.id,
-        date: new Date(date)
+        siteId: site.id
       }
     })
+    
+    // Compare dates by extracting just the date part (YYYY-MM-DD)
+    const existingSpecialDay = allSpecialDays.find(sd => {
+      const existingDateStr = sd.date.toISOString().split('T')[0]
+      return existingDateStr === date
+    })
+
+    console.log('Existing special day found:', existingSpecialDay)
 
     if (existingSpecialDay) {
       return NextResponse.json({ 
-        error: 'A special day already exists for this date' 
+        error: `A special day already exists for ${date}. Please edit or delete it first.`,
+        details: [`date: A special day already exists for ${date}. Please edit or delete the existing one first.`]
       }, { status: 400 })
     }
 
@@ -121,7 +139,7 @@ export async function POST(request: NextRequest) {
     const specialDay = await prisma.specialDay.create({
       data: {
         siteId: site.id,
-        date: new Date(date),
+        date: localDate,
         reason: reasonValidation.sanitizedValue,
         closed: closed,
         openTime: !closed ? openTime : null,

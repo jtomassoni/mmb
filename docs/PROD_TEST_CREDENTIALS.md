@@ -2,15 +2,49 @@
 
 This document contains credentials for production deployment.
 
-## Users
+## Production Superadmin
 
-All users have the password: **`test`**
+### Initial Login
+- **Username:** `jimmythegent`
+- **Initial Password:** `foobar`
+- **Role:** SUPERADMIN
+- **Access:** Full access to all features (single-tenant mode)
 
-### 1. Super Admin
+**⚠️ IMPORTANT:** On first login, you will be forced to reset your password.
+
+### Password Requirements
+Your new password must have:
+- At least 8 characters
+- One uppercase letter (A-Z)
+- One number (0-9)
+- One special character (!@#$%^&* etc.)
+
+### Forgot Password?
+If you forget your password after resetting it, you can recover access by:
+
+1. Edit `prisma/seed.ts` and change the `PRODUCTION_SUPERADMIN` object:
+   ```typescript
+   const PRODUCTION_SUPERADMIN = {
+     email: 'newadmin',      // Change this
+     name: 'New Admin Name',
+     password: 'temppass123' // Change this (will require reset)
+   }
+   ```
+2. Commit and push to trigger a deployment
+3. The seed will automatically delete the old superadmin and create the new one
+4. Log in with the new credentials and reset the password again
+
+---
+
+## Local Development Users
+
+All local users have the password: **`test`**
+
+### 1. Super Admin (Local)
 - **Username:** `jt`
 - **Password:** `test`
 - **Role:** SUPERADMIN
-- **Access:** Full access to all features (single-tenant mode)
+- **Access:** Full access to all features
 
 ### 2. Restaurant Owner
 - **Username:** `owner`

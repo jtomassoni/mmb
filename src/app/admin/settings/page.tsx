@@ -84,8 +84,9 @@ export default function SettingsPage() {
   // Special days state
   const [specialDays, setSpecialDays] = useState<SpecialDay[]>([])
   const [showAddSpecialDay, setShowAddSpecialDay] = useState(false)
+  const [editingSpecialDay, setEditingSpecialDay] = useState<SpecialDay | null>(null)
   const [newSpecialDay, setNewSpecialDay] = useState({
-    date: '',
+    date: new Date().toISOString().split('T')[0], // Default to today
     reason: '',
     closed: true,
     openTime: '11:00',
@@ -343,7 +344,7 @@ export default function SettingsPage() {
         await fetchSpecialDays()
         setShowAddSpecialDay(false)
         setNewSpecialDay({
-          date: '',
+          date: new Date().toISOString().split('T')[0], // Reset to today
           reason: '',
           closed: true,
           openTime: '11:00',
@@ -393,7 +394,83 @@ export default function SettingsPage() {
     }
   }
 
+  const handleUpdateSpecialDay = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!editingSpecialDay) return
+    
+    setSavingSpecialDays(true)
+    setSpecialDaysErrors({})
+
+    try {
+      const response = await fetch(`/api/admin/special-days/${editingSpecialDay.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          date: editingSpecialDay.date.split('T')[0], // Ensure date is in YYYY-MM-DD format
+          reason: editingSpecialDay.reason,
+          closed: editingSpecialDay.closed,
+          openTime: editingSpecialDay.openTime,
+          closeTime: editingSpecialDay.closeTime
+        })
+      })
+
+      if (response.ok) {
+        addToast({
+          type: 'success',
+          title: 'Special Day Updated!',
+          message: 'The special day has been updated successfully.',
+          duration: 4000
+        })
+        await fetchSpecialDays()
+        setEditingSpecialDay(null)
+      } else {
+        const errorData = await response.json()
+        
+        // Handle validation errors with field-specific messages
+        if (errorData.details && Array.isArray(errorData.details)) {
+          const fieldErrors: Record<string, string[]> = {}
+          errorData.details.forEach((detail: string) => {
+            const [field, ...errorParts] = detail.split(': ')
+            const errorMessage = errorParts.join(': ')
+            if (!fieldErrors[field.toLowerCase()]) {
+              fieldErrors[field.toLowerCase()] = []
+            }
+            fieldErrors[field.toLowerCase()].push(errorMessage)
+          })
+          setSpecialDaysErrors(fieldErrors)
+          
+          setTimeout(() => {
+            scrollToFirstError({
+              duration: 800,
+              offset: -50,
+              focusAfterScroll: true,
+              easing: 'easeInOutCubic'
+            })
+          }, 100)
+        }
+        
+        addToast({
+          type: 'error',
+          title: 'Update Failed',
+          message: errorData.error || 'Failed to update special day. Please check your inputs.',
+          duration: 6000
+        })
+      }
+    } catch (error) {
+      addToast({
+        type: 'error',
+        title: 'Update Failed',
+        message: 'An error occurred while updating the special day.',
+        duration: 6000
+      })
+    } finally {
+      setSavingSpecialDays(false)
+    }
+  }
+
   const handleDeleteSpecialDay = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this special day?')) return
+    
     try {
       const response = await fetch(`/api/admin/special-days/${id}`, {
         method: 'DELETE'
@@ -820,17 +897,20 @@ export default function SettingsPage() {
                             <input
                               type="date"
                               required
+                              min={new Date().toISOString().split('T')[0]}
                               value={newSpecialDay.date}
                               onChange={(e) => setNewSpecialDay({ ...newSpecialDay, date: e.target.value })}
-                              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 ${
-                                specialDaysErrors.date ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300'
+                              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 text-gray-900 ${
+                                specialDaysErrors.date 
+                                  ? 'border-red-300 focus:ring-red-500 focus:border-red-500 bg-red-50' 
+                                  : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
                               }`}
                             />
                           {specialDaysErrors.date && (
-                            <div className="mt-1">
+                            <div className="mt-2 space-y-1">
                               {specialDaysErrors.date.map((error, index) => (
-                                <p key={index} className="text-sm text-red-600 flex items-center gap-1">
-                                  <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <p key={index} className="text-sm text-red-700 flex items-center gap-2 bg-red-50 p-2 rounded border border-red-200">
+                                  <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                                     <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                                   </svg>
                                   {error}
@@ -875,16 +955,16 @@ export default function SettingsPage() {
                         <label className="flex items-center space-x-2 cursor-pointer">
                           <input
                             type="checkbox"
-                            checked={!newSpecialDay.closed}
-                            onChange={(e) => setNewSpecialDay({ 
-                              ...newSpecialDay, 
-                              closed: !e.target.checked,
+                            checked={newSpecialDay.closed}
+                            onChange={(e) => setNewSpecialDay({
+                              ...newSpecialDay,
+                              closed: e.target.checked,
                               openTime: !e.target.checked ? '11:00' : newSpecialDay.openTime,
                               closeTime: !e.target.checked ? '02:00' : newSpecialDay.closeTime
                             })}
                             className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
                           />
-                          <span className="text-sm font-medium text-gray-700">Open on this day</span>
+                          <span className="text-sm font-medium text-gray-700">Closed all day</span>
                         </label>
                       </div>
 
@@ -953,41 +1033,166 @@ export default function SettingsPage() {
                     </div>
                   ) : (
                     specialDays.map((day) => (
-                      <div key={day.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-4">
-                            <div className="text-sm font-medium text-gray-900">
-                              {new Date(day.date).toLocaleDateString('en-US', { 
-                                weekday: 'long', 
-                                year: 'numeric', 
-                                month: 'long', 
-                                day: 'numeric' 
-                              })}
+                      editingSpecialDay?.id === day.id ? (
+                        // Edit Form
+                        <div key={day.id} className="p-4 bg-blue-50 rounded-lg border-2 border-blue-200">
+                          <h4 className="text-sm font-medium text-gray-900 mb-4">Edit Special Day</h4>
+                          <form onSubmit={handleUpdateSpecialDay} className="space-y-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Date *</label>
+                                <input
+                                  type="date"
+                                  required
+                                  min={new Date().toISOString().split('T')[0]}
+                                  value={editingSpecialDay.date.split('T')[0]}
+                                  onChange={(e) => setEditingSpecialDay({ ...editingSpecialDay, date: e.target.value })}
+                                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 text-gray-900 ${
+                                    specialDaysErrors.date 
+                                      ? 'border-red-300 focus:ring-red-500 focus:border-red-500 bg-red-50' 
+                                      : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
+                                  }`}
+                                />
+                                {specialDaysErrors.date && (
+                                  <div className="mt-2 space-y-1">
+                                    {specialDaysErrors.date.map((error, index) => (
+                                      <p key={index} className="text-sm text-red-700 flex items-center gap-2 bg-red-50 p-2 rounded border border-red-200">
+                                        <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                                        </svg>
+                                        {error}
+                                      </p>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Reason *</label>
+                                <input
+                                  type="text"
+                                  required
+                                  value={editingSpecialDay.reason}
+                                  onChange={(e) => setEditingSpecialDay({ ...editingSpecialDay, reason: e.target.value })}
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+                                  placeholder="e.g., Holiday closure, Early opening for Broncos game"
+                                />
+                              </div>
                             </div>
-                            <div className="text-sm text-gray-600">{day.reason}</div>
-                            <div className="flex items-center space-x-2">
-                              {day.closed ? (
-                                <span className="inline-flex items-center px-2 py-1 rounded-full bg-red-100 text-red-800 text-xs font-medium">
-                                  Closed
-                                </span>
-                              ) : (
-                                <span className="inline-flex items-center px-2 py-1 rounded-full bg-green-100 text-green-800 text-xs font-medium">
-                                  {day.openTime} - {day.closeTime}
-                                </span>
-                              )}
+                            <div>
+                              <label className="flex items-center">
+                                <input
+                                  type="checkbox"
+                                  checked={editingSpecialDay.closed}
+                                  onChange={(e) => setEditingSpecialDay({ 
+                                    ...editingSpecialDay, 
+                                    closed: e.target.checked,
+                                    openTime: !e.target.checked ? (editingSpecialDay.openTime || '11:00') : editingSpecialDay.openTime,
+                                    closeTime: !e.target.checked ? (editingSpecialDay.closeTime || '02:00') : editingSpecialDay.closeTime
+                                  })}
+                                  className="rounded border-gray-300 text-blue-600 shadow-sm focus:ring-blue-500"
+                                />
+                                <span className="ml-2 text-sm text-gray-700">Closed all day</span>
+                              </label>
+                            </div>
+                            {!editingSpecialDay.closed && (
+                              <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 mb-1">Open At</label>
+                                  <ProperTimePicker
+                                    value={editingSpecialDay.openTime || '11:00'}
+                                    onChange={(value) => setEditingSpecialDay({ ...editingSpecialDay, openTime: value })}
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 mb-1">Close At</label>
+                                  <ProperTimePicker
+                                    value={editingSpecialDay.closeTime || '02:00'}
+                                    onChange={(value) => setEditingSpecialDay({ ...editingSpecialDay, closeTime: value })}
+                                  />
+                                </div>
+                              </div>
+                            )}
+                            <div className="flex justify-between items-center pt-4">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (editingSpecialDay) {
+                                    handleDeleteSpecialDay(editingSpecialDay.id)
+                                    setEditingSpecialDay(null)
+                                  }
+                                }}
+                                className="px-4 py-2 text-sm font-medium text-red-700 bg-white border border-red-300 rounded-md hover:bg-red-50"
+                              >
+                                Delete
+                              </button>
+                              <div className="flex space-x-3">
+                                <button
+                                  type="button"
+                                  onClick={() => setEditingSpecialDay(null)}
+                                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                                >
+                                  Cancel
+                                </button>
+                                <button
+                                  type="submit"
+                                  disabled={savingSpecialDays}
+                                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 disabled:opacity-50"
+                                >
+                                  {savingSpecialDays ? 'Updating...' : 'Update'}
+                                </button>
+                              </div>
+                            </div>
+                          </form>
+                        </div>
+                      ) : (
+                        // Display Mode
+                        <div key={day.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
+                          <div className="flex-1">
+                            <div className="flex items-center space-x-4">
+                              <div className="text-sm font-medium text-gray-900">
+                                {new Date(day.date).toLocaleDateString('en-US', { 
+                                  weekday: 'long', 
+                                  year: 'numeric', 
+                                  month: 'long', 
+                                  day: 'numeric' 
+                                })}
+                              </div>
+                              <div className="text-sm text-gray-600">{day.reason}</div>
+                              <div className="flex items-center space-x-2">
+                                {day.closed ? (
+                                  <span className="inline-flex items-center px-2 py-1 rounded-full bg-red-100 text-red-800 text-xs font-medium">
+                                    Closed
+                                  </span>
+                                ) : (
+                                  <span className="inline-flex items-center px-2 py-1 rounded-full bg-green-100 text-green-800 text-xs font-medium">
+                                    {day.openTime} - {day.closeTime}
+                                  </span>
+                                )}
+                              </div>
                             </div>
                           </div>
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => setEditingSpecialDay(day)}
+                              className="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-md transition-colors"
+                              title="Edit special day"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                              </svg>
+                            </button>
+                            <button
+                              onClick={() => handleDeleteSpecialDay(day.id)}
+                              className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-md transition-colors"
+                              title="Delete special day"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                              </svg>
+                            </button>
+                          </div>
                         </div>
-                        <button
-                          onClick={() => handleDeleteSpecialDay(day.id)}
-                          className="ml-4 p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-md transition-colors"
-                          title="Delete special day"
-                        >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                          </svg>
-                        </button>
-                      </div>
+                      )
                     ))
                   )}
                 </div>
@@ -1045,10 +1250,19 @@ export default function SettingsPage() {
                               log.resource === 'special_day' ? 'text-yellow-600' :
                               'text-gray-600'
                             }`}>
-                              {log.resource === 'site_settings' ? '⚙️' :
-                               log.resource === 'business_hours' ? '🕒' :
-                               log.resource === 'special_day' ? '📅' :
-                               '📄'}
+                              {(() => {
+                                const iconClass = "w-5 h-5"
+                                switch (log.resource) {
+                                  case 'site_settings':
+                                    return <svg className={iconClass} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                                  case 'business_hours':
+                                    return <svg className={iconClass} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                  case 'special_day':
+                                    return <svg className={iconClass} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                                  default:
+                                    return <svg className={iconClass} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                                }
+                              })()}
                             </span>
                           </div>
                         </div>

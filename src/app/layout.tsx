@@ -5,6 +5,7 @@ import "./theme.css";
 import { Providers } from "../components/providers";
 import { ThemeProvider } from "../components/theme-provider";
 import { ConditionalHeader } from "../components/conditional-header";
+import { ClosureBanner } from "../components/closure-banner";
 import { getSiteData } from "../lib/site-data";
 
 const geistSans = Geist({
@@ -43,7 +44,10 @@ export default async function RootLayout({
       >
         <Providers>
           <ThemeProvider>
-            <ConditionalHeader />
+            <div>
+              <ConditionalHeader />
+              <ClosureBanner />
+            </div>
             <main id="main-content" tabIndex={-1}>
               {children}
             </main>

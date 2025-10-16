@@ -215,6 +215,14 @@ model Event {
   image       String?   // Image URL
   eventTypeId String?   // Reference to custom event type
   price       String?   // Price display (e.g., "$10", "Free", "BOGO")
+  
+  // Recurring event fields
+  isRecurring       Boolean  @default(false) // Is this a recurring event template?
+  recurringPattern  String?  // "weekly", "daily", "monthly", "custom"
+  recurringDaysOfWeek String? // JSON array of day numbers [0-6] for weekly (e.g., "[1,3]" for Monday & Wednesday)
+  recurringEndDate  DateTime? // When to stop generating instances
+  parentEventId     String?  // If this is an instance of a recurring event, link to parent
+  
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
@@ -223,6 +231,8 @@ model Event {
   eventType EventType? @relation(fields: [eventTypeId], references: [id], onDelete: SetNull)
   images EventImage[]
   ctas EventCTA[]
+  parentEvent Event? @relation("RecurringInstances", fields: [parentEventId], references: [id], onDelete: Cascade)
+  instances Event[] @relation("RecurringInstances")
 
   @@map("events")
 }
