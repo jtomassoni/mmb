@@ -94,19 +94,14 @@ export async function POST(request: NextRequest) {
         data: {
           siteId: site.id,
           eventTypeId: sportsEventType.id,
-          title: eventTitle,
+          name: eventTitle,
           description: eventDescription,
-          date: gameDate,
+          startDate: gameDate,
+          endDate: gameDate,
           startTime: game.time,
           endTime: '23:59', // Assume games end late
           location: game.homeAway === 'home' ? 'Monaghan\'s Bar & Grill' : 'Watch Party at Monaghan\'s',
-          isRecurring: false,
-          maxAttendees: null,
-          requiresRSVP: false,
-          isActive: true,
-          imageUrl: null,
-          ctaText: 'Join the Watch Party',
-          ctaUrl: null
+          isActive: true
         }
       })
 
