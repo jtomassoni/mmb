@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from 'next/server'
  * This endpoint should be called by Vercel Cron Jobs or similar
  * 
  * Usage:
- * - Set up Vercel Cron Job: */30 * * * * (every 30 minutes)
+ * - Set up Vercel Cron Job to run every 30 minutes
  * - Or call manually: POST /api/cron/broncos-refresh
  */
 export async function POST(request: NextRequest) {
