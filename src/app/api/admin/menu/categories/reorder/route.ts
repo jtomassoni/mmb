@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { logAuditEvent } from '@/lib/audit-log'
+import { prisma } from '@/lib/prisma'
 
 export async function POST(request: NextRequest) {
   try {
@@ -22,6 +23,16 @@ export async function POST(request: NextRequest) {
     if (!movedCategoryId || !movedCategoryName || oldPosition === undefined || newPosition === undefined) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
+
+    // Actually update the sortOrder for each category in the database
+    await Promise.all(
+      reorderedCategories.map((category: any) =>
+        prisma.menuCategory.update({
+          where: { id: category.id },
+          data: { sortOrder: category.sortOrder }
+        })
+      )
+    )
 
     // Log the reordering action
     await logAuditEvent({

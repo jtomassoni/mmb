@@ -217,6 +217,61 @@ function MenuManagementContent() {
     description: ''
   })
 
+  // Form validation errors
+  const [itemErrors, setItemErrors] = useState({
+    name: '',
+    price: '',
+    category: ''
+  })
+
+  // Validation helpers
+  const validatePrice = (value: string): string => {
+    // Remove any non-numeric characters except decimal point
+    let cleaned = value.replace(/[^0-9.]/g, '')
+    
+    // Only allow one decimal point
+    const parts = cleaned.split('.')
+    if (parts.length > 2) {
+      cleaned = parts[0] + '.' + parts.slice(1).join('')
+    }
+    
+    // Limit to 2 decimal places
+    if (parts.length === 2 && parts[1].length > 2) {
+      cleaned = parts[0] + '.' + parts[1].substring(0, 2)
+    }
+    
+    // Prevent leading zeros (except for 0.xx)
+    if (cleaned.length > 1 && cleaned[0] === '0' && cleaned[1] !== '.') {
+      cleaned = cleaned.substring(1)
+    }
+    
+    return cleaned
+  }
+
+  const validateName = (value: string): string => {
+    // Trim whitespace and limit length
+    return value.trimStart().substring(0, 100)
+  }
+
+  const validateDescription = (value: string): string => {
+    // Trim whitespace and limit length
+    return value.trimStart().substring(0, 500)
+  }
+
+  const validateImageUrl = (value: string): string => {
+    // Trim whitespace
+    return value.trim()
+  }
+
+  // Helper to get input className with error states
+  const getInputClassName = (hasError: boolean, baseClass: string = '') => {
+    const base = baseClass || 'w-full px-3 py-2 rounded-lg text-gray-900 placeholder-gray-500'
+    if (hasError) {
+      return `${base} border-2 border-red-500 focus:ring-2 focus:ring-red-500 focus:border-red-500`
+    }
+    return `${base} border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500`
+  }
+
   // Sorting and filtering states
   const [sortBy, setSortBy] = useState<'name' | 'category' | 'price' | 'createdAt'>('category')
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc')
@@ -293,6 +348,22 @@ function MenuManagementContent() {
     }
   }, [searchParams])
 
+  // Handle direct edit from menu page
+  useEffect(() => {
+    const editItemId = searchParams.get('editItem')
+    if (editItemId && menuItems.length > 0) {
+      const itemToEdit = menuItems.find(item => item.id === editItemId)
+      if (itemToEdit) {
+        setEditingItem(itemToEdit)
+        setActiveTab('items')
+        // Remove the editItem param from URL after opening the edit form
+        const params = new URLSearchParams(searchParams.toString())
+        params.delete('editItem')
+        router.replace(`/admin/menu?${params.toString()}`, { scroll: false })
+      }
+    }
+  }, [searchParams, menuItems, router])
+
   // Update URL when active tab changes
   const handleTabChange = (tab: 'items' | 'categories' | 'preview') => {
     setActiveTab(tab)
@@ -344,6 +415,54 @@ function MenuManagementContent() {
 
   const handleCreateItem = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    // Comprehensive frontend validation
+    const errors = {
+      name: '',
+      price: '',
+      category: ''
+    }
+    
+    // Validate name
+    if (!newItem.name.trim()) {
+      errors.name = 'Item name is required'
+    } else if (newItem.name.trim().length < 2) {
+      errors.name = 'Item name must be at least 2 characters'
+    }
+    
+    // Validate price
+    if (!newItem.price) {
+      errors.price = 'Price is required'
+    } else {
+      const numPrice = parseFloat(newItem.price)
+      if (isNaN(numPrice)) {
+        errors.price = 'Price must be a valid number'
+      } else if (numPrice <= 0) {
+        errors.price = 'Price must be greater than $0'
+      } else if (numPrice > 9999.99) {
+        errors.price = 'Price cannot exceed $9,999.99'
+      } else {
+        // Check decimal places
+        const decimalParts = newItem.price.split('.')
+        if (decimalParts.length > 1 && decimalParts[1].length > 2) {
+          errors.price = 'Price can only have 2 decimal places'
+        }
+      }
+    }
+    
+    // Validate category
+    if (!newItem.category) {
+      errors.category = 'Please select a category'
+    }
+    
+    setItemErrors(errors)
+    
+    // Don't submit if there are errors
+    if (errors.name || errors.price || errors.category) {
+      setError('Please fix the errors above before submitting')
+      return
+    }
+    
     setSaving(true)
     setError('')
 
@@ -353,21 +472,25 @@ function MenuManagementContent() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...newItem,
-          price: newItem.price // Send raw price, let backend validate and convert
+          price: newItem.price
         })
       })
+
+      const data = await response.json()
 
       if (response.ok) {
         setSuccess('Menu item created successfully!')
         setNewItem({ name: '', description: '', price: '', category: '', image: '', isAvailable: true })
+        setItemErrors({ name: '', price: '', category: '' })
         setShowCreateItem(false)
         fetchData()
         setTimeout(() => setSuccess(''), 3000)
       } else {
-        setError('Failed to create menu item')
+        // Show specific backend error if FE validation missed something
+        setError(data.error || 'Failed to create menu item. Please check your inputs.')
       }
     } catch (error) {
-      setError('Failed to create menu item')
+      setError('Network error. Please check your connection and try again.')
     } finally {
       setSaving(false)
     }
@@ -513,17 +636,34 @@ function MenuManagementContent() {
     const { active, over } = event
 
     if (active.id !== over.id) {
-      const categoryItems = menuItems.filter(item => item.category === categoryName && item.isAvailable)
-      const oldIndex = categoryItems.findIndex((item) => item.id === active.id)
-      const newIndex = categoryItems.findIndex((item) => item.id === over.id)
+      // Get ALL items in this category (including disabled ones)
+      const allCategoryItems = menuItems.filter(item => item.category === categoryName)
       
-      const movedItem = categoryItems[oldIndex]
-      const reorderedItems = arrayMove(categoryItems, oldIndex, newIndex)
+      // Get only available items for the drag operation, sorted by current sortOrder
+      const availableItems = allCategoryItems
+        .filter(item => item.isAvailable)
+        .sort((a, b) => a.sortOrder - b.sortOrder)
       
-      // Update local state
+      const oldIndex = availableItems.findIndex((item) => item.id === active.id)
+      const newIndex = availableItems.findIndex((item) => item.id === over.id)
+      
+      console.log('Before drag:', availableItems.map((item, i) => `${i + 1}. ${item.name} (sortOrder: ${item.sortOrder})`))
+      
+      const movedItem = availableItems[oldIndex]
+      const reorderedAvailableItems = arrayMove(availableItems, oldIndex, newIndex)
+      
+      console.log('After drag:', reorderedAvailableItems.map((item, i) => `${i + 1}. ${item.name} (will be sortOrder: ${i + 1})`))
+      
+      
+      // Recalculate sortOrder for ALL items in category
+      // Available items get 1, 2, 3... and unavailable items get pushed to the end
+      const unavailableItems = allCategoryItems.filter(item => !item.isAvailable)
+      const allReorderedItems = [...reorderedAvailableItems, ...unavailableItems]
+      
+      // Update local state for ALL items in this category
       const updatedMenuItems = menuItems.map(item => {
         if (item.category === categoryName) {
-          const newItemIndex = reorderedItems.findIndex(ri => ri.id === item.id)
+          const newItemIndex = allReorderedItems.findIndex(ri => ri.id === item.id)
           if (newItemIndex !== -1) {
             return { ...item, sortOrder: newItemIndex + 1 }
           }
@@ -532,15 +672,18 @@ function MenuManagementContent() {
       })
       setMenuItems(updatedMenuItems)
 
-      // Update sort orders in the database and log the reordering
+      // Update sort orders in the database for ALL items in this category
       try {
-        const updates = reorderedItems.map((item, index) => ({
+        const updates = allReorderedItems.map((item, index) => ({
           id: item.id,
           sortOrder: index + 1
         }))
 
-        // Log the reordering action
-        await fetch('/api/admin/menu/items/reorder', {
+        console.log('Reorder updates:', updates.map(u => ({ id: u.id.substring(0, 8), sortOrder: u.sortOrder })))
+        console.log(`Moving "${movedItem.name}" from position ${oldIndex + 1} to ${newIndex + 1}`)
+
+        // Single API call to update all sort orders
+        const response = await fetch('/api/admin/menu/items/reorder', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -553,14 +696,9 @@ function MenuManagementContent() {
           })
         })
 
-        // Update individual item sort orders
-        await Promise.all(updates.map(update => 
-          fetch(`/api/admin/menu/items/${update.id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ sortOrder: update.sortOrder })
-          })
-        ))
+        if (!response.ok) {
+          throw new Error('Failed to reorder items')
+        }
       } catch (error) {
         console.error('Failed to update menu item order:', error)
         // Revert the local state if the update fails
@@ -741,42 +879,78 @@ function MenuManagementContent() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Item Name *
+                        Item Name * <span className="text-xs text-gray-500">(max 100 chars, min 2 chars)</span>
                       </label>
                       <input
                         type="text"
-                        required
                         value={newItem.name}
-                        onChange={(e) => setNewItem({ ...newItem, name: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-gray-900 placeholder-gray-500"
+                        onChange={(e) => {
+                          const validated = validateName(e.target.value)
+                          setNewItem({ ...newItem, name: validated })
+                          
+                          // Real-time validation after first submit attempt
+                          if (itemErrors.name || itemErrors.price || itemErrors.category) {
+                            if (!validated.trim()) {
+                              setItemErrors({ ...itemErrors, name: 'Item name is required' })
+                            } else if (validated.trim().length < 2) {
+                              setItemErrors({ ...itemErrors, name: 'Item name must be at least 2 characters' })
+                            } else {
+                              setItemErrors({ ...itemErrors, name: '' })
+                            }
+                          }
+                        }}
+                        placeholder="Buffalo Wings"
+                        className={getInputClassName(!!itemErrors.name)}
                       />
+                      {itemErrors.name && (
+                        <p className="mt-1 text-sm text-red-600">{itemErrors.name}</p>
+                      )}
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Price *
+                        Price * <span className="text-xs text-gray-500">(max 2 decimals, max $9,999.99)</span>
                       </label>
                       <input
                         type="text"
-                        required
                         value={newItem.price}
                         onChange={(e) => {
-                          // Only allow numbers, commas, and decimals
-                          const value = e.target.value.replace(/[^0-9.,]/g, '')
-                          setNewItem({ ...newItem, price: value })
+                          const validated = validatePrice(e.target.value)
+                          setNewItem({ ...newItem, price: validated })
+                          
+                          // Real-time validation after first submit attempt
+                          if (itemErrors.price || itemErrors.name || itemErrors.category) {
+                            const numPrice = parseFloat(validated)
+                            if (!validated) {
+                              setItemErrors({ ...itemErrors, price: 'Price is required' })
+                            } else if (isNaN(numPrice)) {
+                              setItemErrors({ ...itemErrors, price: 'Price must be a valid number' })
+                            } else if (numPrice <= 0) {
+                              setItemErrors({ ...itemErrors, price: 'Price must be greater than $0' })
+                            } else if (numPrice > 9999.99) {
+                              setItemErrors({ ...itemErrors, price: 'Price cannot exceed $9,999.99' })
+                            } else {
+                              setItemErrors({ ...itemErrors, price: '' })
+                            }
+                          }
                         }}
                         placeholder="10.99"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-gray-900 placeholder-gray-500"
+                        className={getInputClassName(!!itemErrors.price)}
                       />
+                      {itemErrors.price && (
+                        <p className="mt-1 text-sm text-red-600">{itemErrors.price}</p>
+                      )}
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Category *
                       </label>
                       <select
-                        required
                         value={newItem.category}
-                        onChange={(e) => setNewItem({ ...newItem, category: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-gray-900 placeholder-gray-500"
+                        onChange={(e) => {
+                          setNewItem({ ...newItem, category: e.target.value })
+                          if (itemErrors.category) setItemErrors({ ...itemErrors, category: '' })
+                        }}
+                        className={getInputClassName(!!itemErrors.category)}
                       >
                         <option value="">Select a category</option>
                         {categories.map((cat) => (
@@ -785,6 +959,9 @@ function MenuManagementContent() {
                           </option>
                         ))}
                       </select>
+                      {itemErrors.category && (
+                        <p className="mt-1 text-sm text-red-600">{itemErrors.category}</p>
+                      )}
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -793,28 +970,33 @@ function MenuManagementContent() {
                       <input
                         type="url"
                         value={newItem.image}
-                        onChange={(e) => setNewItem({ ...newItem, image: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-gray-900 placeholder-gray-500"
+                        onChange={(e) => setNewItem({ ...newItem, image: validateImageUrl(e.target.value) })}
+                        placeholder="https://example.com/image.jpg"
+                        className={getInputClassName(false)}
                       />
                     </div>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Description
+                      Description <span className="text-xs text-gray-500">(max 500 chars)</span>
                     </label>
                     <textarea
                       value={newItem.description}
-                      onChange={(e) => setNewItem({ ...newItem, description: e.target.value })}
+                      onChange={(e) => setNewItem({ ...newItem, description: validateDescription(e.target.value) })}
                       rows={3}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-gray-900 placeholder-gray-500"
+                      placeholder="Spicy buffalo wings served with ranch and celery"
+                      className={getInputClassName(false)}
                     />
+                    <div className="text-xs text-gray-500 mt-1 text-right">
+                      {newItem.description.length}/500
+                    </div>
                   </div>
                   <div className="flex items-center space-x-2">
                     <input
                       type="checkbox"
                       checked={newItem.isAvailable}
                       onChange={(e) => setNewItem({ ...newItem, isAvailable: e.target.checked })}
-                      className="rounded border-gray-300 text-green-600 focus:ring-green-500"
+                      className="rounded border-gray-300 text-green-600 focus:ring-blue-500"
                     />
                     <label className="text-sm text-gray-700">Available for ordering</label>
                   </div>
@@ -846,31 +1028,29 @@ function MenuManagementContent() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Item Name *
+                        Item Name * <span className="text-xs text-gray-500">(max 100 chars)</span>
                       </label>
                       <input
                         type="text"
-                        required
                         value={editingItem.name}
-                        onChange={(e) => setEditingItem({ ...editingItem, name: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
+                        onChange={(e) => setEditingItem({ ...editingItem, name: validateName(e.target.value) })}
+                        placeholder="Buffalo Wings"
+                        className={getInputClassName(false)}
                       />
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Price *
+                        Price * <span className="text-xs text-gray-500">(max 2 decimals)</span>
                       </label>
                       <input
                         type="text"
-                        required
                         value={editingItem.price.toString()}
                         onChange={(e) => {
-                          // Only allow numbers, commas, and decimals
-                          const value = e.target.value.replace(/[^0-9.,]/g, '')
-                          setEditingItem({ ...editingItem, price: parseFloat(value) || 0 })
+                          const validated = validatePrice(e.target.value)
+                          setEditingItem({ ...editingItem, price: parseFloat(validated) || 0 })
                         }}
                         placeholder="10.99"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
+                        className={getInputClassName(false)}
                       />
                     </div>
                     <div>
@@ -878,10 +1058,9 @@ function MenuManagementContent() {
                         Category *
                       </label>
                       <select
-                        required
                         value={editingItem.category}
                         onChange={(e) => setEditingItem({ ...editingItem, category: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
+                        className={getInputClassName(false)}
                       >
                         <option value="">Select a category</option>
                         {categories.map((cat) => (
@@ -898,21 +1077,26 @@ function MenuManagementContent() {
                       <input
                         type="url"
                         value={editingItem.image || ''}
-                        onChange={(e) => setEditingItem({ ...editingItem, image: e.target.value })}
+                        onChange={(e) => setEditingItem({ ...editingItem, image: validateImageUrl(e.target.value) })}
+                        placeholder="https://example.com/image.jpg"
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                       />
                     </div>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Description
+                      Description <span className="text-xs text-gray-500">(max 500 chars)</span>
                     </label>
                     <textarea
                       value={editingItem.description}
-                      onChange={(e) => setEditingItem({ ...editingItem, description: e.target.value })}
+                      onChange={(e) => setEditingItem({ ...editingItem, description: validateDescription(e.target.value) })}
                       rows={3}
+                      placeholder="Spicy buffalo wings served with ranch and celery"
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                     />
+                    <div className="text-xs text-gray-500 mt-1 text-right">
+                      {editingItem.description.length}/500
+                    </div>
                   </div>
                   <div className="flex items-center space-x-2">
                     <input
@@ -963,7 +1147,7 @@ function MenuManagementContent() {
                       placeholder="Search items..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm text-gray-900 bg-white focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     />
                   </div>
                   
@@ -973,7 +1157,7 @@ function MenuManagementContent() {
                     <select
                       value={filterCategory}
                       onChange={(e) => setFilterCategory(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm text-gray-900 bg-white focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     >
                       <option value="all">All Categories</option>
                       {categories.map(category => (
@@ -988,7 +1172,7 @@ function MenuManagementContent() {
                     <select
                       value={filterStatus}
                       onChange={(e) => setFilterStatus(e.target.value as 'all' | 'available' | 'unavailable')}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm text-gray-900 bg-white focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     >
                       <option value="all">All Status</option>
                       <option value="available">Available</option>
@@ -1003,7 +1187,7 @@ function MenuManagementContent() {
                       <select
                         value={sortBy}
                         onChange={(e) => setSortBy(e.target.value as 'name' | 'category' | 'price' | 'createdAt')}
-                        className="flex-1 px-2 py-2 border border-gray-300 rounded-l-md text-sm text-gray-900 bg-white focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                        className="flex-1 px-2 py-2 border border-gray-300 rounded-l-md text-sm text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       >
                         <option value="name">Name</option>
                         <option value="category">Category</option>
@@ -1012,7 +1196,7 @@ function MenuManagementContent() {
                       </select>
                       <button
                         onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-                        className="px-2 py-2 border border-gray-300 rounded-r-md text-sm text-gray-900 bg-white hover:bg-gray-50 focus:ring-2 focus:ring-green-500"
+                        className="px-2 py-2 border border-gray-300 rounded-r-md text-sm text-gray-900 bg-white hover:bg-gray-50 focus:ring-2 focus:ring-blue-500"
                         title={`Sort ${sortOrder === 'asc' ? 'Descending' : 'Ascending'}`}
                       >
                         {sortOrder === 'asc' ? '↑' : '↓'}
@@ -1134,7 +1318,7 @@ function MenuManagementContent() {
                       required
                       value={newCategory.name}
                       onChange={(e) => setNewCategory({ ...newCategory, name: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-gray-900 placeholder-gray-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                     />
                   </div>
                   <div>
@@ -1145,7 +1329,7 @@ function MenuManagementContent() {
                       value={newCategory.description}
                       onChange={(e) => setNewCategory({ ...newCategory, description: e.target.value })}
                       rows={3}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-gray-900 placeholder-gray-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                     />
                   </div>
                   <div className="flex space-x-4">

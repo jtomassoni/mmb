@@ -41,7 +41,7 @@ NEXTAUTH_URL="http://localhost:3000"
 NEXTAUTH_SECRET="your-secret-key-here"
 
 # Platform Configuration
-PLATFORM_HOST="www.byte-by-bite.com"
+PLATFORM_HOST="mmb-five.vercel.app"
 
 # Vercel (optional)
 VERCEL_TOKEN=""

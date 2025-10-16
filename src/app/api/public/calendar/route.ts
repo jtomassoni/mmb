@@ -97,10 +97,22 @@ export async function GET(request: NextRequest) {
     const type = searchParams.get('type')
     const limit = searchParams.get('limit')
 
+    // Get the site first
+    const site = await prisma.site.findFirst({
+      where: { slug: 'monaghans-bargrill' }
+    })
+
+    if (!site) {
+      return NextResponse.json(
+        { success: false, error: 'Site not found' },
+        { status: 404 }
+      )
+    }
+
     // Fetch events from database
     const dbEvents = await prisma.event.findMany({
       where: {
-        siteId: 'cmgfjti600004meoa7n4vy3o8', // Monaghan's site ID
+        siteId: site.id,
         isActive: true,
         ...(startDate && endDate ? {
           startDate: {

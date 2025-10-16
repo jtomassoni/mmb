@@ -28,7 +28,7 @@ A single-tenant restaurant management system built with Next.js, featuring menu 
 
 All users have the password: **`test`**
 
-- **Super Admin:** `superadmin@monaghans.com` - Full system access
+- **Admin:** `superadmin@monaghans.com` - Full system access
 - **Owner:** `owner@monaghans.com` - Full site management
 - **Manager:** `manager@monaghans.com` - Content management
 - **Staff:** `staff@monaghans.com` - Read-only access

@@ -215,34 +215,11 @@ export default function EventsPage() {
               break
             case 5: // Friday
               events = [
-                {
-                  title: "Happy Hour",
-                  time: "3:00 PM - 7:00 PM",
-                  description: "BOGO first round of wine, wells, or drafts",
-                  type: "drink"
-                },
-                {
-                  title: "Friday Night Vibes",
-                  time: "All Day",
-                  description: "Weekend starts here! Open until 2 AM",
-                  type: "entertainment"
-                }
+                // Happy Hour removed from calendar events
               ]
               break
             case 6: // Saturday
               events = [
-                {
-                  title: "Happy Hour",
-                  time: "3:00 PM - 7:00 PM",
-                  description: "BOGO first round of wine, wells, or drafts",
-                  type: "drink"
-                },
-                {
-                  title: "Saturday Night",
-                  time: "All Day",
-                  description: "Full weekend energy! Open until 2 AM",
-                  type: "entertainment"
-                },
                 {
                   title: "Karaoke Night",
                   time: "9:00 PM",
@@ -308,7 +285,7 @@ export default function EventsPage() {
           <h1 className="text-4xl font-bold text-gray-900 mb-4">What's Happening This Week</h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Every day brings something special at Monaghan's. From daily specials to weekly events, 
-            there's always a reason to stop by!
+            there's always a reason to stop by! Join us for our daily happy hour from 10:00 AM - 12:00 PM & 3:00 PM - 7:00 PM with BOGO first round of wine, wells, or drafts.
           </p>
         </div>
 
@@ -353,13 +330,6 @@ export default function EventsPage() {
             </div>
             )
           })}
-        </div>
-
-        {/* Happy Hour Info */}
-        <div className="bg-green-50 border border-green-200 rounded-lg p-6 text-center mb-12">
-          <h3 className="text-lg font-semibold text-green-800 mb-2">Daily Happy Hour</h3>
-          <p className="text-green-700 mb-1">10:00 AM - 12:00 PM & 3:00 PM - 7:00 PM</p>
-          <p className="text-sm text-green-600">Buy One Get One on first round of wine, wells, or drafts</p>
         </div>
 
       </div>

@@ -3,7 +3,7 @@
  */
 
 export function getPlatformHost(): string {
-  return process.env.NEXT_PUBLIC_PLATFORM_HOST || 'https://www.byte-by-bite.com'
+  return process.env.NEXT_PUBLIC_PLATFORM_HOST || 'https://mmb-five.vercel.app'
 }
 
 export function getCurrentHost(): string {

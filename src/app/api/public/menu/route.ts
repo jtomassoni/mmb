@@ -30,6 +30,7 @@ export async function GET() {
           description: item.description,
           price: `$${item.price.toFixed(2)}`,
           category: item.category,
+          image: item.image,
           isAvailable: item.isAvailable
         }))
     }))

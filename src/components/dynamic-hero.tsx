@@ -234,7 +234,7 @@ export function DynamicHero({ siteDescription, siteName }: { siteDescription?: s
   }
 
   return (
-    <section className="relative min-h-screen flex flex-col overflow-hidden">
+    <section className="relative min-h-[calc(100vh-4rem)] flex flex-col overflow-hidden pt-8">
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
         <img
@@ -245,16 +245,13 @@ export function DynamicHero({ siteDescription, siteName }: { siteDescription?: s
         <div className="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
       </div>
 
-      {/* Spacer for header */}
-      <div className="relative z-20 h-16"></div>
-
       {/* Main Content */}
       <div className="relative z-10 flex-1 flex items-center">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center max-w-6xl mx-auto">
             
             {/* Left Side - Brand & Status */}
-            <div className="text-white space-y-10">
+            <div className="text-white space-y-8 text-center lg:text-left">
               <div>
                 <h1 className="text-7xl lg:text-8xl font-black mb-8 leading-none tracking-tight font-display">
                   <span className="block font-light">{siteName?.split(' ')[0] || "Monaghan's"}</span>
@@ -272,7 +269,7 @@ export function DynamicHero({ siteDescription, siteName }: { siteDescription?: s
               )}
 
               {/* Quick Actions */}
-              <div className="flex gap-4">
+              <div className="flex gap-4 justify-center lg:justify-start">
                 <a 
                   href="/menu" 
                   className="bg-green-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-green-700 hover:shadow-2xl hover:shadow-green-500/30 transition-all duration-300 hover:brightness-110"
@@ -282,52 +279,74 @@ export function DynamicHero({ siteDescription, siteName }: { siteDescription?: s
               </div>
             </div>
 
-            {/* Right Side - Daily Info Card */}
+            {/* Right Side - Specials & Events Card */}
             <div className="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10 hover:bg-white/10 hover:border-white/20 hover:shadow-lg hover:shadow-white/5 transition-all duration-300">
               
-              {/* Status */}
-              <div className="flex items-center mb-4 pb-4 border-b border-white/20">
-                <div className={`w-3 h-3 rounded-full mr-3 ${snapshot.isOpen ? 'bg-green-400' : 'bg-red-400'}`}></div>
-                <h3 className="text-lg font-semibold text-white">
-                  {snapshot.status}
-                  {!snapshot.isOpen && snapshot.nextOpenTime && (
-                    <span className="ml-2 text-gray-300 text-sm">• Opens {snapshot.nextOpenTime}</span>
-                  )}
-                </h3>
-              </div>
-
-              <div className="space-y-3">
+              <div className="space-y-4">
+                {/* Today's Specials */}
                 <div>
-                  <h4 className="text-sm font-medium text-white/90 mb-1">Food Special</h4>
-                  <p className="text-white text-sm">{snapshot.foodSpecial}</p>
+                  <h3 className="text-base font-semibold text-white mb-3 flex items-center">
+                    <span className="text-green-400 mr-2">Today's Specials</span>
+                  </h3>
+                  <div className="space-y-2">
+                    <div className="bg-white/10 rounded-lg p-2.5">
+                      <h4 className="text-xs font-medium text-white/90 mb-0.5">Food Special</h4>
+                      <p className="text-white text-xs">{snapshot.foodSpecial}</p>
+                    </div>
+                    <div className="bg-white/10 rounded-lg p-2.5">
+                      <h4 className="text-xs font-medium text-white/90 mb-0.5">Drink Special</h4>
+                      <p className="text-white text-xs">{snapshot.drinkSpecial}</p>
+                    </div>
+                    <div className="bg-white/10 rounded-lg p-2.5">
+                      <h4 className="text-xs font-medium text-white/90 mb-0.5">Happy Hour</h4>
+                      <p className="text-white text-xs">10am-12pm & 3pm-7pm daily</p>
+                    </div>
+                  </div>
                 </div>
 
-                <div>
-                  <h4 className="text-sm font-medium text-white/90 mb-1">Drink Special</h4>
-                  <p className="text-white text-sm">{snapshot.drinkSpecial}</p>
-                </div>
-
-                <div>
-                  <h4 className="text-sm font-medium text-white/90 mb-1">Happy Hour</h4>
-                  <p className="text-white text-sm">10am-12pm & 3pm-7pm daily</p>
-                </div>
-
+                {/* Events Today */}
                 {snapshot.events.length > 0 && (
                   <div>
-                    <h4 className="text-sm font-medium text-white/90 mb-2">Events Today</h4>
-                    <div className="space-y-1">
+                    <h3 className="text-base font-semibold text-white mb-3 flex items-center">
+                      <span className="text-purple-400 mr-2">Events Today</span>
+                    </h3>
+                    <div className="space-y-2">
                       {snapshot.events.map((event, index) => (
-                        <div key={index} className="flex items-center text-sm text-gray-300">
-                          <span className="text-xs text-gray-400 mr-2">{getTypeIcon(event.type)}</span>
-                          <span className="flex-1">{event.title}</span>
-                          {event.time && (
-                            <span className="text-xs text-gray-400 ml-2">{event.time}</span>
-                          )}
+                        <div key={index} className="bg-white/15 rounded-lg p-3 hover:bg-white/20 transition-colors border border-white/10">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <div className="flex items-center mb-1.5">
+                                <span className={`text-xs px-2 py-0.5 rounded-full mr-2 ${getTypeColor(event.type)} bg-white/20 font-medium`}>
+                                  {getTypeIcon(event.type)}
+                                </span>
+                                {event.time && (
+                                  <span className="text-xs text-gray-300 bg-white/10 px-2 py-0.5 rounded font-medium">
+                                    {event.time}
+                                  </span>
+                                )}
+                              </div>
+                              <h4 className="text-white font-semibold text-xs mb-0.5">{event.title}</h4>
+                              <p className="text-gray-200 text-xs leading-relaxed">{event.description}</p>
+                            </div>
+                          </div>
                         </div>
                       ))}
                     </div>
                   </div>
                 )}
+
+                {/* Quick Actions */}
+                <div className="pt-2">
+                  <a 
+                    href="/events" 
+                    className="inline-flex items-center text-sm text-green-400 hover:text-green-300 transition-colors"
+                  >
+                    View All Events
+                    <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </a>
+                </div>
               </div>
             </div>
           </div>

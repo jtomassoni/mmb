@@ -52,29 +52,10 @@ async function addVercelDomain() {
       console.log(`✅ Created domain: ${domain.hostname}`)
     }
 
-    // Also add the platform domain
-    const platformDomain = await prisma.domain.findFirst({
-      where: {
-        hostname: 'www.byte-by-bite.com'
-      }
-    })
-
-    if (!platformDomain) {
-      await prisma.domain.create({
-        data: {
-          hostname: 'www.byte-by-bite.com',
-          siteId: site.id, // Temporary - will be updated when platform site is created
-          status: 'ACTIVE',
-          provider: 'VERCEL'
-        }
-      })
-      console.log('✅ Created platform domain entry')
-    }
-
     console.log('🎉 Domain setup completed!')
     console.log('📝 Next steps:')
     console.log('   1. Test mmb-five.vercel.app - should show Monaghan\'s site')
-    console.log('   2. Test www.byte-by-bite.com/resto-admin - should show superadmin dashboard')
+    console.log('   2. Test mmb-five.vercel.app/admin - should show admin dashboard')
 
   } catch (error) {
     console.error('❌ Error adding domain:', error)

@@ -426,6 +426,7 @@ export default function SettingsPage() {
     }
   }
 
+
   // Helper component for displaying field errors
   const FieldError = ({ fieldName }: { fieldName: string }) => {
     const errors = siteErrors[fieldName.toLowerCase()]
@@ -482,22 +483,31 @@ export default function SettingsPage() {
       <AdminSubNav />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <div className="mb-10">
+        <div className="mb-6">
           <div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-3">Company Info & Settings</h1>
-            <p className="text-lg text-gray-600 max-w-3xl">Manage your business information, hours, and system settings. Changes here will be reflected on your public website.</p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Company Info & Settings</h1>
+            <p className="text-sm text-gray-600 max-w-3xl">Manage your business information, hours, and system settings. Changes here will be reflected on your public website.</p>
           </div>
         </div>
 
-        <div className="space-y-8">
+        <div className="space-y-6">
           {/* Company Information - Horizontal Layout */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6 border-b border-gray-200 pb-4">Company Information</h2>
-            <form onSubmit={handleSiteSettingsSave} className="space-y-6">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-5">
+            <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-200">
+              <h2 className="text-lg font-semibold text-gray-900">Company Information</h2>
+              <button
+                onClick={handleSiteSettingsSave}
+                disabled={savingSite}
+                className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors font-medium text-sm"
+              >
+                {savingSite ? 'Saving...' : 'Save'}
+              </button>
+            </div>
+            <form onSubmit={handleSiteSettingsSave} className="space-y-4">
               {/* Basic Info Row */}
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
                     Restaurant Name *
                   </label>
                   <input
@@ -505,14 +515,14 @@ export default function SettingsPage() {
                     required
                     value={siteSettings.name}
                     onChange={(e) => setSiteSettings({ ...siteSettings, name: e.target.value })}
-                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500 ${
+                    className={`w-full px-3 py-1.5 text-sm border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500 ${
                       siteErrors.name ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300'
                     }`}
                   />
                   <FieldError fieldName="name" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
                     Phone *
                   </label>
                   <input
@@ -520,21 +530,21 @@ export default function SettingsPage() {
                     required
                     value={siteSettings.phone}
                     onChange={(e) => setSiteSettings({ ...siteSettings, phone: e.target.value })}
-                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500 ${
+                    className={`w-full px-3 py-1.5 text-sm border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500 ${
                       siteErrors.phone ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300'
                     }`}
                   />
                   <FieldError fieldName="phone" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
                     Email
                   </label>
                   <input
                     type="email"
                     value={siteSettings.email}
                     onChange={(e) => setSiteSettings({ ...siteSettings, email: e.target.value })}
-                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500 ${
+                    className={`w-full px-3 py-1.5 text-sm border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500 ${
                       siteErrors.email ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300'
                     }`}
                   />
@@ -544,14 +554,14 @@ export default function SettingsPage() {
 
               {/* Address Row */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-xs font-medium text-gray-700 mb-1">
                   Address
                 </label>
                 <input
                   type="text"
                   value={siteSettings.address}
                   onChange={(e) => setSiteSettings({ ...siteSettings, address: e.target.value })}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500 ${
+                  className={`w-full px-3 py-1.5 text-sm border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500 ${
                     siteErrors.address ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300'
                   }`}
                 />
@@ -560,14 +570,14 @@ export default function SettingsPage() {
 
               {/* Description Row */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-xs font-medium text-gray-700 mb-1">
                   Description
                 </label>
                 <textarea
                   value={siteSettings.description}
                   onChange={(e) => setSiteSettings({ ...siteSettings, description: e.target.value })}
-                  rows={3}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500 ${
+                  rows={2}
+                  className={`w-full px-3 py-1.5 text-sm border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500 ${
                     siteErrors.description ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300'
                   }`}
                 />
@@ -575,15 +585,15 @@ export default function SettingsPage() {
               </div>
 
               {/* Location & Maps Row */}
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
                     Timezone
                   </label>
                   <select
                     value={siteSettings.timezone}
                     onChange={(e) => setSiteSettings({ ...siteSettings, timezone: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+                    className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                   >
                     <option value="America/Denver">Mountain Time (Denver)</option>
                     <option value="America/New_York">Eastern Time (New York)</option>
@@ -592,7 +602,7 @@ export default function SettingsPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
                     Latitude
                   </label>
                   <input
@@ -601,11 +611,11 @@ export default function SettingsPage() {
                     value={siteSettings.latitude || ''}
                     onChange={(e) => setSiteSettings({ ...siteSettings, latitude: e.target.value ? parseFloat(e.target.value) : undefined })}
                     placeholder="39.7392"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
+                    className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
                     Longitude
                   </label>
                   <input
@@ -614,33 +624,30 @@ export default function SettingsPage() {
                     value={siteSettings.longitude || ''}
                     onChange={(e) => setSiteSettings({ ...siteSettings, longitude: e.target.value ? parseFloat(e.target.value) : undefined })}
                     placeholder="-104.9903"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
+                    className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                   />
                 </div>
               </div>
 
               {/* Google Maps Integration */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
                     Google Maps Share URL
                   </label>
                   <input
                     type="url"
                     value={siteSettings.googleMapsUrl || ''}
                     onChange={(e) => setSiteSettings({ ...siteSettings, googleMapsUrl: e.target.value })}
-                    placeholder="https://maps.app.goo.gl/LA2AYUTPUreV9KyJ8"
-                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500 ${
+                    placeholder="https://maps.app.goo.gl/..."
+                    className={`w-full px-3 py-1.5 text-sm border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500 ${
                       siteErrors['google maps url'] ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300'
                     }`}
                   />
                   <FieldError fieldName="google maps url" />
-                  <p className="text-sm text-gray-500 mt-1">
-                    Paste the Google Maps share URL here for easy directions.
-                  </p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
                     Google Place ID (Optional)
                   </label>
                   <input
@@ -648,46 +655,42 @@ export default function SettingsPage() {
                     value={siteSettings.googlePlaceId || ''}
                     onChange={(e) => setSiteSettings({ ...siteSettings, googlePlaceId: e.target.value })}
                     placeholder="ChIJ..."
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
+                    className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                   />
-                  <p className="text-sm text-gray-500 mt-1">
-                    Advanced: Google Places API place ID for enhanced integration.
-                  </p>
                 </div>
-              </div>
-
-              <div className="pt-4 border-t border-gray-200">
-                <button
-                  type="submit"
-                  disabled={savingSite}
-                  className="bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors font-medium"
-                >
-                  {savingSite ? 'Saving...' : 'Save Company Information'}
-                </button>
               </div>
             </form>
           </div>
 
           {/* Hours Management Section */}
-          <div className="space-y-6">
+          <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-2xl font-semibold text-gray-900">Hours Management</h2>
-                <p className="text-gray-600 mt-1">Manage your regular business hours and special operating days</p>
+                <h2 className="text-lg font-semibold text-gray-900">Hours Management</h2>
+                <p className="text-sm text-gray-600 mt-1">Manage your regular business hours and special operating days</p>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
               {/* Regular Business Hours */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-6 border-b border-gray-200 pb-4">Regular Business Hours</h3>
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-5">
+                <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-200">
+                  <h3 className="text-base font-semibold text-gray-900">Regular Business Hours</h3>
+                  <button
+                    onClick={handleBusinessHoursSave}
+                    disabled={savingHours}
+                    className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors font-medium text-sm"
+                  >
+                    {savingHours ? 'Saving...' : 'Save'}
+                  </button>
+                </div>
 
-                <form onSubmit={handleBusinessHoursSave} className="space-y-2">
+                <form onSubmit={handleBusinessHoursSave} className="space-y-1.5">
                   {Object.entries(businessHours).map(([day, hours]) => (
-                    <div key={day} className="flex items-center gap-3 py-2 px-3 border border-gray-200 rounded hover:bg-gray-50 transition-colors">
+                    <div key={day} className="flex items-center gap-2 py-1.5 px-2 border border-gray-200 rounded hover:bg-gray-50 transition-colors">
                       {/* Day Name */}
-                      <div className="w-14 flex-shrink-0">
-                        <span className="font-medium text-gray-900 capitalize text-xs">{day}</span>
+                      <div className="w-12 flex-shrink-0">
+                        <span className="font-medium text-gray-900 capitalize text-xs">{day.slice(0, 3)}</span>
                       </div>
                       
                       {/* Open/Closed Toggle */}
@@ -777,36 +780,26 @@ export default function SettingsPage() {
                       )}
                     </div>
                   ))}
-
-                  <div className="pt-3 border-t border-gray-200">
-                    <button
-                      type="submit"
-                      disabled={savingHours}
-                      className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors font-medium text-sm"
-                    >
-                      {savingHours ? 'Saving...' : 'Save Business Hours'}
-                    </button>
-                  </div>
                 </form>
               </div>
 
               {/* Special Days */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <div className="border-b border-gray-200 pb-4 mb-6">
-                  <h3 className="text-lg font-semibold text-gray-900">Special Days</h3>
-                  <p className="text-sm text-gray-600 mt-1">
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-5">
+                <div className="border-b border-gray-200 pb-3 mb-4">
+                  <h3 className="text-base font-semibold text-gray-900">Special Days</h3>
+                  <p className="text-xs text-gray-600 mt-1">
                     Override regular hours for holidays, closures, or events
                   </p>
                 </div>
 
                 {/* Add Special Day Button */}
-                <div className="mb-6">
+                <div className="mb-4">
                   <button
                     type="button"
                     onClick={() => setShowAddSpecialDay(!showAddSpecialDay)}
-                    className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    className="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-md shadow-sm text-xs font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                   >
-                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                     </svg>
                     Add Special Day

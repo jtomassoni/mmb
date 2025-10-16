@@ -8,6 +8,6 @@ jest.mock('next/headers', () => ({
 }))
 
 // Mock environment variables
-process.env.PLATFORM_HOST = 'www.byte-by-bite.com'
+process.env.PLATFORM_HOST = 'mmb-five.vercel.app'
 process.env.NEXTAUTH_URL = 'http://localhost:3000'
 process.env.NEXTAUTH_SECRET = 'test-secret'

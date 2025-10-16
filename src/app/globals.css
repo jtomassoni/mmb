@@ -213,25 +213,272 @@ html {
   --foreground: #ffffff;
 }
 
+/* High Contrast Mode - Comprehensive Implementation */
 .high-contrast body {
   background: #000000 !important;
   color: #ffffff !important;
 }
 
-.high-contrast * {
+/* Reset backgrounds and text for better contrast */
+.high-contrast *:not(img):not(svg):not(path):not(circle):not(rect):not(line):not(polyline):not(polygon):not(picture):not(source):not(video):not(canvas):not(span:has(img)) {
   background-color: #000000 !important;
   color: #ffffff !important;
-  border-color: #ffffff !important;
 }
 
+/* Override for any element containing images */
+.high-contrast *:has(img) {
+  background-color: transparent !important;
+}
+
+/* Ensure image containers don't hide images */
+.high-contrast .relative:has(img),
+.high-contrast div:has(img),
+.high-contrast [class*="image"],
+.high-contrast picture,
+.high-contrast picture > * {
+  background-color: transparent !important;
+}
+
+/* Next.js Image component support - FORCE display */
+.high-contrast img,
+.high-contrast img[src],
+.high-contrast img[srcset] {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  background: transparent !important;
+  max-width: 100% !important;
+  height: auto !important;
+}
+
+/* Image wrappers - all variations */
+.high-contrast span:has(> img),
+.high-contrast span > img,
+.high-contrast div > img {
+  background-color: transparent !important;
+  display: block !important;
+}
+
+/* Gallery specific - force grid images to show */
+.high-contrast .relative img,
+.high-contrast .overflow-hidden img,
+.high-contrast .columns-1 img,
+.high-contrast .columns-2 img,
+.high-contrast .columns-3 img,
+.high-contrast .columns-4 img,
+.high-contrast [class*="columns-"] img,
+.high-contrast .break-inside-avoid img,
+.high-contrast .group img {
+  visibility: visible !important;
+  display: block !important;
+  opacity: 1 !important;
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+/* Gallery masonry layout containers */
+.high-contrast .columns-1,
+.high-contrast .columns-2,
+.high-contrast .columns-3,
+.high-contrast .columns-4,
+.high-contrast [class*="columns-"] {
+  background: transparent !important;
+}
+
+.high-contrast .break-inside-avoid {
+  background: transparent !important;
+}
+
+/* Links - Yellow for high visibility */
 .high-contrast a {
   color: #ffff00 !important;
   text-decoration: underline !important;
+  text-decoration-thickness: 2px !important;
 }
 
+.high-contrast a:hover {
+  color: #ffff66 !important;
+  text-decoration-thickness: 3px !important;
+}
+
+/* Buttons - White background with black text */
 .high-contrast button {
   background-color: #ffffff !important;
   color: #000000 !important;
+  border: 3px solid #ffffff !important;
+  font-weight: 600 !important;
+}
+
+.high-contrast button:hover {
+  background-color: #ffff00 !important;
+  color: #000000 !important;
+  border-color: #ffff00 !important;
+}
+
+/* Headers and Navigation */
+.high-contrast header {
+  background: #000000 !important;
+  border-color: #ffffff !important;
+  border-width: 3px !important;
+}
+
+.high-contrast nav a {
+  background-color: #000000 !important;
+  border: 2px solid #ffffff !important;
+  padding: 8px 12px !important;
+}
+
+/* Cards and containers */
+.high-contrast .bg-white,
+.high-contrast .bg-gray-50,
+.high-contrast .bg-gray-100,
+.high-contrast [class*="bg-"],
+.high-contrast [class*="backdrop-"] {
+  background: #000000 !important;
+  border: 2px solid #ffffff !important;
+}
+
+/* Forms */
+.high-contrast input,
+.high-contrast textarea,
+.high-contrast select {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  border: 3px solid #ffffff !important;
+}
+
+.high-contrast input:focus,
+.high-contrast textarea:focus,
+.high-contrast select:focus {
+  border-color: #ffff00 !important;
+  outline: 3px solid #ffff00 !important;
+}
+
+/* Images - maintain visibility and don't override */
+.high-contrast img:not([data-accessibility-dropdown] img) {
+  border: 2px solid #ffffff !important;
+  /* Remove filters that might hide images */
+  filter: none !important;
+  /* Ensure images display properly */
+  background-color: transparent !important;
+  /* Force content to display */
+  content: normal !important;
+}
+
+/* Hero sections */
+.high-contrast section[class*="hero"],
+.high-contrast section[class*="min-h"] {
+  background: #000000 !important;
+}
+
+/* Overlays and shadows - remove them */
+.high-contrast [class*="shadow"],
+.high-contrast [class*="backdrop-blur"],
+.high-contrast .absolute.inset-0 {
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+/* Status indicators and badges */
+.high-contrast [class*="bg-green"],
+.high-contrast [class*="bg-blue"],
+.high-contrast [class*="bg-red"],
+.high-contrast [class*="bg-yellow"],
+.high-contrast [class*="bg-purple"],
+.high-contrast [class*="bg-orange"],
+.high-contrast [class*="bg-amber"] {
+  background-color: #000000 !important;
+  border: 2px solid #ffff00 !important;
+}
+
+/* Text colors for emphasis */
+.high-contrast [class*="text-green"],
+.high-contrast [class*="text-blue"],
+.high-contrast [class*="text-red"],
+.high-contrast [class*="text-yellow"],
+.high-contrast [class*="text-purple"],
+.high-contrast [class*="text-orange"],
+.high-contrast [class*="text-amber"],
+.high-contrast [class*="text-gray"] {
+  color: #ffffff !important;
+}
+
+/* Headings - make them stand out */
+.high-contrast h1,
+.high-contrast h2,
+.high-contrast h3,
+.high-contrast h4,
+.high-contrast h5,
+.high-contrast h6 {
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  text-decoration: underline !important;
+  text-decoration-color: #ffff00 !important;
+  text-decoration-thickness: 2px !important;
+  text-underline-offset: 4px !important;
+}
+
+/* Focus states - highly visible */
+.high-contrast *:focus {
+  outline: 4px solid #ffff00 !important;
+  outline-offset: 2px !important;
+}
+
+/* Borders for all interactive elements */
+.high-contrast [role="button"],
+.high-contrast [class*="cursor-pointer"],
+.high-contrast [onclick] {
+  border: 2px solid #ffffff !important;
+}
+
+/* SVG icons */
+.high-contrast svg {
+  filter: invert(1) !important;
+}
+
+/* Modal close button - X icon */
+.high-contrast button svg,
+.high-contrast .fixed svg {
+  filter: drop-shadow(0 0 3px #ffff00) !important;
+  stroke: #ffffff !important;
+  stroke-width: 3 !important;
+}
+
+/* Close button specifically */
+.high-contrast .absolute svg {
+  filter: drop-shadow(0 0 3px #ffff00) drop-shadow(0 0 5px #ffff00) !important;
+  stroke: #ffffff !important;
+  stroke-width: 3 !important;
+}
+
+/* Accessibility icon button - yellow border */
+.high-contrast button[aria-label*="Accessibility"],
+.high-contrast button[data-accessibility-dropdown] {
+  border: 3px solid #ffff00 !important;
+  background: transparent !important;
+}
+
+/* Accessibility icon image - make it visible */
+.high-contrast button[aria-label*="Accessibility"] img,
+.high-contrast [data-accessibility-dropdown] img {
+  filter: invert(1) brightness(2) !important;
+  background: transparent !important;
+  border: none !important;
+}
+
+/* Ensure text is always readable */
+.high-contrast span,
+.high-contrast p,
+.high-contrast li,
+.high-contrast td,
+.high-contrast th {
+  color: #ffffff !important;
+}
+
+/* Menu items and dropdowns */
+.high-contrast [role="menu"],
+.high-contrast [role="menuitem"] {
+  background-color: #000000 !important;
   border: 2px solid #ffffff !important;
 }
 
@@ -330,7 +577,4 @@ a {
   text-decoration: underline;
 }
 
-/* High contrast link styles */
-.high-contrast a {
-  text-decoration: underline !important;
-}
+/* High contrast link styles are defined above in the comprehensive section */

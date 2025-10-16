@@ -1,31 +1,13 @@
 import { MetadataRoute } from 'next'
 import { headers } from 'next/headers'
-import { getSiteByHostname, isPlatformHost } from '../lib/site'
+import { getSiteByHostname } from '../lib/site'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const headersList = await headers()
   const hostname = headersList.get('host') || 'localhost:3000'
   const baseUrl = `https://${hostname}`
   
-  // Platform host gets different sitemap
-  if (isPlatformHost(hostname)) {
-    return [
-      {
-        url: baseUrl,
-        lastModified: new Date(),
-        changeFrequency: 'daily',
-        priority: 1,
-      },
-      {
-        url: `${baseUrl}/resto-admin`,
-        lastModified: new Date(),
-        changeFrequency: 'weekly',
-        priority: 0.8,
-      },
-    ]
-  }
-
-  // Try to get site data for tenant domains
+  // Try to get site data
   const site = await getSiteByHostname(hostname)
   
   if (!site) {
@@ -40,7 +22,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ]
   }
 
-  // Build sitemap for active site
+  // Build sitemap for Monaghan's site
   const sitemapEntries: MetadataRoute.Sitemap = [
     {
       url: baseUrl,

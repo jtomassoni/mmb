@@ -10,8 +10,9 @@ export default function VisitPage() {
               Denver's Oldest Bar
             </h1>
             <p className="text-xl text-amber-100 max-w-3xl mx-auto">
-              Since 1893, Monaghan's has been the heart of Denver's historic district, 
-              serving generations with authentic Irish hospitality and unwavering community spirit.
+              Since 1893, Monaghan's has been Denver's favorite spot for good drinks, 
+              great food, and even better times. Come hang out, watch the game, 
+              or belt out your favorite song at karaoke night!
             </p>
           </div>
         </div>
@@ -22,26 +23,25 @@ export default function VisitPage() {
         {/* Story Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-20">
           <div>
-            <h2 className="text-4xl font-bold text-gray-900 mb-6">
-              A Legacy of Community
-            </h2>
+              <h2 className="text-4xl font-bold text-gray-900 mb-6">
+                A Place Where Everyone Belongs
+              </h2>
             <div className="space-y-6 text-lg text-gray-700 leading-relaxed">
               <p>
-                When Monaghan's first opened its doors in 1893, Denver was still a frontier town 
-                finding its way. The bar quickly became more than just a place to drink—it became 
-                a gathering place for miners, railroad workers, and families building the city we 
-                know today.
+                Sure, we've been around since 1893, but that's not why people keep coming back. 
+                Monaghan's is where you come to unwind after work, cheer on your team, 
+                or show off your singing skills on karaoke night.
               </p>
               <p>
-                Through the Great Depression, two World Wars, and countless changes to the city 
-                around us, Monaghan's has remained a constant. Our walls have heard the stories 
-                of generations, from the miners who struck gold to the tech workers who call 
-                Denver home today.
+                Whether you're here for our famous fish and chips, a cold beer during happy hour, 
+                or to dominate trivia night, you'll find exactly what you're looking for. 
+                Our pool tables are always ready, our kitchen stays open late, 
+                and our bartenders know how to make your drink just right.
               </p>
               <p>
-                Today, under minority woman ownership, we continue that tradition of welcoming 
-                everyone who walks through our doors. We're not just preserving history—we're 
-                writing the next chapter of Denver's story, one pint at a time.
+                Under minority woman ownership, we're proud to be Denver's oldest bar 
+                while staying true to what makes a great neighborhood spot: 
+                good food, cold drinks, and great company.
               </p>
             </div>
           </div>
@@ -66,30 +66,31 @@ export default function VisitPage() {
               <div className="text-center text-gray-500">
                 <div className="text-4xl mb-4">🏛️</div>
                 <p className="text-lg font-medium">Current Interior</p>
-                <p className="text-sm">Preserving the authentic atmosphere</p>
+                <p className="text-sm">Pool tables, bar, and dining area</p>
               </div>
             </div>
           </div>
           
           <div className="order-1 lg:order-2">
             <h2 className="text-4xl font-bold text-gray-900 mb-6">
-              Honoring Our Heritage
+              What Makes Us Special
             </h2>
             <div className="space-y-6 text-lg text-gray-700 leading-relaxed">
               <p>
-                As Denver's oldest continuously operating bar, we take our responsibility 
-                to preserve history seriously. Every detail—from the original mahogany bar 
-                to the vintage fixtures—tells a story of the city's evolution.
+                We're not trying to be fancy - we're trying to be your favorite bar. 
+                That means great food that hits the spot, drinks that don't break the bank, 
+                and entertainment that keeps you coming back.
               </p>
               <p>
-                Our commitment goes beyond maintaining the building. We honor the spirit 
-                of those who came before us by creating a space where everyone feels welcome, 
-                regardless of background or circumstance. This is the Monaghan's way.
+                Our pool tables are always busy, our karaoke nights are legendary, 
+                and our trivia nights bring out the competitive spirit in everyone. 
+                Plus, we've got all the games on TV and a patio that's perfect for 
+                those Denver summer nights.
               </p>
               <p>
-                Under minority woman leadership, we're proud to continue this legacy while 
-                ensuring Monaghan's remains a beacon of inclusivity and community in Denver's 
-                historic district.
+                The fact that we've been here since 1893? That's just proof we know 
+                what we're doing. We've seen Denver change, but we've stayed true 
+                to what makes a great neighborhood bar: good times and good people.
               </p>
             </div>
           </div>
@@ -105,7 +106,7 @@ export default function VisitPage() {
               <div className="text-5xl mb-4">🏛️</div>
               <h3 className="text-xl font-semibold text-gray-900 mb-3">Historic Authenticity</h3>
               <p className="text-gray-600">
-                Denver's oldest bar, preserving 130+ years of history and tradition
+                Denver's oldest bar, serving Denver for 130+ years
               </p>
             </div>
             <div className="text-center">

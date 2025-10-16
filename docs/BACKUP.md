@@ -1,6 +1,6 @@
 # Backup & Recovery System
 
-This document describes the backup and recovery system for the Monaghan's Midnight Smash platform.
+This document describes the backup and recovery system for Monaghan's Bar & Grill website.
 
 ## Overview
 

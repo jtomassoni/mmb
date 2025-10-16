@@ -65,7 +65,7 @@ export function Hero({
   return (
     <header 
       role="banner" 
-      className="relative min-h-screen flex items-center justify-center overflow-hidden"
+      className="relative min-h-[calc(100vh-3.5rem)] flex items-center justify-center overflow-hidden"
     >
       {/* Background Media */}
       <div className="absolute inset-0 z-0">

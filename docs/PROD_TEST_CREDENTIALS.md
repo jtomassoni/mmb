@@ -1,38 +1,34 @@
-# Production Test Credentials
+# Production Credentials
 
-This document contains test credentials for production deployment testing.
+This document contains credentials for production deployment.
 
-## Test Users
+## Users
 
 All users have the password: **`test`**
 
 ### 1. Super Admin
-- **Email:** `superadmin`
-- **Name:** Super Admin
+- **Username:** `jt`
+- **Password:** `test`
 - **Role:** SUPERADMIN
 - **Access:** Full access to all features (single-tenant mode)
-- **Use Case:** Testing superadmin features, site management, analytics
 
 ### 2. Restaurant Owner
-- **Email:** `owner`
-- **Name:** Monaghan Owner
+- **Username:** `owner`
+- **Password:** `test`
 - **Role:** OWNER
 - **Access:** Full access to Monaghan's Bar & Grill site
-- **Use Case:** Testing owner-level features, self-serve editing, analytics
 
 ### 3. Restaurant Manager
-- **Email:** `manager`
-- **Name:** Restaurant Manager
+- **Username:** `manager`
+- **Password:** `test`
 - **Role:** MANAGER
 - **Access:** Limited access to Monaghan's Bar & Grill site
-- **Use Case:** Testing manager-level features, content management
 
 ### 4. Restaurant Staff
-- **Email:** `staff`
-- **Name:** Restaurant Staff
+- **Username:** `staff`
+- **Password:** `test`
 - **Role:** STAFF
 - **Access:** Read-only access to Monaghan's Bar & Grill site
-- **Use Case:** Testing staff-level features, viewing content
 
 ## Sample Data
 
@@ -41,7 +37,7 @@ The seed script creates:
 - **Site:** Monaghan's Bar & Grill (`monaghans-bargrill`)
 - **Events:** Live Music Friday, Trivia Night
 - **Specials:** Monday Burger Special, Happy Hour
-- **Memberships:** All users (except superadmin) are members of Monaghan's site
+- **Memberships:** All users are members of Monaghan's site
 
 ## Running the Seed Script
 
@@ -56,8 +52,9 @@ npx tsx prisma/seed.ts
 
 ## Notes
 
-- All passwords are set to `test` for easy testing
+- All passwords are set to `test`
+- Usernames follow a simple first-name pattern (no email addresses needed)
 - Users are created with proper role-based access
 - Sample data provides realistic content for testing
 - Multi-tenant features have been disabled - this is now a single-tenant CMS
-- Superadmin has full access but stays within the single site context
+- For new users, follow the pattern: `firstname` or `first_last` for the username field

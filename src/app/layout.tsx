@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import "./theme.css";
 import { Providers } from "../components/providers";
+import { ThemeProvider } from "../components/theme-provider";
 import { ConditionalHeader } from "../components/conditional-header";
 import { getSiteData } from "../lib/site-data";
 
@@ -40,10 +42,12 @@ export default async function RootLayout({
         suppressHydrationWarning={true}
       >
         <Providers>
-          <ConditionalHeader />
-          <main id="main-content" tabIndex={-1}>
-            {children}
-          </main>
+          <ThemeProvider>
+            <ConditionalHeader />
+            <main id="main-content" tabIndex={-1}>
+              {children}
+            </main>
+          </ThemeProvider>
           <footer className="bg-gray-800 text-white py-4 px-6 mt-auto">
             <div className="max-w-7xl mx-auto">
               <div className="flex flex-col md:flex-row justify-between items-center space-y-3 md:space-y-0">
@@ -99,14 +103,6 @@ export default async function RootLayout({
                       </svg>
                     </a>
                   </div>
-                  
-                  <a 
-                    href="/login" 
-                    className="text-sm hover:underline hover:text-green-400 transition-all duration-300"
-                    aria-label="Owner / Staff Login"
-                  >
-                    Owner / Staff Login
-                  </a>
                 </div>
               </div>
             </div>

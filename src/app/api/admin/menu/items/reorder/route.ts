@@ -31,6 +31,23 @@ export async function POST(request: NextRequest) {
       }
     })
 
+    // Actually update the sortOrder for each item in the database
+    console.log('Backend updating sortOrders:', reorderedItems.map((item: any) => ({ 
+      id: item.id.substring(0, 8), 
+      sortOrder: item.sortOrder 
+    })))
+    
+    await Promise.all(
+      reorderedItems.map((item: any) =>
+        prisma.menuItem.update({
+          where: { id: item.id },
+          data: { sortOrder: item.sortOrder }
+        })
+      )
+    )
+    
+    console.log('✓ SortOrders updated successfully')
+
     await logAuditEvent({
       action: 'REORDER',
       resource: 'menu',

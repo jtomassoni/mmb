@@ -1,0 +1,203 @@
+/* Theme CSS Custom Properties */
+:root {
+  /* Default theme (Irish Pub) */
+  --color-primary: #8B4513;
+  --color-secondary: #2F5233;
+  --color-accent: #D4AF37;
+  --color-background: #FAF9F6;
+  --color-surface: #FFFFFF;
+  --color-text: #1C1C1C;
+  --color-text-secondary: #4A5568;
+  --color-border: #D4C5B9;
+  --color-hover: #A0DAA0;
+  --color-success: #2F5233;
+  --color-warning: #D4AF37;
+  --color-error: #C41E3A;
+  
+  --font-heading: Georgia, serif;
+  --font-body: system-ui, sans-serif;
+  
+  --border-radius: 0.375rem;
+  --shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Theme-aware utility classes */
+.theme-primary {
+  background-color: var(--color-primary);
+  color: var(--color-surface);
+}
+
+.theme-primary:hover {
+  background-color: var(--color-secondary);
+}
+
+.theme-secondary {
+  background-color: var(--color-secondary);
+  color: var(--color-surface);
+}
+
+.theme-accent {
+  background-color: var(--color-accent);
+  color: var(--color-surface);
+}
+
+.theme-surface {
+  background-color: var(--color-surface);
+  color: var(--color-text);
+}
+
+.theme-background {
+  background-color: var(--color-background);
+}
+
+.theme-text {
+  color: var(--color-text);
+}
+
+.theme-text-secondary {
+  color: var(--color-text-secondary);
+}
+
+.theme-border {
+  border-color: var(--color-border);
+}
+
+.theme-hover:hover {
+  background-color: var(--color-hover);
+}
+
+.theme-success {
+  background-color: var(--color-success);
+  color: var(--color-surface);
+}
+
+.theme-warning {
+  background-color: var(--color-warning);
+  color: var(--color-surface);
+}
+
+.theme-error {
+  background-color: var(--color-error);
+  color: var(--color-surface);
+}
+
+/* Theme-aware button styles */
+.btn-theme-primary {
+  background-color: var(--color-primary);
+  color: var(--color-surface);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-theme-primary:hover {
+  background-color: var(--color-secondary);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+.btn-theme-secondary {
+  background-color: var(--color-surface);
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-theme-secondary:hover {
+  background-color: var(--color-hover);
+  transform: translateY(-1px);
+}
+
+.btn-theme-accent {
+  background-color: var(--color-accent);
+  color: var(--color-surface);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-theme-accent:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+/* Theme-aware input styles */
+.input-theme {
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  transition: all 0.2s ease-in-out;
+}
+
+.input-theme:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
+}
+
+/* Theme-aware card styles */
+.card-theme {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  color: var(--color-text);
+}
+
+/* Theme-aware navigation styles */
+.nav-theme {
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+
+.nav-link-theme {
+  color: var(--color-text-secondary);
+  transition: color 0.2s ease-in-out;
+}
+
+.nav-link-theme:hover {
+  color: var(--color-primary);
+  background-color: var(--color-hover);
+}
+
+/* Theme-aware status indicators */
+.status-success {
+  background-color: var(--color-success);
+  color: var(--color-surface);
+}
+
+.status-warning {
+  background-color: var(--color-warning);
+  color: var(--color-surface);
+}
+
+.status-error {
+  background-color: var(--color-error);
+  color: var(--color-surface);
+}
+
+/* Dark theme adjustments */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-background: #0f172a;
+    --color-surface: #1e293b;
+    --color-text: #f1f5f9;
+    --color-text-secondary: #94a3b8;
+    --color-border: #334155;
+  }
+}
+
+/* Apply theme fonts */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-background);
+  color: var(--color-text);
+}

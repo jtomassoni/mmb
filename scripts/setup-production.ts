@@ -41,31 +41,9 @@ async function setupProduction() {
       return
     }
 
-    // Verify platform site exists
-    const platformSite = await prisma.site.findFirst({
-      where: { slug: 'platform' }
-    })
-
-    if (!platformSite) {
-      console.log('🏗️  Creating platform site...')
-      await prisma.site.create({
-        data: {
-          name: 'Byte by Bite Platform',
-          slug: 'platform',
-          description: 'Multi-tenant restaurant platform',
-          address: 'Platform',
-          phone: '(555) 000-0000',
-          email: 'admin@byte-by-bite.com'
-        }
-      })
-      console.log('✅ Platform site created')
-    } else {
-      console.log('✅ Platform site exists')
-    }
-
     // Check if Monaghan's site exists
     const monaghansSite = await prisma.site.findFirst({
-      where: { slug: 'monaghans-bar-grill' }
+      where: { slug: 'monaghans-bargrill' }
     })
 
     if (!monaghansSite) {
@@ -73,7 +51,7 @@ async function setupProduction() {
       await prisma.site.create({
         data: {
           name: "Monaghan's Bar & Grill",
-          slug: "monaghans-bar-grill",
+          slug: "monaghans-bargrill",
           description: "Where Denver comes to eat, drink, and play",
           address: "1234 Main Street, Denver, CO 80202",
           phone: "(303) 555-0123",

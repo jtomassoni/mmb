@@ -44,7 +44,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { name, description, address, phone, email, timezone, latitude, longitude, googlePlaceId, googleMapsUrl } = body
+    const { name, description, address, phone, email, timezone, latitude, longitude, googlePlaceId, googleMapsUrl, homeTeam } = body
 
     // Validate all inputs
     const nameValidation = validateBusinessName(name)
@@ -100,7 +100,8 @@ export async function PUT(request: NextRequest) {
         latitude: latitude ? parseFloat(latitude) : null,
         longitude: longitude ? parseFloat(longitude) : null,
         googlePlaceId: googlePlaceId || null,
-        googleMapsUrl: mapsUrlValidation.sanitizedValue || null
+        googleMapsUrl: mapsUrlValidation.sanitizedValue || null,
+        homeTeam: homeTeam || null
       }
     })
 
@@ -161,6 +162,12 @@ export async function PUT(request: NextRequest) {
     if (existingSite.googleMapsUrl !== newGoogleMapsUrl) {
       changes.googleMapsUrl = newGoogleMapsUrl
       previousValues.googleMapsUrl = existingSite.googleMapsUrl
+    }
+    
+    const newHomeTeam = homeTeam || null
+    if (existingSite.homeTeam !== newHomeTeam) {
+      changes.homeTeam = newHomeTeam
+      previousValues.homeTeam = existingSite.homeTeam
     }
 
     // Only log if there were actual changes

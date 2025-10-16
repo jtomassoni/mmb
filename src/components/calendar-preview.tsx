@@ -215,12 +215,6 @@ export function CalendarPreview() {
             case 5: // Friday
               events = [
                 {
-                  title: "Happy Hour",
-                  time: "3:00 PM - 7:00 PM",
-                  description: "BOGO first round of wine, wells, or drafts",
-                  type: "drink"
-                },
-                {
                   title: "Friday Night Vibes",
                   time: "All Day",
                   description: "Weekend starts here! Open until 2 AM",
@@ -230,12 +224,6 @@ export function CalendarPreview() {
               break
             case 6: // Saturday
               events = [
-                {
-                  title: "Happy Hour",
-                  time: "3:00 PM - 7:00 PM",
-                  description: "BOGO first round of wine, wells, or drafts",
-                  type: "drink"
-                },
                 {
                   title: "Saturday Night",
                   time: "All Day",

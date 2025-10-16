@@ -1,24 +1,12 @@
 import { MetadataRoute } from 'next'
 import { headers } from 'next/headers'
-import { getSiteByHostname, isPlatformHost } from '../lib/site'
+import { getSiteByHostname } from '../lib/site'
 
 export default async function robots(): Promise<MetadataRoute.Robots> {
   const headersList = await headers()
   const hostname = headersList.get('host') || 'localhost:3000'
   
-  // Platform host gets different rules
-  if (isPlatformHost(hostname)) {
-    return {
-      rules: {
-        userAgent: '*',
-        allow: '/',
-        disallow: ['/resto-admin/', '/api/'],
-      },
-      sitemap: `https://${hostname}/sitemap.xml`,
-    }
-  }
-
-  // Try to get site data for tenant domains
+  // Try to get site data
   const site = await getSiteByHostname(hostname)
   const baseUrl = `https://${hostname}`
   

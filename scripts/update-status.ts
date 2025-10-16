@@ -24,7 +24,7 @@ type Task = {
   artifacts?: string[];
 };
 type StatusJson = {
-  meta: { lastUpdated: string; branch: string; platformHost?: string; tenants?: string[] };
+  meta: { lastUpdated: string; branch: string };
   tasks: Task[];
 };
 
@@ -72,9 +72,9 @@ function firstTodo(json: StatusJson): string {
     if (t.state !== 'done') {
       if (Array.isArray(t.subtasks) && t.subtasks.length) {
         const st = t.subtasks.find(s => s.state !== 'done');
-        if (st) return `${t.id}/${st.id} — ${st.title}`;
+        if (st) return `${t.id}/${st.id} - ${st.title}`;
       }
-      return `${t.id} — ${t.title}`;
+      return `${t.id} - ${t.title}`;
     }
   }
   return 'All tasks complete 🎉';
@@ -83,10 +83,10 @@ function firstTodo(json: StatusJson): string {
 function renderChecklist(tasks: Task[]) {
   const lines: string[] = [];
   for (const t of tasks) {
-    lines.push(`- [${t.state === 'done' ? 'x' : ' '}] ${t.id} — ${t.title}`);
+    lines.push(`- [${t.state === 'done' ? 'x' : ' '}] ${t.id} - ${t.title}`);
     if (t.subtasks && t.subtasks.length) {
       for (const s of t.subtasks) {
-        lines.push(`  - [${s.state === 'done' ? 'x' : ' '}] ${s.id} — ${s.title}`);
+        lines.push(`  - [${s.state === 'done' ? 'x' : ' '}] ${s.id} - ${s.title}`);
       }
     }
   }

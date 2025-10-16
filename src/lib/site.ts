@@ -64,6 +64,6 @@ export function getHostnameFromRequest(request: Request): string {
 }
 
 export function isPlatformHost(hostname: string): boolean {
-  const platformHost = process.env.PLATFORM_HOST || 'www.byte-by-bite.com'
+  const platformHost = process.env.PLATFORM_HOST || 'mmb-five.vercel.app'
   return hostname === platformHost.toLowerCase()
 }

@@ -10,8 +10,7 @@ const envPath = path.join(projectRoot, '.env.local');
 const requiredVars = [
   'DATABASE_URL',
   'NEXTAUTH_URL', 
-  'NEXTAUTH_SECRET',
-  'PLATFORM_HOST'
+  'NEXTAUTH_SECRET'
 ];
 
 // Optional environment variables (with helpful messages)

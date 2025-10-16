@@ -234,7 +234,7 @@ export default function SitePreview({ data, businessType }: SitePreviewProps) {
       <footer className="bg-gray-800 text-white p-8">
         <div className="text-center">
           <p className="text-gray-300">© 2025 {data.name || 'Your Restaurant'}. All rights reserved.</p>
-          <p className="text-gray-400 text-sm mt-2">Powered by Byte by Bite</p>
+          <p className="text-gray-400 text-sm mt-2">Monaghan's Bar & Grill</p>
         </div>
       </footer>
     </div>

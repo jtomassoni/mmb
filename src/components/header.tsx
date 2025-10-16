@@ -12,6 +12,7 @@ export function HeaderClient({ siteName }: { siteName?: string }) {
   const { data: session, status } = useSession()
   const { totalItems, isOpen, setIsOpen } = useCart()
   const [dynamicSiteName, setDynamicSiteName] = useState(siteName)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   // Fetch site data on client side
   useEffect(() => {
@@ -32,53 +33,55 @@ export function HeaderClient({ siteName }: { siteName?: string }) {
 
   return (
     <>
-      <header className="bg-white shadow-sm border-b">
+      <header className="bg-gradient-to-r from-amber-900 via-amber-800 to-amber-900 shadow-lg border-b-2 border-amber-700 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-14 sm:h-16">
             {/* Logo/Brand */}
             <div className="flex-shrink-0">
-              <Link href="/" className="text-lg sm:text-xl font-bold text-gray-900 hover:text-green-600 transition-all duration-300 hover:scale-105 hover:drop-shadow-lg relative group">
+              <Link href="/" className="text-lg sm:text-xl font-bold text-amber-100 hover:text-white transition-colors duration-300 font-serif">
                 <span className="hidden sm:inline">{dynamicSiteName || siteName || "Monaghan's Bar & Grill"}</span>
                 <span className="sm:hidden">{dynamicSiteName?.split(' ')[0] || "Monaghan's"}</span>
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-600 transition-all duration-300 group-hover:w-full"></span>
               </Link>
             </div>
 
             {/* Navigation - Hidden on very small screens */}
-            <nav className="hidden lg:flex space-x-2">
-              <Link href="/" className="relative text-gray-600 hover:text-green-600 px-3 py-2 text-sm font-medium transition-all duration-300 rounded-lg group overflow-hidden">
+            <nav className="hidden lg:flex space-x-1">
+              <Link href="/" className="relative text-amber-100 hover:text-white px-3 py-2 text-sm font-medium transition-all duration-300 rounded-md group overflow-hidden hover:bg-amber-700/30">
                 <span className="relative z-10">Home</span>
-                <div className="absolute inset-0 bg-gradient-to-r from-green-50 to-green-100 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <div className="absolute bottom-0 left-0 w-full h-0.5 bg-green-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
               </Link>
-              <Link href="/menu" className="relative text-gray-600 hover:text-green-600 px-3 py-2 text-sm font-medium transition-all duration-300 rounded-lg group overflow-hidden">
+              <Link href="/menu" className="relative text-amber-100 hover:text-white px-3 py-2 text-sm font-medium transition-all duration-300 rounded-md group overflow-hidden hover:bg-amber-700/30">
                 <span className="relative z-10">Menu</span>
-                <div className="absolute inset-0 bg-gradient-to-r from-green-50 to-green-100 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <div className="absolute bottom-0 left-0 w-full h-0.5 bg-green-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
               </Link>
-              <Link href="/events" className="relative text-gray-600 hover:text-green-600 px-3 py-2 text-sm font-medium transition-all duration-300 rounded-lg group overflow-hidden">
+              <Link href="/events" className="relative text-amber-100 hover:text-white px-3 py-2 text-sm font-medium transition-all duration-300 rounded-md group overflow-hidden hover:bg-amber-700/30">
                 <span className="relative z-10">Events</span>
-                <div className="absolute inset-0 bg-gradient-to-r from-green-50 to-green-100 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <div className="absolute bottom-0 left-0 w-full h-0.5 bg-green-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
               </Link>
-              <Link href="/about" className="relative text-gray-600 hover:text-green-600 px-3 py-2 text-sm font-medium transition-all duration-300 rounded-lg group overflow-hidden">
+              <Link href="/about" className="relative text-amber-100 hover:text-white px-3 py-2 text-sm font-medium transition-all duration-300 rounded-md group overflow-hidden hover:bg-amber-700/30">
                 <span className="relative z-10">About Us</span>
-                <div className="absolute inset-0 bg-gradient-to-r from-green-50 to-green-100 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <div className="absolute bottom-0 left-0 w-full h-0.5 bg-green-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
               </Link>
-              <Link href="/#contact" className="relative text-gray-600 hover:text-green-600 px-3 py-2 text-sm font-medium transition-all duration-300 rounded-lg group overflow-hidden">
+              <Link href="/#contact" className="relative text-amber-100 hover:text-white px-3 py-2 text-sm font-medium transition-all duration-300 rounded-md group overflow-hidden hover:bg-amber-700/30">
                 <span className="relative z-10">Contact</span>
-                <div className="absolute inset-0 bg-gradient-to-r from-green-50 to-green-100 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <div className="absolute bottom-0 left-0 w-full h-0.5 bg-green-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
-              </Link>
-              <Link href="/menu" className="relative bg-orange-600 text-white px-2 py-1.5 text-xs font-medium transition-all duration-300 rounded hover:bg-orange-700 hover:shadow-lg hover:shadow-orange-500/25 hover:scale-105 group overflow-hidden">
-                <span className="relative z-10">Order Online</span>
-                <div className="absolute inset-0 bg-gradient-to-r from-orange-500 to-orange-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </Link>
             </nav>
 
             {/* Right Side Actions */}
             <div className="flex items-center space-x-2 sm:space-x-4">
+              {/* Mobile menu button */}
+              <div className="lg:hidden">
+                <button
+                  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                  className="text-amber-100 hover:text-white p-2 border border-amber-600 rounded-md hover:bg-amber-700/30"
+                  aria-label="Toggle mobile menu"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    {mobileMenuOpen ? (
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    ) : (
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                    )}
+                  </svg>
+                </button>
+              </div>
+              
               {/* Accessibility Options - Hidden on small screens */}
               <div className="hidden sm:block">
                 <AccessibilityDropdown />
@@ -92,64 +95,57 @@ export function HeaderClient({ siteName }: { siteName?: string }) {
               ) : session ? (
                 /* Logged-in User Actions */
                 <div className="flex items-center space-x-2 sm:space-x-3">
-                  <span className="text-xs sm:text-sm text-gray-600 hidden md:block">
+                  <span className="text-xs sm:text-sm text-amber-100 font-medium hidden md:block">
                     {session.user?.name || session.user?.email}
                   </span>
                   <div className="flex items-center space-x-1 sm:space-x-2">
                     <a
                       href={getRedirectUrl(session.user?.role || 'STAFF')}
-                      className="relative bg-indigo-600 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-300 hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-500/25 hover:scale-105 group overflow-hidden"
+                      className="relative bg-blue-600 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-md text-xs sm:text-sm font-semibold transition-all duration-300 hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/30 hover:scale-105 border border-blue-500"
                     >
-                      <span className="relative z-10">Dashboard</span>
-                      <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-indigo-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      Dashboard
                     </a>
                     <button
                       onClick={() => signOut({ callbackUrl: window.location.origin + '/' })}
-                      className="relative text-xs sm:text-sm text-gray-500 hover:text-gray-700 px-2 py-1 sm:px-3 sm:py-2 rounded-lg hover:bg-gray-100 transition-all duration-300 hover:shadow-md group overflow-hidden"
+                      className="relative text-xs sm:text-sm text-amber-100 hover:text-white px-2 py-1 sm:px-3 sm:py-2 rounded-md hover:bg-amber-700/40 transition-all duration-300 font-medium border border-amber-600 hover:border-amber-500"
                     >
-                      <span className="relative z-10">Sign Out</span>
-                      <div className="absolute inset-0 bg-gradient-to-r from-gray-50 to-gray-100 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      Sign Out
                     </button>
                   </div>
                 </div>
               ) : (
-                /* Anonymous User Actions - Future Online Ordering */
+                /* Anonymous User Actions - Clean navigation */
                 <div className="flex items-center space-x-1 sm:space-x-2">
-                  {/* Cart Button - Disabled until online ordering is implemented */}
-                  <button 
-                    className="relative bg-gray-400 text-white px-2 py-1 rounded text-xs font-medium cursor-not-allowed opacity-60"
-                    disabled
-                    title="Online ordering coming soon!"
-                  >
-                    <span className="relative z-10 flex items-center space-x-1">
-                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01" />
-                      </svg>
-                      <span className="hidden sm:inline">Cart</span>
-                      <span className="text-xs">(Soon)</span>
-                    </span>
-                  </button>
-
-                  {/* Login Button - Disabled until online ordering is implemented */}
-                  <button
-                    className="relative bg-gray-400 text-white px-2 py-1 rounded text-xs font-medium cursor-not-allowed opacity-60"
-                    disabled
-                    title="Online ordering login coming soon!"
-                  >
-                    <span className="relative z-10 flex items-center space-x-1">
-                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
-                      </svg>
-                      <span className="hidden sm:inline">Login</span>
-                      <span className="text-xs">(Soon)</span>
-                    </span>
-                  </button>
+                  {/* Future: Add cart/login when online ordering is implemented */}
                 </div>
               )}
             </div>
           </div>
         </div>
       </header>
+
+      {/* Mobile Menu */}
+      {mobileMenuOpen && (
+        <div className="lg:hidden bg-gradient-to-b from-amber-800 to-amber-900 border-b-2 border-amber-700 shadow-lg">
+          <div className="px-4 py-2 space-y-1">
+            <Link href="/" className="block px-3 py-2 text-amber-100 hover:text-white hover:bg-amber-700/30 rounded-md border border-transparent hover:border-amber-600 transition-all duration-300">
+              Home
+            </Link>
+            <Link href="/menu" className="block px-3 py-2 text-amber-100 hover:text-white hover:bg-amber-700/30 rounded-md border border-transparent hover:border-amber-600 transition-all duration-300">
+              Menu
+            </Link>
+            <Link href="/events" className="block px-3 py-2 text-amber-100 hover:text-white hover:bg-amber-700/30 rounded-md border border-transparent hover:border-amber-600 transition-all duration-300">
+              Events
+            </Link>
+            <Link href="/about" className="block px-3 py-2 text-amber-100 hover:text-white hover:bg-amber-700/30 rounded-md border border-transparent hover:border-amber-600 transition-all duration-300">
+              About Us
+            </Link>
+            <Link href="/#contact" className="block px-3 py-2 text-amber-100 hover:text-white hover:bg-amber-700/30 rounded-md border border-transparent hover:border-amber-600 transition-all duration-300">
+              Contact
+            </Link>
+          </div>
+        </div>
+      )}
 
       {/* Cart Sidebar */}
       <CartSidebar isOpen={isOpen} onClose={() => setIsOpen(false)} />

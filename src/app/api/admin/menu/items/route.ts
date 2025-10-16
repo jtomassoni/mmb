@@ -14,7 +14,7 @@ export async function GET() {
     const items = await prisma.menuItem.findMany({
       orderBy: [
         { category: 'asc' },
-        { createdAt: 'desc' }
+        { sortOrder: 'asc' }
       ]
     })
 
@@ -35,6 +35,8 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { name, description, price, category, image, isAvailable } = body
 
+    console.log('Creating menu item:', { name, price, category, image })
+
     if (!name || !price || !category) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
@@ -47,23 +49,37 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid price format' }, { status: 400 })
     }
 
+    // Get the site ID (assume first site for now)
+    const site = await prisma.site.findFirst()
+    if (!site) {
+      return NextResponse.json({ error: 'No site found' }, { status: 500 })
+    }
+
     // Get the next sort order for this category
-    const lastItem = await prisma.menuItem.findFirst({
-      where: { category: category },
-      orderBy: { createdAt: 'desc' }
+    const maxSortOrder = await prisma.menuItem.findFirst({
+      where: { 
+        siteId: site.id,
+        category: category 
+      },
+      orderBy: { sortOrder: 'desc' },
+      select: { sortOrder: true }
     })
-    const nextSortOrder = 1 // Simple default for now
+    const nextSortOrder = (maxSortOrder?.sortOrder ?? 0) + 1
 
     const item = await prisma.menuItem.create({
       data: {
-        siteId: 'cmgfjti600004meoa7n4vy3o8', // Use actual site ID
+        siteId: site.id,
         name,
         description: description || '',
         price: numericPrice,
         category,
+        image: image || null,
+        sortOrder: nextSortOrder,
         isAvailable: isAvailable !== false
       }
     })
+
+    console.log('Created menu item:', { id: item.id, name: item.name, image: item.image })
 
     // Log the creation
     await logAuditEvent({

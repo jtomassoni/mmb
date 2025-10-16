@@ -1,12 +1,12 @@
-# 🚀 Deployment Guide - Vercel Multi-Tenant Restaurant Platform
+# 🚀 Deployment Guide - Monaghan's Bar & Grill Website
 
 ## Overview
-This is a multi-tenant Next.js application designed to run on Vercel, serving both the platform admin interface and individual restaurant websites.
+This is a Next.js application for Monaghan's Bar & Grill, designed to run on Vercel.
 
 ## Architecture
 ```
-Platform Host: www.byte-by-bite.com (Superadmin dashboard)
-Tenant Hosts: monaghansbargrill.com, [future-restaurants].com
+Main Host: mmb-five.vercel.app (Restaurant website)
+Admin Interface: mmb-five.vercel.app/admin (Admin dashboard)
 ```
 
 ## Vercel Configuration
@@ -16,7 +16,7 @@ Set these in your Vercel project settings:
 
 ```bash
 # Authentication
-NEXTAUTH_URL=https://www.byte-by-bite.com
+NEXTAUTH_URL=https://mmb-five.vercel.app
 NEXTAUTH_SECRET=your-secret-key-here
 
 # Database (SQLite for development, PostgreSQL for production)
@@ -29,13 +29,8 @@ VERCEL_PROJECT_ID=your-project-id
 
 ### Domain Setup Process
 
-1. **Platform Domain (www.byte-by-bite.com)**
+1. **Main Domain (mmb-five.vercel.app)**
    - Add to Vercel project settings
-   - Configure DNS: CNAME to `cname.vercel-dns.com`
-
-2. **Tenant Domains (monaghansbargrill.com)**
-   - Use the domain management UI at `/resto-admin/domains`
-   - Automatically adds to Vercel project via API
    - Configure DNS: CNAME to `cname.vercel-dns.com`
 
 ## Deployment Steps
@@ -67,11 +62,8 @@ npx prisma migrate deploy
 
 ### 4. Domain Configuration
 ```bash
-# Add platform domain
-vercel domains add www.byte-by-bite.com
-
-# Add tenant domains (or use UI)
-vercel domains add monaghansbargrill.com
+# Add main domain
+vercel domains add mmb-five.vercel.app
 ```
 
 ## Scaling Strategy

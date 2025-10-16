@@ -114,8 +114,8 @@ export default async function Home() {
       {/* Dynamic Hero Section */}
       <DynamicHero siteDescription={siteData?.description} siteName={siteData?.name} />
 
-      {/* Order Online Section */}
-      <section className="py-16 bg-gradient-to-br from-green-50 to-green-100">
+      {/* Order Online Section - Hidden for now */}
+      <section className="py-16 bg-gradient-to-br from-green-50 to-green-100 hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">Order Online</h2>
@@ -218,7 +218,7 @@ export default async function Home() {
                 What started as a simple bar has grown into a community hub where friends become family.
               </p>
               <p className="text-lg text-gray-600 mb-6">
-                We're more than just a bar and grill – we're where Denver comes to eat, drink, and play. 
+                We're where Denver comes to eat, drink, and play. 
                 From our famous burgers to our weekly poker nights, every dish and every event is crafted 
                 with the community in mind.
               </p>
@@ -310,17 +310,14 @@ export default async function Home() {
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="text-center">
-              <div className="text-3xl mb-2">🍺</div>
               <h3 className="font-semibold text-gray-900 mb-2">Great Atmosphere</h3>
               <p className="text-sm text-gray-600">Pool tables, karaoke, and friendly staff</p>
             </div>
             <div className="text-center">
-              <div className="text-3xl mb-2">🍔</div>
               <h3 className="font-semibold text-gray-900 mb-2">Amazing Food</h3>
               <p className="text-sm text-gray-600">Fresh ingredients, made to order</p>
             </div>
             <div className="text-center">
-              <div className="text-3xl mb-2">🎉</div>
               <h3 className="font-semibold text-gray-900 mb-2">Fun Events</h3>
               <p className="text-sm text-gray-600">Poker nights, trivia, and live music</p>
             </div>

@@ -1,11 +1,7 @@
 {
   "meta": {
     "lastUpdated": "2025-09-19T02:35:00.000Z",
-    "branch": "recovery/restart-20250918-1837",
-    "platformHost": "www.byte-by-bite.com",
-    "tenants": [
-      "monaghansbargrill.com"
-    ]
+    "branch": "recovery/restart-20250918-1837"
   },
   "tasks": [
     {

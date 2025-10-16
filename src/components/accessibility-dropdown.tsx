@@ -33,9 +33,21 @@ export function AccessibilityDropdown() {
       }
     }
 
+    // Handle click outside to close dropdown
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element
+      if (isOpen && !target.closest('[data-accessibility-dropdown]')) {
+        setIsOpen(false)
+      }
+    }
+
     if (isOpen) {
       document.addEventListener('keydown', handleKeyDown)
-      return () => document.removeEventListener('keydown', handleKeyDown)
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => {
+        document.removeEventListener('keydown', handleKeyDown)
+        document.removeEventListener('mousedown', handleClickOutside)
+      }
     }
   }, [isOpen])
 
@@ -127,21 +139,20 @@ export function AccessibilityDropdown() {
         aria-expanded={isOpen}
         aria-haspopup="true"
         title="Accessibility options"
+        data-accessibility-dropdown
       >
-        <svg 
-          className="w-5 h-5" 
-          fill="none" 
-          stroke="currentColor" 
-          viewBox="0 0 24 24"
+        {/* Accessibility icon from Freepik: https://www.freepik.com/icon/accessibility_1512642 */}
+        <img 
+          src="/accessibility-icon.png" 
+          alt="Accessibility" 
+          className="w-8 h-8 brightness-0 invert"
           aria-hidden="true"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
-        </svg>
+        />
       </button>
 
       {/* Dropdown Panel */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-64 bg-white border border-gray-300 rounded-lg shadow-lg p-4 z-50">
+        <div className="absolute right-0 mt-2 w-64 bg-white border border-gray-300 rounded-lg shadow-lg p-4 z-50" data-accessibility-dropdown>
           <h3 className="text-sm font-semibold text-gray-900 mb-3">Accessibility Options</h3>
           
           <div className="space-y-3">

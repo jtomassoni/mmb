@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -37,6 +37,7 @@ model User {
   password  String?  // For MVP testing
   role      Role     @default(STAFF)
   isActive  Boolean  @default(true)  // For enabling/disabling users
+  mustResetPassword Boolean @default(false) // Force password reset on next login
   disabledAt DateTime?  // When user was disabled
   disabledBy String?     // Who disabled the user
   disabledReason String? // Reason for disabling
@@ -65,6 +66,8 @@ model Site {
   longitude   Float?   // GPS longitude
   googlePlaceId String? // Google Places API place ID
   googleMapsUrl String? // Google Maps share URL
+  themeId      String?  // Selected theme ID
+  homeTeam     String?  // ESPN team ID for home team
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 

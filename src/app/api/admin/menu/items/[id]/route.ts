@@ -44,6 +44,7 @@ export async function PUT(
         description: description ?? existingItem.description,
         price: numericPrice,
         category: category ?? existingItem.category,
+        image: image !== undefined ? (image || null) : existingItem.image,
         isAvailable: isAvailable ?? existingItem.isAvailable,
       }
     })
@@ -71,6 +72,10 @@ export async function PUT(
     if (isAvailable !== undefined && isAvailable !== existingItem.isAvailable) {
       changes.isAvailable = isAvailable
       previousValues.isAvailable = existingItem.isAvailable
+    }
+    if (image !== undefined && image !== existingItem.image) {
+      changes.image = image
+      previousValues.image = existingItem.image
     }
 
     if (Object.keys(changes).length > 0) {

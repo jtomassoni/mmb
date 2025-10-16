@@ -11,7 +11,7 @@
 ### 🔐 Admin Login & CMS Optimization
 - [x] **COMPLETED**: Optimize CMS for admin login
 - [x] Implement role-based access control (RBAC) hierarchy:
-  - Superadmin: Can create/delete owners + all owner permissions
+  - Admin: Can create/delete users + all owner permissions
   - Owner: Full site management (same as superadmin except user management)
   - Admin: Limited permissions (TBD)
 - [x] Add user disable/enable functionality for billing issues
@@ -22,7 +22,7 @@
 - [x] Review current auth system in `src/lib/auth.ts`
 - [x] Update RBAC permissions in `src/lib/rbac.ts`
 - [x] Modify admin routes to respect role hierarchy
-- [x] Add user management interface for superadmins
+- [x] Add user management interface for admins
 - [x] Create user management API endpoints
 - [x] Add user status fields to database schema
 - [x] Update admin dashboard with role-based content
@@ -33,7 +33,7 @@
 - [x] Basic authentication system in place
 - [x] User management system implemented
 - [x] Role-based access control optimized
-- [x] Superadmin dashboard with user management
+- [x] Admin dashboard with user management
 - [x] User disable/enable functionality
 - [x] Database migration for user status fields
 - [x] Cart system implemented for future online ordering
