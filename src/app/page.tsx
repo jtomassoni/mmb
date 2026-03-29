@@ -1,594 +1,181 @@
-import { DynamicHero } from '../components/dynamic-hero';
-import { getSiteData } from '../lib/site-data';
-import { prisma } from '../lib/prisma';
+import type { ReactNode } from "react";
 
-export default async function Home() {
-  // Get site data from database
-  const siteData = await getSiteData()
-  
-  // Get business hours - handle case where database is not available during build
-  let businessHours: Array<{
-    dayOfWeek: number;
-    openTime: string | null;
-    closeTime: string | null;
-    isClosed: boolean;
-  }> = []
-  
-  // Get special days
-  let specialDays: Array<{
-    id: string;
-    date: Date;
-    reason: string;
-    closed: boolean;
-    openTime: string | null;
-    closeTime: string | null;
-  }> = []
-  
-  try {
-    if (siteData?.id) {
-      businessHours = await prisma.hours.findMany({
-        where: {
-          siteId: siteData.id
-        },
-        orderBy: { dayOfWeek: 'asc' }
-      })
-      
-      // Get upcoming special days (today and future)
-      const today = new Date()
-      today.setHours(0, 0, 0, 0)
-      
-      specialDays = await prisma.specialDay.findMany({
-        where: {
-          siteId: siteData.id,
-          date: {
-            gte: today
-          }
-        },
-        orderBy: { date: 'asc' }
-      })
-    }
-  } catch (error) {
-    console.error('Error fetching business hours and special days:', error)
-    // Provide default business hours if database is not available
-    businessHours = [
-      { dayOfWeek: 0, openTime: '10:00', closeTime: '21:00', isClosed: false }, // Sunday
-      { dayOfWeek: 1, openTime: '11:00', closeTime: '22:00', isClosed: false }, // Monday
-      { dayOfWeek: 2, openTime: '11:00', closeTime: '22:00', isClosed: false }, // Tuesday
-      { dayOfWeek: 3, openTime: '11:00', closeTime: '22:00', isClosed: false }, // Wednesday
-      { dayOfWeek: 4, openTime: '11:00', closeTime: '22:00', isClosed: false }, // Thursday
-      { dayOfWeek: 5, openTime: '11:00', closeTime: '23:00', isClosed: false }, // Friday
-      { dayOfWeek: 6, openTime: '10:00', closeTime: '23:00', isClosed: false }, // Saturday
-    ]
+import { SiteNav } from "@/components/site-nav";
+import { getSiteName } from "@/lib/site";
+
+const siteName = getSiteName();
+
+const doorDash = process.env.NEXT_PUBLIC_DOORDASH_URL?.trim() ?? "";
+
+const orderBtnBase =
+  "inline-flex min-h-[48px] w-full flex-1 cursor-pointer touch-manipulation items-center justify-center rounded-xl px-4 py-2.5 text-base font-extrabold leading-tight text-white shadow-md transition active:brightness-95 active:scale-[0.99] min-[480px]:text-lg sm:min-h-[64px] sm:rounded-2xl sm:px-5 sm:py-[1.1rem] sm:text-xl sm:shadow-lg sm:min-w-[220px] sm:flex-initial sm:hover:brightness-110 sm:active:scale-100";
+
+const menuCardLinkRing =
+  "text-inherit no-underline outline-none transition-[filter,transform] focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-black/80 active:brightness-[0.97] active:scale-[0.995]";
+
+function OrderableMenuCard({
+  href,
+  ariaLabel,
+  ringVariant,
+  className,
+  children,
+}: {
+  href: string | undefined;
+  ariaLabel: string;
+  ringVariant: "pink" | "cyan";
+  className: string;
+  children: ReactNode;
+}) {
+  const ring =
+    ringVariant === "pink"
+      ? "focus-visible:ring-[#ff2d95]"
+      : "focus-visible:ring-[#39f3ff]";
+
+  if (href) {
+    return (
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={`${className} ${menuCardLinkRing} ${ring}`}
+        aria-label={ariaLabel}
+      >
+        {children}
+      </a>
+    );
   }
 
-  // Helper function to format business hours
-  const formatBusinessHours = (hours: typeof businessHours) => {
-    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-    
-    return hours.map(hour => {
-      const dayName = dayNames[hour.dayOfWeek]
-      if (hour.isClosed) {
-        return `${dayName}: Closed`
-      }
-      if (hour.openTime && hour.closeTime) {
-        // Format time from "09:00" to "9:00 AM"
-        const formatTime = (time: string) => {
-          const [hours, minutes] = time.split(':')
-          const hourNum = parseInt(hours)
-          const ampm = hourNum >= 12 ? 'PM' : 'AM'
-          const displayHour = hourNum === 0 ? 12 : hourNum > 12 ? hourNum - 12 : hourNum
-          return `${displayHour}:${minutes} ${ampm}`
-        }
-        return `${dayName}: ${formatTime(hour.openTime)} - ${formatTime(hour.closeTime)}`
-      }
-      return `${dayName}: Hours not set`
-    })
-  }
-  
-  // JSON-LD structured data for restaurant
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Restaurant",
-    "name": siteData?.name || "Monaghan's Bar & Grill",
-    "description": siteData?.description || "Where Denver comes to eat, drink, and play",
-    "address": {
-      "@type": "PostalAddress",
-      "streetAddress": siteData?.address || "123 Main Street",
-      "addressLocality": "Denver",
-      "addressRegion": "CO",
-      "postalCode": "80202"
-    },
-    "telephone": siteData?.phone || "(303) 555-0123",
-    "email": siteData?.email || "info@monaghans.com",
-    "url": "https://monaghansbargrill.com",
-    "servesCuisine": "American",
-    "priceRange": "$$",
-    "openingHours": businessHours.length > 0 ? businessHours.map(hour => {
-      if (hour.isClosed) return null
-      if (hour.openTime && hour.closeTime) {
-        const dayNames = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
-        const dayName = dayNames[hour.dayOfWeek]
-        return `${dayName} ${hour.openTime}-${hour.closeTime}`
-      }
-      return null
-    }).filter(Boolean) : [
-      "Mo-Th 11:00-22:00",
-      "Fr-Sa 11:00-23:00", 
-      "Su 10:00-21:00"
-    ],
-    "amenityFeature": [
-      "Pool Tables",
-      "Karaoke",
-      "Live Entertainment",
-      "Full Bar"
-    ]
-  }
+  return <article className={className}>{children}</article>;
+}
 
+function OrderCTAs({ className = "" }: { className?: string }) {
   return (
-    <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-      {/* Preload critical images */}
-      <link rel="preload" as="image" href="/pics/hero.png" />
-      <link rel="preload" as="image" href="/pics/monaghans-billiards.jpg" />
-      <link rel="preload" as="image" href="/pics/monaghans-fish-n-chips.jpg" />
-      <div className="min-h-screen bg-gray-50">
-      {/* Special Hours Banner - Only show if today has special hours (not closed) */}
-      {specialDays.length > 0 && (() => {
-        const today = new Date()
-        today.setHours(0, 0, 0, 0)
-        const todayStr = today.toISOString().split('T')[0]
-        
-        const todaySpecialDay = specialDays.find(day => {
-          const [year, month, dayNum] = day.date.toISOString().split('T')[0].split('-').map(Number)
-          const dayDate = new Date(year, month - 1, dayNum)
-          return dayDate.toISOString().split('T')[0] === todayStr
-        })
-        
-        // Only show banner for special hours (not closures)
-        if (todaySpecialDay && !todaySpecialDay.closed) {
-          return (
-            <div className="bg-amber-600 text-white py-3 px-4">
-              <div className="max-w-7xl mx-auto text-center">
-                <p className="text-sm md:text-base font-medium">
-                  <svg className="inline w-5 h-5 mr-2 -mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <strong>Special Hours Today:</strong> {todaySpecialDay.reason} - Open {todaySpecialDay.openTime} to {todaySpecialDay.closeTime}
-                </p>
-              </div>
-            </div>
-          )
-        }
-        
-        return null
-      })()}
-      
-      <DynamicHero siteDescription={siteData?.description} siteName={siteData?.name} />
-
-      {/* Order Online Section - Hidden for now */}
-      <section className="py-16 bg-gradient-to-br from-green-50 to-green-100 hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Order Online</h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Get your favorite Monaghan's dishes delivered or ready for pickup
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            {/* Ordering Options */}
-            <div className="space-y-6">
-              <div className="bg-white p-8 rounded-lg shadow-lg">
-                <h3 className="text-2xl font-semibold text-gray-900 mb-6">How to Order</h3>
-                <div className="space-y-4">
-                  <div className="flex items-center space-x-4">
-                    <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center text-white font-bold text-lg">1</div>
-                    <div>
-                      <h4 className="font-semibold text-gray-900">Call Us</h4>
-                      <p className="text-gray-600">Speak directly with our staff</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-4">
-                    <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center text-white font-bold text-lg">2</div>
-                    <div>
-                      <h4 className="font-semibold text-gray-900">Place Your Order</h4>
-                      <p className="text-gray-600">Tell us what you'd like</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-4">
-                    <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center text-white font-bold text-lg">3</div>
-                    <div>
-                      <h4 className="font-semibold text-gray-900">Pick Up or Delivery</h4>
-                      <p className="text-gray-600">Ready in 15-20 minutes</p>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="mt-8 space-y-4">
-                  <a 
-                    href={`tel:${siteData?.phone?.replace(/\D/g, '') || '3035550123'}`}
-                    className="w-full bg-green-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-green-700 hover:shadow-lg transition-all duration-300 text-center block"
-                  >
-                    📞 Call Now: {siteData?.phone || "(303) 555-0123"}
-                  </a>
-                  <a 
-                    href="/menu"
-                    className="w-full bg-white text-green-600 px-8 py-4 rounded-lg font-semibold border-2 border-green-600 hover:bg-green-50 transition-all duration-300 text-center block"
-                  >
-                    📋 View Full Menu
-                  </a>
-                </div>
-              </div>
-            </div>
-            
-            {/* Popular Items Preview */}
-            <div className="space-y-6">
-              <h3 className="text-2xl font-semibold text-gray-900 mb-6">Popular Items</h3>
-              <div className="space-y-4">
-                <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h4 className="font-semibold text-gray-900">Monaghan's Famous Burger</h4>
-                      <p className="text-gray-600 text-sm">Juicy beef patty with lettuce, tomato, onion, and our special sauce</p>
-                    </div>
-                    <span className="text-green-600 font-bold">$12.99</span>
-                  </div>
-                </div>
-                <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h4 className="font-semibold text-gray-900">Fish & Chips</h4>
-                      <p className="text-gray-600 text-sm">Beer-battered cod with crispy fries and tartar sauce</p>
-                    </div>
-                    <span className="text-green-600 font-bold">$14.99</span>
-                  </div>
-                </div>
-                <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h4 className="font-semibold text-gray-900">Breakfast Biscuit</h4>
-                      <p className="text-gray-600 text-sm">Flaky biscuit with eggs, bacon, and cheese</p>
-                    </div>
-                    <span className="text-green-600 font-bold">$8.99</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Our Story Section */}
-      <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-4xl font-bold text-gray-900 mb-6">Our Story</h2>
-              <p className="text-lg text-gray-600 mb-6">
-                Monaghan's Bar & Grill has been Denver's neighborhood gathering place for over two decades. 
-                What started as a simple bar has grown into a community hub where friends become family.
-              </p>
-              <p className="text-lg text-gray-600 mb-6">
-                We're where Denver comes to eat, drink, and play. 
-                From our famous burgers to our weekly poker nights, every dish and every event is crafted 
-                with the community in mind.
-              </p>
-              <div className="space-y-4">
-                <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
-                    <span className="text-white text-sm">✓</span>
-                  </div>
-                  <span className="text-gray-700">Family-owned and operated</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
-                    <span className="text-white text-sm">✓</span>
-                  </div>
-                  <span className="text-gray-700">Fresh ingredients, made to order</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
-                    <span className="text-white text-sm">✓</span>
-                  </div>
-                  <span className="text-gray-700">Community events and entertainment</span>
-                </div>
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-4">
-                <img 
-                  src="/pics/monaghans-billiard-room.jpg" 
-                  alt="Monaghan's Billiard Room"
-                  className="w-full h-48 object-cover rounded-lg shadow-md"
-                />
-                <img 
-                  src="/pics/monaghans-patio.jpg" 
-                  alt="Monaghan's Patio"
-                  className="w-full h-32 object-cover rounded-lg shadow-md"
-                />
-              </div>
-              <div className="space-y-4 mt-8">
-                <img 
-                  src="/pics/monaghans-kareoke.jpg" 
-                  alt="Monaghan's Karaoke Night"
-                  className="w-full h-32 object-cover rounded-lg shadow-md"
-                />
-                <img 
-                  src="/pics/monaghans-billiards.jpg" 
-                  alt="Monaghan's Pool Tables"
-                  className="w-full h-48 object-cover rounded-lg shadow-md"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-
-      {/* Google Reviews CTA */}
-      <section className="py-16 bg-gradient-to-br from-blue-50 to-blue-100">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">Love Monaghan's?</h2>
-          <p className="text-xl text-gray-600 mb-8">
-            Help others discover our amazing food and atmosphere by leaving a review
-          </p>
-          
-          <div className="bg-white p-8 rounded-lg shadow-lg mb-8">
-            <div className="flex items-center justify-center mb-4">
-              <div className="flex text-yellow-400 text-2xl">
-                ★★★★★
-              </div>
-              <span className="ml-3 text-lg font-semibold text-gray-700">4.8 stars</span>
-            </div>
-            <p className="text-gray-600 mb-6">
-              Based on reviews from our amazing customers
-            </p>
-            <a 
-              href="https://www.google.com/search?q=Monaghan%27s+Bar+%26+Grill+Denver+CO+reviews"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-blue-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-blue-700 hover:shadow-lg transition-all duration-300"
-            >
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-              </svg>
-              Leave a Google Review
-            </a>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="text-center">
-              <h3 className="font-semibold text-gray-900 mb-2">Great Atmosphere</h3>
-              <p className="text-sm text-gray-600">Pool tables, karaoke, and friendly staff</p>
-            </div>
-            <div className="text-center">
-              <h3 className="font-semibold text-gray-900 mb-2">Amazing Food</h3>
-              <p className="text-sm text-gray-600">Fresh ingredients, made to order</p>
-            </div>
-            <div className="text-center">
-              <h3 className="font-semibold text-gray-900 mb-2">Fun Events</h3>
-              <p className="text-sm text-gray-600">Poker nights, trivia, and live music</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Location & Hours Section */}
-      <section id="contact" className="py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Visit Us</h2>
-            <p className="text-xl text-gray-600">Come experience the Monaghan's difference</p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-            {/* Location & Contact */}
-            <div className="bg-white p-6 rounded-lg shadow-lg flex flex-col">
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">Location & Contact</h3>
-              
-              <div className="space-y-6 flex-1">
-                <div className="flex items-start space-x-4">
-                  <div className="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                    <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-900 mb-2 text-sm">Address</h4>
-                    <a 
-                      href="https://www.google.com/maps/dir/?api=1&destination=3889+S+King+St,+Denver,+CO+80236"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-green-600 hover:text-green-700 font-medium text-sm hover:underline"
-                    >
-                      {siteData?.address || "3889 S King St, Denver, CO 80236"}
-                    </a>
-                  </div>
-                </div>
-                
-                <div className="flex items-start space-x-4">
-                  <div className="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                    <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-900 mb-2 text-sm">Phone</h4>
-                    <a href={`tel:${siteData?.phone?.replace(/\D/g, '') || '3035550123'}`} className="text-green-600 hover:text-green-700 font-medium text-sm">
-                      {siteData?.phone || "(303) 555-0123"}
-                    </a>
-                  </div>
-                </div>
-                
-                <div className="flex items-start space-x-4">
-                  <div className="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                    <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-900 mb-2 text-sm">Email</h4>
-                    <a href={`mailto:${siteData?.email || 'info@monaghans.com'}`} className="text-green-600 hover:text-green-700 text-sm">
-                      {siteData?.email || "info@monaghans.com"}
-                    </a>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="mt-6">
-                <a 
-                  href={`tel:${siteData?.phone?.replace(/\D/g, '') || '3035550123'}`}
-                  className="w-full bg-green-600 text-white px-4 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors text-center block"
-                >
-                  📞 Call Now: {siteData?.phone || "(303) 555-0123"}
-                </a>
-              </div>
-            </div>
-            
-            {/* Hours */}
-            <div className="bg-white p-6 rounded-lg shadow-lg">
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">Hours</h3>
-              
-              {/* Special Days Alert (show upcoming special days within 7 days) */}
-              {specialDays.length > 0 && (() => {
-                const now = new Date()
-                const sevenDaysFromNow = new Date(now)
-                sevenDaysFromNow.setDate(now.getDate() + 7)
-                
-                const upcomingSpecialDays = specialDays.filter(day => {
-                  const dayDate = new Date(day.date)
-                  return dayDate <= sevenDaysFromNow
-                })
-                
-                if (upcomingSpecialDays.length > 0) {
-                  return (
-                    <div className="mb-4 space-y-2">
-                      {upcomingSpecialDays.map(day => {
-                        // Parse date as local to avoid timezone issues
-                        const dateStr = day.date.toISOString().split('T')[0]
-                        const [year, month, dayNum] = dateStr.split('-').map(Number)
-                        const localDate = new Date(year, month - 1, dayNum)
-                        const formattedDate = localDate.toLocaleDateString('en-US', { 
-                          weekday: 'short', 
-                          month: 'short', 
-                          day: 'numeric' 
-                        })
-                        
-                        return (
-                          <div 
-                            key={day.id}
-                            className={`p-3 rounded-lg ${
-                              day.closed 
-                                ? 'bg-red-50 border border-red-200' 
-                                : 'bg-amber-50 border border-amber-200'
-                            }`}
-                          >
-                            <div className="flex items-start justify-between">
-                              <div className="flex-1">
-                                <p className={`font-semibold text-sm ${day.closed ? 'text-red-900' : 'text-amber-900'}`}>
-                                  {formattedDate}
-                                </p>
-                                <p className={`text-xs mt-1 ${day.closed ? 'text-red-700' : 'text-amber-700'}`}>
-                                  {day.reason}
-                                </p>
-                              </div>
-                              {day.closed ? (
-                                <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-red-100 text-red-800 border border-red-300">
-                                  CLOSED
-                                </span>
-                              ) : (
-                                <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-amber-100 text-amber-800 border border-amber-300 whitespace-nowrap">
-                                  {day.openTime} - {day.closeTime}
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        )
-                      })}
-                    </div>
-                  )
-                }
-                return null
-              })()}
-              
-              <div className="space-y-2">
-                {businessHours.length > 0 ? (
-                  <>
-                    {formatBusinessHours(businessHours).map((hourText, index) => (
-                      <div key={index} className="flex justify-between items-center py-1 border-b border-gray-100 last:border-b-0">
-                        <span className="text-gray-700 text-sm">{hourText.split(':')[0]}</span>
-                        <span className="text-gray-600 font-medium text-sm">{hourText.split(':').slice(1).join(':').trim()}</span>
-                      </div>
-                    ))}
-                  </>
-                ) : (
-                  <>
-                    <div className="flex justify-between items-center py-1 border-b border-gray-100">
-                      <span className="text-gray-700 text-sm">Monday - Thursday</span>
-                      <span className="text-gray-600 font-medium text-sm">10:00 AM - 2:00 AM</span>
-                    </div>
-                    <div className="flex justify-between items-center py-1 border-b border-gray-100">
-                      <span className="text-gray-700 text-sm">Friday</span>
-                      <span className="text-gray-600 font-medium text-sm">10:00 AM - 2:00 AM</span>
-                    </div>
-                    <div className="flex justify-between items-center py-1 border-b border-gray-100">
-                      <span className="text-gray-700 text-sm">Saturday</span>
-                      <span className="text-gray-600 font-medium text-sm">8:00 AM - 2:00 AM</span>
-                    </div>
-                    <div className="flex justify-between items-center py-1">
-                      <span className="text-gray-700 text-sm">Sunday</span>
-                      <span className="text-gray-600 font-medium text-sm">8:00 AM - 2:00 AM</span>
-                    </div>
-                  </>
-                )}
-              </div>
-              <p className="text-xs text-gray-500 mt-3 italic">Call ahead if it's late to confirm we're still open!</p>
-            </div>
-            
-            {/* Map */}
-            <div className="bg-white p-6 rounded-lg shadow-lg md:col-span-2 xl:col-span-1">
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">Find Us</h3>
-              <div className="mb-4 flex items-center space-x-3">
-                <div className="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center flex-shrink-0">
-                  <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                </div>
-                <a 
-                  href="https://www.google.com/maps/dir/?api=1&destination=3889+S+King+St,+Denver,+CO+80236"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-green-600 hover:text-green-700 font-medium text-sm hover:underline"
-                >
-                  {siteData?.address || "3889 S King St, Denver, CO 80236"}
-                </a>
-              </div>
-              <div className="h-64 md:h-80 xl:h-64 rounded-lg overflow-hidden">
-                <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3067.5!2d-104.9!3d39.7!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x876c7c8c8c8c8c8c%3A0x8c8c8c8c8c8c8c8c!2s3889%20S%20King%20St%2C%20Denver%2C%20CO%2080236!5e0!3m2!1sen!2sus!4v1234567890123!5m2!1sen!2sus"
-                  width="100%"
-                  height="100%"
-                  style={{ border: 0 }}
-                  allowFullScreen
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  title="Monaghan's Bar & Grill Location"
-                ></iframe>
-              </div>
-            </div>
-          </div>
-          
-        </div>
-      </section>
+    <div
+      className={`flex flex-col items-stretch gap-2 sm:flex-row sm:items-center sm:justify-center sm:gap-4 ${className}`}
+    >
+      {doorDash ? (
+        <a
+          href={doorDash}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`${orderBtnBase} bg-[#ff3008] shadow-[0_0_32px_rgba(255,48,8,0.55),0_4px_24px_rgba(0,0,0,0.35)]`}
+        >
+          Order on DoorDash
+        </a>
+      ) : (
+        <button
+          type="button"
+          className={`${orderBtnBase} border-0 bg-[#ff3008] shadow-[0_0_32px_rgba(255,48,8,0.55),0_4px_24px_rgba(0,0,0,0.35)]`}
+        >
+          Order on DoorDash
+        </button>
+      )}
     </div>
-    </>
+  );
+}
+
+export default function Home() {
+  return (
+    <div className="relative min-h-dvh overflow-x-hidden overflow-y-auto">
+      <div aria-hidden className="hero-bg-stack" />
+
+      <div
+        className="relative z-10 mx-auto max-w-6xl px-2 py-2 pb-[max(0.75rem,env(safe-area-inset-bottom))] max-sm:grid max-sm:min-h-[100dvh] max-sm:grid-rows-[auto_minmax(0,1fr)_auto] max-sm:gap-0 sm:flex sm:min-h-0 sm:flex-col sm:px-8 sm:py-6 sm:pb-6 lg:max-w-7xl lg:px-10"
+      >
+        {/* Brand — compact on mobile so burger grid owns the viewport */}
+        <header className="shrink-0 text-center max-sm:py-0.5 sm:mb-0 lg:mb-4">
+          <h1 className="neon-text-pink text-[clamp(1.05rem,4.8vw,3rem)] font-extrabold leading-[1.08] tracking-[0.05em] [font-family:var(--font-outrun),sans-serif] sm:text-[clamp(1.2rem,5.5vw,3rem)] sm:leading-tight sm:tracking-[0.1em]">
+            {siteName}
+          </h1>
+          <p className="neon-text-cyan mt-0.5 text-[clamp(0.68rem,2vw,1.1rem)] font-semibold tracking-[0.12em] [text-shadow:0_0_14px_rgba(57,243,255,0.55)] sm:mt-1.5 sm:text-[clamp(0.72rem,2.2vw,1.1rem)] sm:tracking-[0.28em]">
+            Smashed Fresh. Served Late.
+          </p>
+        </header>
+
+        <main
+          id="menu"
+          className="mt-1.5 flex min-h-0 flex-col max-sm:h-full max-sm:min-h-0 sm:mt-5"
+        >
+          <div className="mx-auto flex min-h-0 min-w-0 w-full max-w-2xl flex-col max-sm:h-full max-sm:flex-1 sm:max-w-3xl lg:max-w-6xl xl:max-w-7xl">
+            <section className="flex min-h-0 flex-col space-y-2.5 max-sm:flex-1 sm:space-y-3 lg:space-y-5">
+              <h2 className="shrink-0 text-center text-base font-bold uppercase tracking-[0.28em] text-[#ff2d95] drop-shadow-[0_0_10px_rgba(255,45,149,0.45)] [font-family:var(--font-outrun),sans-serif] sm:text-lg sm:tracking-[0.35em] lg:text-2xl lg:tracking-[0.38em]">
+                The menu
+              </h2>
+              <ul className="grid min-h-0 grid-cols-1 grid-rows-none items-stretch gap-3 max-sm:flex-1 sm:min-h-0 sm:grid-cols-2 sm:grid-rows-1 sm:gap-4 sm:items-start lg:gap-8 xl:gap-12">
+                <li className="flex min-h-0 min-w-0">
+                  <OrderableMenuCard
+                    href={doorDash || undefined}
+                    ariaLabel="Order The Smash on DoorDash"
+                    ringVariant="pink"
+                    className="flex min-h-0 w-full min-w-0 flex-col justify-start rounded-xl border-[2.5px] border-[#ff2d95]/55 bg-black/80 p-5 shadow-[0_0_28px_rgba(255,45,149,0.2)] backdrop-blur-sm max-sm:min-h-[12.5rem] sm:h-full sm:min-h-[11rem] sm:rounded-xl sm:border-2 sm:bg-black/75 sm:p-5 lg:rounded-2xl lg:border-[3px] lg:p-8 lg:shadow-[0_0_40px_rgba(255,45,149,0.18)] xl:p-10"
+                  >
+                    <div className="flex flex-col gap-1.5 border-b border-[#ff2d95]/25 pb-3 sm:flex-row sm:flex-wrap sm:items-baseline sm:justify-between sm:gap-1.5 sm:pb-3 lg:pb-5">
+                      <h3 className="text-[clamp(1.05rem,4.5vw,1.35rem)] font-bold leading-tight text-white [font-family:var(--font-outrun),sans-serif] sm:text-2xl lg:text-3xl xl:text-4xl">
+                        The Smash
+                      </h3>
+                      <span className="neon-text-cyan text-[clamp(1.75rem,8vw,2.65rem)] font-extrabold tabular-nums leading-none sm:text-3xl lg:text-4xl xl:text-5xl">
+                        $10
+                      </span>
+                    </div>
+                    <p className="mt-3 text-[clamp(0.9rem,3.4vw,1.05rem)] leading-snug text-white [text-rendering:optimizeLegibility] max-sm:leading-relaxed sm:mt-3.5 sm:text-lg sm:leading-relaxed lg:mt-5 lg:text-xl lg:leading-relaxed xl:text-2xl xl:leading-relaxed">
+                      1 beef patty, American cheese, brioche bun,
+                      diced onions, house sauce
+                    </p>
+                  </OrderableMenuCard>
+                </li>
+                <li className="flex min-h-0 min-w-0">
+                  <OrderableMenuCard
+                    href={doorDash || undefined}
+                    ariaLabel="Order The Double Smash on DoorDash"
+                    ringVariant="cyan"
+                    className="flex min-h-0 w-full min-w-0 flex-col justify-start rounded-xl border-[2.5px] border-[#39f3ff]/55 bg-black/80 p-5 shadow-[0_0_28px_rgba(57,243,255,0.2)] backdrop-blur-sm max-sm:min-h-[12.5rem] sm:h-full sm:min-h-[11rem] sm:rounded-xl sm:border-2 sm:bg-black/75 sm:p-5 lg:rounded-2xl lg:border-[3px] lg:p-8 lg:shadow-[0_0_40px_rgba(57,243,255,0.18)] xl:p-10"
+                  >
+                    <div className="flex flex-col gap-1.5 border-b border-[#39f3ff]/30 pb-3 sm:flex-row sm:flex-wrap sm:items-baseline sm:justify-between sm:gap-1.5 sm:pb-3 lg:pb-5">
+                      <h3 className="text-[clamp(1rem,4vw,1.3rem)] font-bold leading-tight text-white [font-family:var(--font-outrun),sans-serif] sm:text-2xl lg:text-3xl xl:text-4xl">
+                        The Double Smash
+                      </h3>
+                      <span className="neon-text-cyan text-[clamp(1.75rem,8vw,2.65rem)] font-extrabold tabular-nums leading-none sm:text-3xl lg:text-4xl xl:text-5xl">
+                        $15
+                      </span>
+                    </div>
+                    <p className="mt-3 text-[clamp(0.9rem,3.4vw,1.05rem)] leading-snug text-white [text-rendering:optimizeLegibility] max-sm:leading-relaxed sm:mt-3.5 sm:text-lg sm:leading-relaxed lg:mt-5 lg:text-xl lg:leading-relaxed xl:text-2xl xl:leading-relaxed">
+                      2 beef patties, 2 slices cheese, brioche
+                      bun, diced onions, house sauce
+                    </p>
+                  </OrderableMenuCard>
+                </li>
+              </ul>
+            </section>
+          </div>
+        </main>
+
+        <div className="mt-2 flex shrink-0 flex-col gap-1.5 sm:contents">
+          <section
+            aria-label="Order delivery"
+            className="shrink-0 rounded-xl border border-[#ff2d95]/45 bg-black/65 p-3 shadow-[0_0_28px_rgba(255,45,149,0.2)] backdrop-blur-md sm:mt-5 sm:rounded-2xl sm:p-6 sm:shadow-[0_0_40px_rgba(255,45,149,0.25)]"
+          >
+            <p className="mb-2 text-center text-[0.65rem] font-bold uppercase tracking-[0.2em] text-[#ff2d95] [font-family:var(--font-outrun),sans-serif] sm:mb-4 sm:text-xs sm:tracking-[0.35em]">
+              Tap to order
+            </p>
+            <OrderCTAs className="gap-2 sm:gap-4" />
+          </section>
+
+          <p className="mx-auto w-full max-w-md text-balance text-center text-[0.65rem] font-medium leading-snug text-white/88 sm:mt-4 sm:max-w-2xl sm:text-base sm:leading-relaxed">
+            Late-night delivery around{" "}
+            <strong className="font-semibold text-white">Littleton</strong>,{" "}
+            <strong className="font-semibold text-white">Englewood</strong> &{" "}
+            <strong className="font-semibold text-white">Sheridan</strong>.
+            Minority woman-owned. A new concept from a local staple.
+          </p>
+
+          <footer className="shrink-0 border-t border-white/10 pt-2 pb-[max(0.35rem,env(safe-area-inset-bottom))] sm:mt-6 sm:pt-4 sm:pb-[max(1rem,env(safe-area-inset-bottom))]">
+            <SiteNav current="home" />
+            <p className="mt-1.5 text-center text-[0.6rem] text-white/35 sm:mt-3 sm:text-xs">
+              &copy; {new Date().getFullYear()} {siteName.replace(/\s+/g, " ")}
+            </p>
+          </footer>
+        </div>
+      </div>
+    </div>
   );
 }

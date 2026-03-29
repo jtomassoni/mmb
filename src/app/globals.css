@@ -1,580 +1,181 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700;800;900&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Hide scrollbars for date picker */
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
-}
-
-/* Smooth scrolling for picker wheels */
-.picker-wheel {
-  -webkit-overflow-scrolling: touch;
-  scroll-behavior: auto; /* Disable smooth scroll for better control */
-  overscroll-behavior: contain;
-  scroll-snap-type: y mandatory;
-  scroll-snap-align: start;
-}
-
-.picker-item {
-  scroll-snap-align: center;
-  scroll-snap-stop: always;
-}
-
-/* Modern Time Picker Styles */
-.proper-time-picker {
-  @apply relative;
-}
-
-.proper-time-picker__button {
-  @apply w-full px-3 py-2 text-left border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white text-gray-900 cursor-pointer hover:border-gray-400;
-}
-
-.proper-time-picker__button:disabled {
-  @apply bg-gray-100 text-gray-400 cursor-not-allowed;
-}
-
-.proper-time-picker__button.error {
-  @apply border-red-300 focus:ring-red-500 focus:border-red-500;
-}
-
-.proper-time-picker__dropdown {
-  @apply absolute z-[9999] w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-xl;
-}
-
-/* Custom scrollbar for time picker */
-.scrollbar-thin {
-  scrollbar-width: thin;
-}
-
-.scrollbar-thin::-webkit-scrollbar {
-  width: 6px;
-}
-
-.scrollbar-thin::-webkit-scrollbar-track {
-  background: #f1f5f9;
-  border-radius: 3px;
-}
-
-.scrollbar-thin::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 3px;
-}
-
-.scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
-}
-
-/* Fix double border issue on regular inputs */
-input:focus, textarea:focus, select:focus {
-  @apply outline-none;
-}
-
-/* Ensure error state takes precedence over focus state */
-.border-red-300:focus {
-  @apply border-red-500 ring-1 ring-red-500 ring-opacity-50;
-}
-
-/* React Day Picker - Use Built-in CSS Variables */
-.rdp {
-  --rdp-cell-size: 40px;
-  --rdp-accent-color: #10b981;
-  --rdp-background-color: #ffffff;
-  --rdp-outline: 2px solid var(--rdp-accent-color);
-  --rdp-outline-selected: 2px solid var(--rdp-accent-color);
-  --rdp-selected-color: #ffffff;
-  --rdp-text-color: #374151;
-  --rdp-text-color-disabled: #9ca3af;
-  --rdp-text-color-outside: #9ca3af;
-  --rdp-text-color-selected: #ffffff;
-  --rdp-text-color-today: #374151;
-  --rdp-background-color-today: transparent;
-  --rdp-background-color-selected: #10b981;
-  --rdp-background-color-hover: #f3f4f6;
-}
-
-/* Fix month/year and day number colors */
-.rdp .rdp-caption_label {
-  color: #111827 !important;
-  font-weight: 600;
-}
-
-.rdp .rdp-head_cell {
-  color: #374151 !important;
-  font-weight: 600;
-}
-
-/* Alternative selectors for weekday headers */
-.rdp thead th {
-  color: #374151 !important;
-  font-weight: 600;
-}
-
-.rdp .rdp-table thead th {
-  color: #374151 !important;
-  font-weight: 600;
-}
-
-.rdp .rdp-day {
-  color: #374151 !important;
-}
-
-.rdp .rdp-day_selected {
-  color: #ffffff !important;
-}
-
-.rdp .rdp-day_today {
-  color: #374151 !important;
-  background-color: transparent !important;
-}
-
-.rdp .rdp-day_outside {
-  color: #9ca3af !important;
-}
-
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --neon-pink: #ff2d95;
+  --neon-cyan: #39f3ff;
+  --neon-purple: #b967ff;
+  --void: #050508;
+  --grid-line: rgba(255, 45, 149, 0.15);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  min-height: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  color: #f0e8ff;
+  background: var(--void);
 }
 
-/* Fix focus outline issues and blue box */
-*:focus {
-  outline: none !important;
+/* Outrun horizon grid */
+.outrun-bg {
+  background-color: var(--void);
+  background-image: linear-gradient(
+      180deg,
+      transparent 0%,
+      transparent 42%,
+      rgba(185, 103, 255, 0.12) 42%,
+      rgba(255, 45, 149, 0.08) 100%
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 47px,
+      var(--grid-line) 47px,
+      var(--grid-line) 48px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 47px,
+      var(--grid-line) 47px,
+      var(--grid-line) 48px
+    );
+  background-size: 100% 100%, 48px 48px, 48px 48px;
+  background-position: center bottom;
 }
 
-*:focus-visible {
-  outline: 2px solid #ef4444 !important;
-  outline-offset: 2px !important;
+.neon-text-pink {
+  color: var(--neon-pink);
+  text-shadow: 0 0 12px rgba(255, 45, 149, 0.85), 0 0 28px rgba(255, 45, 149, 0.45);
 }
 
-/* Remove default button focus styles */
-button:focus,
-a:focus {
-  outline: none !important;
+.neon-text-cyan {
+  color: var(--neon-cyan);
+  text-shadow: 0 0 10px rgba(57, 243, 255, 0.7), 0 0 22px rgba(57, 243, 255, 0.35);
 }
 
-/* Custom focus styles for better UX */
-button:focus-visible,
-a:focus-visible {
-  outline: 2px solid #ef4444 !important;
-  outline-offset: 2px !important;
+.neon-border {
+  box-shadow: 0 0 0 1px rgba(255, 45, 149, 0.35), 0 0 20px rgba(255, 45, 149, 0.15),
+    inset 0 0 30px rgba(57, 243, 255, 0.04);
 }
 
-/* Remove blue highlight on click/tap */
-* {
-  -webkit-tap-highlight-color: transparent;
-  -webkit-touch-callout: none;
+/* Hero art as atmosphere: image sits under scrims + neon grid (first layer = top) */
+.hero-bg-stack {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-color: var(--void);
+  background-image:
+    /* subtle outrun grid over the scene */
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 47px,
+      rgba(255, 45, 149, 0.07) 47px,
+      rgba(255, 45, 149, 0.07) 48px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 47px,
+      rgba(255, 45, 149, 0.07) 47px,
+      rgba(255, 45, 149, 0.07) 48px
+    ),
+    /* readability: vignette + horizon wash */
+    linear-gradient(
+      180deg,
+      rgba(5, 5, 8, 0.94) 0%,
+      rgba(5, 5, 8, 0.35) 38%,
+      rgba(5, 5, 8, 0.42) 58%,
+      rgba(5, 5, 8, 0.93) 100%
+    ),
+    radial-gradient(
+      ellipse 90% 55% at 50% -8%,
+      rgba(185, 103, 255, 0.2),
+      transparent 52%
+    ),
+    linear-gradient(
+      180deg,
+      transparent 0%,
+      transparent 44%,
+      rgba(185, 103, 255, 0.07) 44%,
+      rgba(255, 45, 149, 0.06) 100%
+    ),
+    url("/pics/hero.png");
+  background-size:
+    48px 48px,
+    48px 48px,
+    100% 100%,
+    100% 100%,
+    100% 100%,
+    cover;
+  background-position:
+    center,
+    center bottom,
+    center,
+    center,
+    center,
+    52% 42%;
+  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat;
+  filter: saturate(1.1) contrast(1.03);
 }
 
-/* Custom font classes */
-.font-display {
-  font-family: 'Playfair Display', serif;
+@media (min-width: 1024px) {
+  .hero-bg-stack {
+    background-position:
+      center,
+      center bottom,
+      center,
+      center,
+      center,
+      58% 38%;
+  }
 }
 
-.font-sans {
-  font-family: 'Inter', sans-serif;
+/* Phones: stronger scrim so neon + burger read less busy behind thumbs-at-a-distance */
+@media (max-width: 639px) {
+  .hero-bg-stack {
+    background-image:
+      repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 47px,
+        rgba(255, 45, 149, 0.05) 47px,
+        rgba(255, 45, 149, 0.05) 48px
+      ),
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 47px,
+        rgba(255, 45, 149, 0.05) 47px,
+        rgba(255, 45, 149, 0.05) 48px
+      ),
+      linear-gradient(
+        180deg,
+        rgba(5, 5, 8, 0.96) 0%,
+        rgba(5, 5, 8, 0.52) 36%,
+        rgba(5, 5, 8, 0.5) 58%,
+        rgba(5, 5, 8, 0.94) 100%
+      ),
+      radial-gradient(
+        ellipse 95% 50% at 50% -6%,
+        rgba(185, 103, 255, 0.16),
+        transparent 50%
+      ),
+      linear-gradient(
+        180deg,
+        transparent 0%,
+        transparent 42%,
+        rgba(185, 103, 255, 0.05) 42%,
+        rgba(255, 45, 149, 0.04) 100%
+      ),
+      url("/pics/hero.png");
+    filter: saturate(1.05) contrast(1.05);
+  }
 }
-
-/* Accessibility Styles */
-:root {
-  --font-scale: 1;
-  --base-font-size: 18px;
-}
-
-/* Font scaling */
-html {
-  font-size: calc(var(--base-font-size) * var(--font-scale));
-  line-height: 1.6;
-}
-
-/* High contrast mode */
-.high-contrast {
-  --background: #000000;
-  --foreground: #ffffff;
-}
-
-/* High Contrast Mode - Comprehensive Implementation */
-.high-contrast body {
-  background: #000000 !important;
-  color: #ffffff !important;
-}
-
-/* Reset backgrounds and text for better contrast */
-.high-contrast *:not(img):not(svg):not(path):not(circle):not(rect):not(line):not(polyline):not(polygon):not(picture):not(source):not(video):not(canvas):not(span:has(img)) {
-  background-color: #000000 !important;
-  color: #ffffff !important;
-}
-
-/* Override for any element containing images */
-.high-contrast *:has(img) {
-  background-color: transparent !important;
-}
-
-/* Ensure image containers don't hide images */
-.high-contrast .relative:has(img),
-.high-contrast div:has(img),
-.high-contrast [class*="image"],
-.high-contrast picture,
-.high-contrast picture > * {
-  background-color: transparent !important;
-}
-
-/* Next.js Image component support - FORCE display */
-.high-contrast img,
-.high-contrast img[src],
-.high-contrast img[srcset] {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  background: transparent !important;
-  max-width: 100% !important;
-  height: auto !important;
-}
-
-/* Image wrappers - all variations */
-.high-contrast span:has(> img),
-.high-contrast span > img,
-.high-contrast div > img {
-  background-color: transparent !important;
-  display: block !important;
-}
-
-/* Gallery specific - force grid images to show */
-.high-contrast .relative img,
-.high-contrast .overflow-hidden img,
-.high-contrast .columns-1 img,
-.high-contrast .columns-2 img,
-.high-contrast .columns-3 img,
-.high-contrast .columns-4 img,
-.high-contrast [class*="columns-"] img,
-.high-contrast .break-inside-avoid img,
-.high-contrast .group img {
-  visibility: visible !important;
-  display: block !important;
-  opacity: 1 !important;
-  position: relative !important;
-  z-index: 1 !important;
-}
-
-/* Gallery masonry layout containers */
-.high-contrast .columns-1,
-.high-contrast .columns-2,
-.high-contrast .columns-3,
-.high-contrast .columns-4,
-.high-contrast [class*="columns-"] {
-  background: transparent !important;
-}
-
-.high-contrast .break-inside-avoid {
-  background: transparent !important;
-}
-
-/* Links - Yellow for high visibility */
-.high-contrast a {
-  color: #ffff00 !important;
-  text-decoration: underline !important;
-  text-decoration-thickness: 2px !important;
-}
-
-.high-contrast a:hover {
-  color: #ffff66 !important;
-  text-decoration-thickness: 3px !important;
-}
-
-/* Buttons - White background with black text */
-.high-contrast button {
-  background-color: #ffffff !important;
-  color: #000000 !important;
-  border: 3px solid #ffffff !important;
-  font-weight: 600 !important;
-}
-
-.high-contrast button:hover {
-  background-color: #ffff00 !important;
-  color: #000000 !important;
-  border-color: #ffff00 !important;
-}
-
-/* Headers and Navigation */
-.high-contrast header {
-  background: #000000 !important;
-  border-color: #ffffff !important;
-  border-width: 3px !important;
-}
-
-.high-contrast nav a {
-  background-color: #000000 !important;
-  border: 2px solid #ffffff !important;
-  padding: 8px 12px !important;
-}
-
-/* Cards and containers */
-.high-contrast .bg-white,
-.high-contrast .bg-gray-50,
-.high-contrast .bg-gray-100,
-.high-contrast [class*="bg-"],
-.high-contrast [class*="backdrop-"] {
-  background: #000000 !important;
-  border: 2px solid #ffffff !important;
-}
-
-/* Forms */
-.high-contrast input,
-.high-contrast textarea,
-.high-contrast select {
-  background-color: #000000 !important;
-  color: #ffffff !important;
-  border: 3px solid #ffffff !important;
-}
-
-.high-contrast input:focus,
-.high-contrast textarea:focus,
-.high-contrast select:focus {
-  border-color: #ffff00 !important;
-  outline: 3px solid #ffff00 !important;
-}
-
-/* Images - maintain visibility and don't override */
-.high-contrast img:not([data-accessibility-dropdown] img) {
-  border: 2px solid #ffffff !important;
-  /* Remove filters that might hide images */
-  filter: none !important;
-  /* Ensure images display properly */
-  background-color: transparent !important;
-  /* Force content to display */
-  content: normal !important;
-}
-
-/* Hero sections */
-.high-contrast section[class*="hero"],
-.high-contrast section[class*="min-h"] {
-  background: #000000 !important;
-}
-
-/* Overlays and shadows - remove them */
-.high-contrast [class*="shadow"],
-.high-contrast [class*="backdrop-blur"],
-.high-contrast .absolute.inset-0 {
-  box-shadow: none !important;
-  backdrop-filter: none !important;
-}
-
-/* Status indicators and badges */
-.high-contrast [class*="bg-green"],
-.high-contrast [class*="bg-blue"],
-.high-contrast [class*="bg-red"],
-.high-contrast [class*="bg-yellow"],
-.high-contrast [class*="bg-purple"],
-.high-contrast [class*="bg-orange"],
-.high-contrast [class*="bg-amber"] {
-  background-color: #000000 !important;
-  border: 2px solid #ffff00 !important;
-}
-
-/* Text colors for emphasis */
-.high-contrast [class*="text-green"],
-.high-contrast [class*="text-blue"],
-.high-contrast [class*="text-red"],
-.high-contrast [class*="text-yellow"],
-.high-contrast [class*="text-purple"],
-.high-contrast [class*="text-orange"],
-.high-contrast [class*="text-amber"],
-.high-contrast [class*="text-gray"] {
-  color: #ffffff !important;
-}
-
-/* Headings - make them stand out */
-.high-contrast h1,
-.high-contrast h2,
-.high-contrast h3,
-.high-contrast h4,
-.high-contrast h5,
-.high-contrast h6 {
-  color: #ffffff !important;
-  font-weight: 700 !important;
-  text-decoration: underline !important;
-  text-decoration-color: #ffff00 !important;
-  text-decoration-thickness: 2px !important;
-  text-underline-offset: 4px !important;
-}
-
-/* Focus states - highly visible */
-.high-contrast *:focus {
-  outline: 4px solid #ffff00 !important;
-  outline-offset: 2px !important;
-}
-
-/* Borders for all interactive elements */
-.high-contrast [role="button"],
-.high-contrast [class*="cursor-pointer"],
-.high-contrast [onclick] {
-  border: 2px solid #ffffff !important;
-}
-
-/* SVG icons */
-.high-contrast svg {
-  filter: invert(1) !important;
-}
-
-/* Modal close button - X icon */
-.high-contrast button svg,
-.high-contrast .fixed svg {
-  filter: drop-shadow(0 0 3px #ffff00) !important;
-  stroke: #ffffff !important;
-  stroke-width: 3 !important;
-}
-
-/* Close button specifically */
-.high-contrast .absolute svg {
-  filter: drop-shadow(0 0 3px #ffff00) drop-shadow(0 0 5px #ffff00) !important;
-  stroke: #ffffff !important;
-  stroke-width: 3 !important;
-}
-
-/* Accessibility icon button - yellow border */
-.high-contrast button[aria-label*="Accessibility"],
-.high-contrast button[data-accessibility-dropdown] {
-  border: 3px solid #ffff00 !important;
-  background: transparent !important;
-}
-
-/* Accessibility icon image - make it visible */
-.high-contrast button[aria-label*="Accessibility"] img,
-.high-contrast [data-accessibility-dropdown] img {
-  filter: invert(1) brightness(2) !important;
-  background: transparent !important;
-  border: none !important;
-}
-
-/* Ensure text is always readable */
-.high-contrast span,
-.high-contrast p,
-.high-contrast li,
-.high-contrast td,
-.high-contrast th {
-  color: #ffffff !important;
-}
-
-/* Menu items and dropdowns */
-.high-contrast [role="menu"],
-.high-contrast [role="menuitem"] {
-  background-color: #000000 !important;
-  border: 2px solid #ffffff !important;
-}
-
-/* Reduced motion */
-.reduced-motion * {
-  animation-duration: 0.01ms !important;
-  animation-iteration-count: 1 !important;
-  transition-duration: 0.01ms !important;
-}
-
-/* Dyslexia-friendly font */
-.dyslexia-font {
-  font-family: 'OpenDyslexic', 'Comic Sans MS', cursive !important;
-}
-
-/* Focus styles */
-*:focus {
-  outline: 2px solid #0066cc;
-  outline-offset: 2px;
-}
-
-/* Custom sexy hover effects */
-.hover-lift {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.hover-lift:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-}
-
-.hover-glow {
-  transition: all 0.3s ease;
-}
-
-.hover-glow:hover {
-  box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
-}
-
-.hover-scale {
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.hover-scale:hover {
-  transform: scale(1.05);
-}
-
-/* Smooth color transitions */
-.transition-sexy {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Custom button hover effects */
-.btn-sexy {
-  position: relative;
-  overflow: hidden;
-  transition: all 0.3s ease;
-}
-
-.btn-sexy::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: left 0.5s;
-}
-
-.btn-sexy:hover::before {
-  left: 100%;
-}
-
-/* Screen reader only */
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
-
-/* Minimum touch target size */
-button, a, input, select, textarea {
-  min-height: 44px;
-  min-width: 44px;
-}
-
-/* Link styles */
-a {
-  text-decoration: underline;
-}
-
-/* High contrast link styles are defined above in the comprehensive section */

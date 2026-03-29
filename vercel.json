@@ -1,8 +1,0 @@
-{
-  "crons": [
-    {
-      "path": "/api/cron/broncos-refresh",
-      "schedule": "*/30 * * * *"
-    }
-  ]
-}
