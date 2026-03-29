@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Orbitron, Rajdhani } from "next/font/google";
 import "./globals.css";
 import { getSiteName, getSiteUrl } from "@/lib/site";
@@ -26,6 +26,13 @@ const body = Rajdhani({
 const siteName = getSiteName();
 const metadataBase = getMetadataBase();
 const baseUrl = getSiteUrl();
+
+/** Lets `env(safe-area-inset-*)` reflect notches & home indicators (iOS; some Android). */
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
 
 export const metadata: Metadata = {
   ...(metadataBase ? { metadataBase } : {}),

@@ -3,8 +3,8 @@ import Link from "next/link";
 type NavKey = "home" | "about" | "blog";
 
 const link =
-  "text-[0.68rem] font-medium text-white/42 transition hover:text-white/85 sm:text-[0.8125rem]";
-const currentLink = "text-[#39f3ff]/75";
+  "text-base font-medium text-[#b8f7ff]/90 transition hover:text-white sm:text-[0.875rem]";
+const currentLink = "text-[#39f3ff] drop-shadow-[0_0_1px_rgb(0_0_0/0.85)]";
 
 /** Quiet footer-style links. Use at the bottom of the page, not under the logo. */
 export function SiteNav({
