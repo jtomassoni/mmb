@@ -4,16 +4,29 @@ import { FloatingOrderButton } from "@/components/floating-order-button";
 import { PageScene } from "@/components/page-scene";
 import { SiteNav } from "@/components/site-nav";
 import { blogPosts } from "@/lib/blog-posts";
-import { getSiteName } from "@/lib/site";
+import { getSiteName, getSiteUrl } from "@/lib/site";
 
 const siteName = getSiteName();
 
+const blogIndexDesc =
+  "Updates from the kitchen: opening prep, delivery zone, and late night smash burgers in south Denver.";
+
 export const metadata: Metadata = {
   title: `Blog | ${siteName}`,
-  description: `Updates from the kitchen: opening prep, delivery zone, and late night smash burgers in south Denver.`,
+  description: blogIndexDesc,
+  alternates: { canonical: "/blog" },
   openGraph: {
     title: `Blog | ${siteName}`,
-    description: "Opening soon. Stories from the build, the menu, and the neighborhood.",
+    description:
+      "Opening soon. Stories from the build, the menu, and the neighborhood.",
+    type: "website",
+    url: "/blog",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `Blog | ${siteName}`,
+    description:
+      "Opening soon. Stories from the build, the menu, and the neighborhood.",
   },
 };
 
@@ -31,8 +44,32 @@ export default function BlogIndexPage() {
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
   );
 
+  const base = getSiteUrl();
+  const blogJsonLd = base
+    ? {
+        "@context": "https://schema.org",
+        "@type": "Blog",
+        name: "Opening notes",
+        description: blogIndexDesc,
+        url: `${base}/blog`,
+        publisher: { "@id": `${base.replace(/\/$/, "")}/#business` },
+        blogPost: sorted.map((p) => ({
+          "@type": "BlogPosting",
+          headline: p.title,
+          url: `${base}/blog/${p.slug}`,
+          datePublished: p.date,
+        })),
+      }
+    : null;
+
   return (
     <PageScene>
+      {blogJsonLd ? (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(blogJsonLd) }}
+        />
+      ) : null}
       <FloatingOrderButton />
       <header className="text-center">
         <p className="neon-text-pink text-xs font-bold uppercase tracking-[0.35em] [font-family:var(--font-outrun),sans-serif]">

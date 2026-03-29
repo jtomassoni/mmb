@@ -2,14 +2,26 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { PageScene } from "@/components/page-scene";
 import { SiteNav } from "@/components/site-nav";
-import { getSiteName } from "@/lib/site";
+import { getSiteName, getSiteUrl } from "@/lib/site";
 
 const siteName = getSiteName();
 
+const aboutDesc =
+  "Minority woman-owned smash burger delivery. Late night food around Littleton, Englewood, Sheridan and south Denver. New concept from a local staple.";
+
 export const metadata: Metadata = {
   title: `About | ${siteName}`,
-  description: `Minority woman-owned smash burger delivery. Late night food around Littleton, Englewood, Sheridan and south Denver. New concept from a local staple.`,
+  description: aboutDesc,
+  alternates: { canonical: "/about" },
   openGraph: {
+    title: `About ${siteName}`,
+    description:
+      "Who we are, why two burgers, and how we are getting ready to serve south Denver late night.",
+    type: "website",
+    url: "/about",
+  },
+  twitter: {
+    card: "summary_large_image",
     title: `About ${siteName}`,
     description:
       "Who we are, why two burgers, and how we are getting ready to serve south Denver late night.",
@@ -17,8 +29,26 @@ export const metadata: Metadata = {
 };
 
 export default function AboutPage() {
+  const base = getSiteUrl();
+  const aboutJsonLd = base
+    ? {
+        "@context": "https://schema.org",
+        "@type": "AboutPage",
+        name: `About ${siteName}`,
+        url: `${base}/about`,
+        description: aboutDesc,
+        isPartOf: { "@id": `${base.replace(/\/$/, "")}/#website` },
+      }
+    : null;
+
   return (
     <PageScene>
+      {aboutJsonLd ? (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(aboutJsonLd) }}
+        />
+      ) : null}
       <header className="text-center">
         <p className="neon-text-pink text-xs font-bold uppercase tracking-[0.35em] [font-family:var(--font-outrun),sans-serif]">
           About

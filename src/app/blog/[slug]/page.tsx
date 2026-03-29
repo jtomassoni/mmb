@@ -5,6 +5,11 @@ import { FloatingOrderButton } from "@/components/floating-order-button";
 import { PageScene } from "@/components/page-scene";
 import { SiteNav } from "@/components/site-nav";
 import { blogPosts, getPostBySlug } from "@/lib/blog-posts";
+import {
+  OG_IMAGE_HEIGHT,
+  OG_IMAGE_PATH,
+  OG_IMAGE_WIDTH,
+} from "@/lib/seo";
 import { getSiteName, getSiteUrl } from "@/lib/site";
 
 const siteName = getSiteName();
@@ -22,15 +27,33 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const base = getSiteUrl();
   const title = `${post.title} | ${siteName}`;
+  const path = `/blog/${post.slug}`;
   return {
     title,
     description: post.excerpt,
+    authors: [{ name: siteName }],
+    alternates: { canonical: path },
     openGraph: {
       title,
       description: post.excerpt,
       type: "article",
       publishedTime: post.date,
-      ...(base ? { url: `${base}/blog/${post.slug}` } : {}),
+      authors: [siteName],
+      url: path,
+      images: [
+        {
+          url: OG_IMAGE_PATH,
+          width: OG_IMAGE_WIDTH,
+          height: OG_IMAGE_HEIGHT,
+          alt: post.title,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description: post.excerpt,
+      images: [OG_IMAGE_PATH],
     },
   };
 }
@@ -50,6 +73,7 @@ export default async function BlogPostPage({ params }: Props) {
   if (!post) notFound();
 
   const base = getSiteUrl();
+  const origin = base?.replace(/\/$/, "") ?? "";
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
@@ -60,8 +84,15 @@ export default async function BlogPostPage({ params }: Props) {
       "@type": "Organization",
       name: siteName,
     },
+    publisher: {
+      "@type": "Organization",
+      name: siteName,
+      ...(origin ? { url: `${origin}/` } : {}),
+    },
     ...(base
       ? {
+          url: `${base}/blog/${post.slug}`,
+          image: [`${origin}${OG_IMAGE_PATH}`],
           mainEntityOfPage: {
             "@type": "WebPage",
             "@id": `${base}/blog/${post.slug}`,

@@ -5,6 +5,6 @@ export default function robots(): MetadataRoute.Robots {
   const base = getSiteUrl();
   return {
     rules: { userAgent: "*", allow: "/" },
-    ...(base ? { sitemap: `${base}/sitemap.xml` } : {}),
+    ...(base ? { sitemap: `${base}/sitemap.xml`, host: base } : {}),
   };
 }

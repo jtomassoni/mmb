@@ -1,9 +1,16 @@
+import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
 import { SiteNav } from "@/components/site-nav";
 import { getSiteName } from "@/lib/site";
 
 const siteName = getSiteName();
+
+/** Home route: canonical + OG URL (title/description live on root layout). */
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+  openGraph: { url: "/" },
+};
 
 const doorDash = process.env.NEXT_PUBLIC_DOORDASH_URL?.trim() ?? "";
 
